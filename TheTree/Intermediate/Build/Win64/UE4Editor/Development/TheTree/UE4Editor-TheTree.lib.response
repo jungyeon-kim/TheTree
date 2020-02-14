@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-TheTree.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\TheTreeEditor\Development\Engine\SharedPCH.Engine.h.obj"
+"C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\TheTree.cpp.obj"
+"C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\Default.rc2.res"
+/OUT:"C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\UE4Editor-TheTree.lib"
+/INCLUDE:IMPLEMENT_MODULE_TheTree

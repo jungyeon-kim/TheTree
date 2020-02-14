@@ -1,0 +1,15 @@
+﻿  Using 'git status' to determine working set for adaptive non-unity build (C:\project\Unreal Engine\TheTree).
+  Creating makefile for TheTreeEditor (no existing makefile)
+  Parsing headers for TheTreeEditor
+    Running UnrealHeaderTool "C:\project\Unreal Engine\TheTree\TheTree\TheTree.uproject" "C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\TheTreeEditor\Development\TheTreeEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+  Reflection code generated for TheTreeEditor in 5.0704642 seconds
+  Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.17763.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+  Building 4 actions with 12 processes...
+    [1/4] TheTree.cpp
+    [2/4] UE4Editor-TheTree-0002.lib
+       C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\UE4Editor-TheTree-0002.lib 라이브러리 및 C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\UE4Editor-TheTree-0002.exp 개체를 생성하고 있습니다.
+    [3/4] UE4Editor-TheTree-0002.dll
+       C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\UE4Editor-TheTree-0002.suppressed.lib 라이브러리 및 C:\project\Unreal Engine\TheTree\TheTree\Intermediate\Build\Win64\UE4Editor\Development\TheTree\UE4Editor-TheTree-0002.suppressed.exp 개체를 생성하고 있습니다.
+    [4/4] TheTreeEditor.target
+  Total time in Parallel executor: 1.29 seconds
+  Total execution time: 7.90 seconds
