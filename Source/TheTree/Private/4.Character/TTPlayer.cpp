@@ -1,6 +1,7 @@
 #include "TTPlayer.h"
 #include "TTPlayerController.h"
 #include "TTAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
 {
@@ -28,8 +29,8 @@ ATTPlayer::ATTPlayer()
 	ArmLengthSpeed = 3.0f;
 	ArmRotationSpeed = 10.0f;
 	MaxCombo = 4;
-	AttackLength = 200.0f;
-	AttackRadius = 50.0f;
+	AttackLength = 300.0f;
+	AttackRadius = 100.0f;
 	DeadTimer = 5.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
@@ -94,7 +95,7 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
-	PlayerInputComponent->BindAction(TEXT("BasicAttack"), EInputEvent::IE_Pressed, this, &ATTPlayer::BasicAttack);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
@@ -112,8 +113,81 @@ void ATTPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 }
 
-void ATTPlayer::BasicAttack()
+void ATTPlayer::Attack()
 {
+	if (GetCurrentStateMachineName() == FName("Ground"))
+	{
+		if (bIsAttacking)
+		{
+			TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+			if (bCanNextCombo) bIsComboInputOn = true;
+		}
+		else
+		{
+			TTCHECK(!CurrentCombo);
+			AttackStartComboState();
+			TTAnimInstance->PlayAttackMontange();
+			TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
+			bIsAttacking = true;
+		}
+	}
+}
+
+void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	TTCHECK(bIsAttacking);
+	TTCHECK(CurrentCombo > 0);
+	bIsAttacking = false;
+	AttackEndComboState();
+	OnAttackEnded.Broadcast();
+}
+
+void ATTPlayer::AttackStartComboState()
+{
+	bCanNextCombo = true;
+	bIsComboInputOn = false;
+	TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1));
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+}
+
+void ATTPlayer::AttackEndComboState()
+{
+	bIsComboInputOn = false;
+	bCanNextCombo = false;
+	CurrentCombo = 0;
+}
+
+void ATTPlayer::AttackCheck()
+{
+	FHitResult HitResult{};
+	FCollisionQueryParams Params{ NAME_None, false, this };
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackLength,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,	// Attack 트레이스 채널
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params);
+
+#if ENABLE_DRAW_DEBUG
+	FVector Trace{ GetActorForwardVector() * AttackLength };
+	FVector Center{ GetActorLocation() + Trace * 0.5f };
+	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
+	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
+	FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
+	float DebugLifeTime{ 5.0f };
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
+#endif
+
+	if (bResult)
+		if (HitResult.Actor.IsValid())
+		{
+			TTLOG(Warning, TEXT("Hit Actor Name: %s"), *HitResult.Actor->GetName());
+
+			FDamageEvent DamageEvent{};
+			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
+		}
 }
 
 bool ATTPlayer::CanSetWeapon()
@@ -128,6 +202,11 @@ void ATTPlayer::SetWeapon(AABWeapon* NewWeapon)
 ECharacterState ATTPlayer::GetCharacterState() const
 {
 	return CurrentState;
+}
+
+FName ATTPlayer::GetCurrentStateMachineName() const
+{
+	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(FName("BaseAction")));
 }
 
 void ATTPlayer::SetCharacterState(ECharacterState NewState)
@@ -172,9 +251,13 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 	}
 }
 
-FName ATTPlayer::GetCurrentStateMachineName() const
+void ATTPlayer::Jump()
 {
-	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(FName("BaseAction")));
+	if (GetCurrentStateMachineName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	{
+		bPressedJump = true;
+		JumpKeyHoldTime = 0.0f;
+	}
 }
 
 void ATTPlayer::UpDown(float NewAxisValue)
@@ -197,20 +280,4 @@ void ATTPlayer::LookUp(float NewAxisValue)
 void ATTPlayer::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
-}
-
-void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-}
-
-void ATTPlayer::AttackStartComboState()
-{
-}
-
-void ATTPlayer::AttackEndComboState()
-{
-}
-
-void ATTPlayer::AttackCheck()
-{
 }

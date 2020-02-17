@@ -37,6 +37,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	float AttackRadius;		// 공격판정 반지름
 private:
+	void Jump();
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
@@ -83,7 +84,7 @@ public:
 		AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;
 
-	void BasicAttack();
+	void Attack();
 	FOnAttackEndDelegate OnAttackEnded{};
 
 	bool CanSetWeapon();
