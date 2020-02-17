@@ -1,5 +1,6 @@
 #include "TTPlayer.h"
 #include "TTPlayerController.h"
+#include "TTPlayerWeapon.h"
 #include "TTAnimInstance.h"
 #include "DrawDebugHelpers.h"
 
@@ -14,6 +15,8 @@ ATTPlayer::ATTPlayer()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
+
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Characters/Player/SK_Player.SK_Player") };
 	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animations/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
@@ -22,15 +25,13 @@ ATTPlayer::ATTPlayer()
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 800.0f;
 	GetCharacterMovement()->JumpZVelocity = 1100.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
 	SpringArm->TargetArmLength = 800.0f;
 	ArmLengthSpeed = 3.0f;
 	ArmRotationSpeed = 10.0f;
 	MaxCombo = 4;
-	AttackLength = 300.0f;
-	AttackRadius = 100.0f;
 	DeadTimer = 5.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
@@ -52,6 +53,7 @@ void ATTPlayer::PostInitializeComponents()
 			AttackStartComboState();
 			TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
 		}
+		else TTAnimInstance->StopAllMontages(0.25f);
 	});
 }
 
@@ -60,6 +62,9 @@ void ATTPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	TTPlayerController = Cast<ATTPlayerController>(GetController());
+	const auto& CurWeapon{ GetWorld()->SpawnActor<ATTPlayerWeapon>() };
+	if (CurWeapon) CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale,
+		TEXT("rHand_Socket"));
 
 	SetCharacterState(ECharacterState::READY);
 }
@@ -161,18 +166,33 @@ void ATTPlayer::AttackCheck()
 {
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
+	FVector Trace{}, Center{};
+
+	if (CurrentCombo == 4)
+	{
+		AttackLength = 1.0f;
+		AttackRadius = 330.0f;
+		Trace = FVector::ZeroVector;
+		Center = GetActorLocation();
+	}
+	else
+	{
+		AttackLength = 300.0f;
+		AttackRadius = 100.0f;
+		Trace = GetActorForwardVector() * AttackLength;
+		Center = GetActorLocation() + Trace * 0.5f;
+	}
+
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackLength,
 		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel2,	// Attack 트레이스 채널
+		ECollisionChannel::ECC_GameTraceChannel3,
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
 #if ENABLE_DRAW_DEBUG
-	FVector Trace{ GetActorForwardVector() * AttackLength };
-	FVector Center{ GetActorLocation() + Trace * 0.5f };
 	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 	FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
