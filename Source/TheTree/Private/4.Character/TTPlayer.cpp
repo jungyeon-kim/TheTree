@@ -25,6 +25,7 @@ ATTPlayer::ATTPlayer()
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
+	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
 	GetCharacterMovement()->MaxWalkSpeed = 800.0f;
 	GetCharacterMovement()->JumpZVelocity = 1100.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
@@ -69,6 +70,19 @@ void ATTPlayer::BeginPlay()
 	SetCharacterState(ECharacterState::READY);
 }
 
+void ATTPlayer::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsAttacking)
+	{
+		FVector CameraForwardVector{ Camera->GetForwardVector() };
+		CameraForwardVector.Z = 0.0f;
+		FRotator TargetRot{ FRotationMatrix::MakeFromX(CameraForwardVector).Rotator() };
+		SetActorRotation(TargetRot);
+	}
+}
+
 void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
@@ -88,11 +102,6 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 		GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };	// 초당 회전량
 		break;
 	}
-}
-
-void ATTPlayer::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -166,21 +175,16 @@ void ATTPlayer::AttackCheck()
 {
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
-	FVector Trace{}, Center{};
 
 	if (CurrentCombo == 4)
 	{
 		AttackLength = 1.0f;
 		AttackRadius = 330.0f;
-		Trace = FVector::ZeroVector;
-		Center = GetActorLocation();
 	}
 	else
 	{
 		AttackLength = 300.0f;
 		AttackRadius = 100.0f;
-		Trace = GetActorForwardVector() * AttackLength;
-		Center = GetActorLocation() + Trace * 0.5f;
 	}
 
 	bool bResult = GetWorld()->SweepSingleByChannel(
@@ -193,6 +197,8 @@ void ATTPlayer::AttackCheck()
 		Params);
 
 #if ENABLE_DRAW_DEBUG
+	FVector Trace{ GetActorForwardVector() * AttackLength };
+	FVector Center{ GetActorLocation() + Trace * 0.5f };
 	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 	FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
