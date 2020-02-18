@@ -20,12 +20,14 @@ private:
 	bool bIsDead;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Dodge", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* DodgeMontage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
 	UFUNCTION()
 	void AnimNotify_NextAttackCheck();
-	FName GetAttackMontageSectionName(int32 Section);
+	FName GetAttackMontageSectionName(int32 Section) const;
 public:
 	FOnNextHitCheckDelegate OnAttackHitCheck{};
 	FOnNextAttackCheckDelegate OnNextAttackCheck{};
@@ -36,6 +38,7 @@ public:
 
 	void PlayAttackMontange();
 	void JumpToAttackMontageSection(int32 NewSection);
+	void PlayDodgeMontage();
 
 	void SetDeadAnim();
 };

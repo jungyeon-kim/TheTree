@@ -19,7 +19,7 @@ ATTPlayer::ATTPlayer()
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Characters/Player/SK_Player.SK_Player") };
-	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animations/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
+	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animations/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
 	if (SK_PLAYER.Succeeded()) GetMesh()->SetSkeletalMesh(SK_PLAYER.Object);
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
@@ -45,6 +45,7 @@ void ATTPlayer::PostInitializeComponents()
 	TTAnimInstance = Cast<UTTAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnAttackMontageEnded);
+	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnDodgeMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPlayer::AttackCheck);
 	TTAnimInstance->OnNextAttackCheck.AddLambda([&]()
 	{
@@ -79,7 +80,7 @@ void ATTPlayer::Tick(float DeltaTime)
 		FVector CameraForwardVector{ Camera->GetForwardVector() };
 		CameraForwardVector.Z = 0.0f;
 		FRotator TargetRot{ FRotationMatrix::MakeFromX(CameraForwardVector).Rotator() };
-		SetActorRotation(TargetRot);
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 12.0f));
 	}
 }
 
@@ -96,10 +97,10 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 		SpringArm->bInheritYaw = true;
 		SpringArm->bInheritRoll = true;
 		SpringArm->bDoCollisionTest = true;
-		bUseControllerRotationYaw = false;								// 컨트롤러의 Yaw회전을 캐릭터에 적용
-		GetCharacterMovement()->bOrientRotationToMovement = true;		// 움직이는 방향으로 회전
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;	// RotationRate에 따라 부드럽게 회전
-		GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };	// 초당 회전량
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
 		break;
 	}
 }
@@ -108,8 +109,9 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
+	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
@@ -129,31 +131,19 @@ void ATTPlayer::PossessedBy(AController* NewController)
 
 void ATTPlayer::Attack()
 {
-	if (GetCurrentStateMachineName() == FName("Ground"))
+	if (bIsAttacking)
 	{
-		if (bIsAttacking)
-		{
-			TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
-			if (bCanNextCombo) bIsComboInputOn = true;
-		}
-		else
-		{
-			TTCHECK(!CurrentCombo);
-			AttackStartComboState();
-			TTAnimInstance->PlayAttackMontange();
-			TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
-			bIsAttacking = true;
-		}
+		TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+		if (bCanNextCombo) bIsComboInputOn = true;
 	}
-}
-
-void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	TTCHECK(bIsAttacking);
-	TTCHECK(CurrentCombo > 0);
-	bIsAttacking = false;
-	AttackEndComboState();
-	OnAttackEnded.Broadcast();
+	else if (GetCurrentStateMachineName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
+	{
+		TTCHECK(!CurrentCombo);
+		AttackStartComboState();
+		TTAnimInstance->PlayAttackMontange();
+		TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
+		bIsAttacking = true;
+	}
 }
 
 void ATTPlayer::AttackStartComboState()
@@ -196,7 +186,7 @@ void ATTPlayer::AttackCheck()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
-#if ENABLE_DRAW_DEBUG
+#if 0
 	FVector Trace{ GetActorForwardVector() * AttackLength };
 	FVector Center{ GetActorLocation() + Trace * 0.5f };
 	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
@@ -214,6 +204,20 @@ void ATTPlayer::AttackCheck()
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
 		}
+}
+
+void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage->GetName() == "PlayerAttackMontage")
+	{
+		bIsAttacking = false;
+		AttackEndComboState();
+	}
+}
+
+void ATTPlayer::OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage->GetName() == "PlayerDodgeMontage") bIsDodging = false;
 }
 
 bool ATTPlayer::CanSetWeapon()
@@ -283,6 +287,15 @@ void ATTPlayer::Jump()
 	{
 		bPressedJump = true;
 		JumpKeyHoldTime = 0.0f;
+	}
+}
+
+void ATTPlayer::Dodge()
+{
+	if (!bIsDodging)
+	{
+		TTAnimInstance->PlayDodgeMontage();
+		bIsDodging = true;
 	}
 }
 
