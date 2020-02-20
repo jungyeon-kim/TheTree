@@ -80,7 +80,7 @@ void ATTPlayer::Tick(float DeltaTime)
 		FVector CameraForwardVector{ Camera->GetForwardVector() };
 		CameraForwardVector.Z = 0.0f;
 		FRotator TargetRot{ FRotationMatrix::MakeFromX(CameraForwardVector).Rotator() };
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 12.0f));
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 10.0f));
 	}
 }
 
@@ -136,7 +136,7 @@ void ATTPlayer::Attack()
 		TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
 		if (bCanNextCombo) bIsComboInputOn = true;
 	}
-	else if (GetCurrentStateMachineName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
+	else if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 	{
 		TTCHECK(!CurrentCombo);
 		AttackStartComboState();
@@ -186,7 +186,7 @@ void ATTPlayer::AttackCheck()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
-#if 0
+#if ENABLE_DRAW_DEBUG
 	FVector Trace{ GetActorForwardVector() * AttackLength };
 	FVector Center{ GetActorLocation() + Trace * 0.5f };
 	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
@@ -234,7 +234,7 @@ ECharacterState ATTPlayer::GetCharacterState() const
 	return CurrentState;
 }
 
-FName ATTPlayer::GetCurrentStateMachineName() const
+FName ATTPlayer::GetCurrentStateNodeName() const
 {
 	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(FName("BaseAction")));
 }
@@ -283,7 +283,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 
 void ATTPlayer::Jump()
 {
-	if (GetCurrentStateMachineName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
 	{
 		bPressedJump = true;
 		JumpKeyHoldTime = 0.0f;
@@ -301,13 +301,13 @@ void ATTPlayer::Dodge()
 
 void ATTPlayer::UpDown(float NewAxisValue)
 {
-	if (GetCurrentStateMachineName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void ATTPlayer::LeftRight(float NewAxisValue)
 {
-	if (GetCurrentStateMachineName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 

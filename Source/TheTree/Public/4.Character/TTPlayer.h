@@ -95,5 +95,5 @@ public:
 
 	ECharacterState GetCharacterState() const;
 	void SetCharacterState(ECharacterState NewState);
-	FName GetCurrentStateMachineName() const;
+	FName GetCurrentStateNodeName() const;
 };

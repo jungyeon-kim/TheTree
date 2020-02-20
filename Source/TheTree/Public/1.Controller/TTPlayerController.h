@@ -14,5 +14,6 @@ public:
 	ATTPlayerController();
 
 	virtual void PostInitializeComponents() override;
+	virtual void PlayerTick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
 };

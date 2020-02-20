@@ -13,8 +13,15 @@ void ATTPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly InputMode;
-	SetInputMode(InputMode);
+	//FInputModeGameOnly InputModeGameOnly{};
+	//SetInputMode(InputModeGameOnly);
+}
+
+void ATTPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	//SetMouseLocation(0.0f, 0.0f);
 }
 
 void ATTPlayerController::OnPossess(APawn* InPawn)
