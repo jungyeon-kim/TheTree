@@ -17,5 +17,7 @@ enum class ECharacterState
 	INIT,
 	LOADING,
 	READY,
+	NOBATTLE,
+	BATTLE,
 	DEAD
 };

@@ -26,14 +26,16 @@ ATTPlayer::ATTPlayer()
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
 	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
-	GetCharacterMovement()->MaxWalkSpeed = 800.0f;
-	GetCharacterMovement()->JumpZVelocity = 1100.0f;
-	GetCharacterMovement()->GravityScale = 3.0f;
 	SpringArm->TargetArmLength = 800.0f;
 	ArmLengthSpeed = 3.0f;
 	ArmRotationSpeed = 10.0f;
 	MaxCombo = 4;
 	DeadTimer = 5.0f;
+	GeneralMoveSpeed = 1000;
+	AdvancedMoveSpeed = GeneralMoveSpeed * 1.2f;
+	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+	GetCharacterMovement()->JumpZVelocity = 1100.0f;
+	GetCharacterMovement()->GravityScale = 3.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
 }
@@ -57,6 +59,7 @@ void ATTPlayer::PostInitializeComponents()
 		}
 		else TTAnimInstance->StopAllMontages(0.25f);
 	});
+	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
 }
 
 void ATTPlayer::BeginPlay()
@@ -64,9 +67,9 @@ void ATTPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	TTPlayerController = Cast<ATTPlayerController>(GetController());
-	const auto& CurWeapon{ GetWorld()->SpawnActor<ATTPlayerWeapon>() };
-	if (CurWeapon) CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale,
-		TEXT("rHand_Socket"));
+	CurrentWeapon = GetWorld()->SpawnActor<ATTPlayerWeapon>();
+	if (CurrentWeapon) CurrentWeapon->AttachToComponent(GetMesh(), 
+		FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Back_Socket"));
 
 	SetCharacterState(ECharacterState::READY);
 }
@@ -112,6 +115,7 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
 	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
+	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
@@ -136,7 +140,8 @@ void ATTPlayer::Attack()
 		TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
 		if (bCanNextCombo) bIsComboInputOn = true;
 	}
-	else if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
+	else if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying()
+		&& CurrentState == ECharacterState::BATTLE)
 	{
 		TTCHECK(!CurrentCombo);
 		AttackStartComboState();
@@ -220,15 +225,6 @@ void ATTPlayer::OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	if (Montage->GetName() == "PlayerDodgeMontage") bIsDodging = false;
 }
 
-bool ATTPlayer::CanSetWeapon()
-{
-	return false;
-}
-
-void ATTPlayer::SetWeapon(AABWeapon* NewWeapon)
-{
-}
-
 ECharacterState ATTPlayer::GetCharacterState() const
 {
 	return CurrentState;
@@ -237,6 +233,16 @@ ECharacterState ATTPlayer::GetCharacterState() const
 FName ATTPlayer::GetCurrentStateNodeName() const
 {
 	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(FName("BaseAction")));
+}
+
+void ATTPlayer::SetWeapon()
+{
+	TTCHECK(CurrentWeapon);
+
+	if (TTAnimInstance->GetIsBattleOn()) CurrentWeapon->AttachToComponent(GetMesh(), 
+		FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("rHand_Socket"));
+	else CurrentWeapon->AttachToComponent(GetMesh(),
+		FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Back_Socket"));
 }
 
 void ATTPlayer::SetCharacterState(ECharacterState NewState)
@@ -260,6 +266,17 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 
 		SetControlMode(EControlMode::THIRD_PERSON);
 		EnableInput(TTPlayerController);
+		SetCharacterState(ECharacterState::NOBATTLE);
+		break;
+	}
+	case ECharacterState::NOBATTLE:
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+		break;
+	}
+	case ECharacterState::BATTLE:
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.7f;
 		break;
 	}
 	case ECharacterState::DEAD:
@@ -283,7 +300,8 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 
 void ATTPlayer::Jump()
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying()
+		&& CurrentState == ECharacterState::NOBATTLE)
 	{
 		bPressedJump = true;
 		JumpKeyHoldTime = 0.0f;
@@ -296,6 +314,16 @@ void ATTPlayer::Dodge()
 	{
 		TTAnimInstance->PlayDodgeMontage();
 		bIsDodging = true;
+	}
+}
+
+void ATTPlayer::SwapBattleMode()
+{
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	{
+		TTAnimInstance->PlayInOutWeaponMontage();
+		if (TTAnimInstance->GetIsBattleOn()) SetCharacterState(ECharacterState::BATTLE);
+		else SetCharacterState(ECharacterState::NOBATTLE);
 	}
 }
 

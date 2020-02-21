@@ -15,6 +15,10 @@ private:
 	ECharacterState CurrentState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", Meta = (AllowPrivateAccess = true))
 	float DeadTimer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", Meta = (AllowPrivateAccess = true))
+	float GeneralMoveSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", Meta = (AllowPrivateAccess = true))
+	float AdvancedMoveSpeed;
 	UPROPERTY()
 	class ATTPlayerController* TTPlayerController;
 	UPROPERTY()
@@ -42,6 +46,7 @@ private:
 	void Attack();
 	void Jump();
 	void Dodge();
+	void SwapBattleMode();
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
@@ -74,12 +79,12 @@ public:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	class ATTPlayerWeapon* CurrentWeapon;
 	//UPROPERTY(VisibleAnywhere, Category = "UI")
 	//class UWidgetComponent* HPBarWidget;
 	//UPROPERTY(VisibleAnywhere, Category = "Stat")
 	//class UTTCharacterStatComponent* CharacterStat;
-	//UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	//class ATTWeapon* CurrentWeapon;
 public:	
 	ATTPlayer();
 
@@ -90,10 +95,8 @@ public:
 		AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;
 
-	bool CanSetWeapon();
-	void SetWeapon(class AABWeapon* NewWeapon);
-
 	ECharacterState GetCharacterState() const;
-	void SetCharacterState(ECharacterState NewState);
 	FName GetCurrentStateNodeName() const;
+	void SetWeapon();
+	void SetCharacterState(ECharacterState NewState);
 };
