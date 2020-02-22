@@ -2,6 +2,7 @@
 
 #include "TheTree.h"
 #include "GameFramework/Character.h"
+#include "Sound/SoundCue.h"
 #include "TTPlayer.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
@@ -79,6 +80,10 @@ public:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+	USoundCue* SoundCue;
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+	UAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	class ATTPlayerWeapon* CurrentWeapon;
 	//UPROPERTY(VisibleAnywhere, Category = "UI")

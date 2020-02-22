@@ -10,13 +10,15 @@ ATTPlayer::ATTPlayer()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-
+	SoundCue = CreateDefaultSubobject<USoundCue>(TEXT("SOUNDCUE"));
+	Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("AUDIO"));
+	
 	RootComponent = GetCapsuleComponent();
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
-
+	Audio->AttachTo(RootComponent);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
-
+	
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Characters/Player/SK_Player.SK_Player") };
 	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animations/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
@@ -38,6 +40,8 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->GravityScale = 3.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
+	ConstructorHelpers::FObjectFinder<USoundCue> SOUND_QUE{TEXT("/Game/Assets/Sounds/PlayerSounds/Player_Attack_SoundCue.Player_Attack_SoundCue")};
+	if (SOUND_QUE.Succeeded()) SoundCue = SOUND_QUE.Object;
 }
 
 void ATTPlayer::PostInitializeComponents()
@@ -60,6 +64,8 @@ void ATTPlayer::PostInitializeComponents()
 		else TTAnimInstance->StopAllMontages(0.25f);
 	});
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
+	if (SoundCue->IsValidLowLevelFast())
+		Audio->SetSound(SoundCue);
 }
 
 void ATTPlayer::BeginPlay()
@@ -209,6 +215,7 @@ void ATTPlayer::AttackCheck()
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
 		}
+	Audio->Play();
 }
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
