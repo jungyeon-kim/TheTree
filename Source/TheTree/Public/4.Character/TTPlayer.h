@@ -40,6 +40,8 @@ private:
 	float AttackRadius;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Dodge", Meta = (AllowPrivateAccess = true))
 	bool bIsDodging;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Dodge", Meta = (AllowPrivateAccess = true))
+	bool bIsSwappingWeapon;
 
 	FTimerHandle DeadTimerHandle{};
 private:
@@ -56,6 +58,8 @@ private:
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION()
 	void OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+	void OnInOutWeaponMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();

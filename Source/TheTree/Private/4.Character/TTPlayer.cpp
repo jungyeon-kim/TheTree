@@ -48,6 +48,7 @@ void ATTPlayer::PostInitializeComponents()
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnAttackMontageEnded);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnDodgeMontageEnded);
+	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnInOutWeaponMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPlayer::AttackCheck);
 	TTAnimInstance->OnNextAttackCheck.AddLambda([&]()
 	{
@@ -140,7 +141,7 @@ void ATTPlayer::Attack()
 		TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
 		if (bCanNextCombo) bIsComboInputOn = true;
 	}
-	else if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying()
+	else if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
 		&& CurrentState == ECharacterState::BATTLE)
 	{
 		TTCHECK(!CurrentCombo);
@@ -225,6 +226,12 @@ void ATTPlayer::OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	if (Montage->GetName() == "PlayerDodgeMontage") bIsDodging = false;
 }
 
+void ATTPlayer::OnInOutWeaponMontageEnded(UAnimMontage * Montage, bool bInterrupted)
+{
+	if (Montage->GetName() == "PlayerInWeaponMontage" || Montage->GetName() == "PlayerOutWeaponMontage")
+		bIsSwappingWeapon = false;
+}
+
 ECharacterState ATTPlayer::GetCharacterState() const
 {
 	return CurrentState;
@@ -300,7 +307,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 
 void ATTPlayer::Jump()
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying()
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
 		&& CurrentState == ECharacterState::NOBATTLE)
 	{
 		bPressedJump = true;
@@ -310,7 +317,7 @@ void ATTPlayer::Jump()
 
 void ATTPlayer::Dodge()
 {
-	if (!bIsDodging)
+	if (!bIsDodging && !bIsSwappingWeapon)
 	{
 		TTAnimInstance->PlayDodgeMontage();
 		bIsDodging = true;
@@ -319,23 +326,24 @@ void ATTPlayer::Dodge()
 
 void ATTPlayer::SwapBattleMode()
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 	{
 		TTAnimInstance->PlayInOutWeaponMontage();
 		if (TTAnimInstance->GetIsBattleOn()) SetCharacterState(ECharacterState::BATTLE);
 		else SetCharacterState(ECharacterState::NOBATTLE);
+		bIsSwappingWeapon = true;
 	}
 }
 
 void ATTPlayer::UpDown(float NewAxisValue)
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void ATTPlayer::LeftRight(float NewAxisValue)
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->IsAnyMontagePlaying())
+	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 
