@@ -12,9 +12,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "World")
 	UGameplayStatics* GamePlay;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
-	class USoundCue* SoundCue;
+	TMap<FString, class USoundCue*> SoundCue;
 public:
 	UTTAudioComponent();
 	
-	void PlaySound(const TCHAR* SoundPath);
+	void AddSound(FString SoundName, const TCHAR* SoundPath);
+	void PlaySound2D(FString SoundName);
+	void PlaySoundAtLocation(FString SoundName, FVector Location);
 };

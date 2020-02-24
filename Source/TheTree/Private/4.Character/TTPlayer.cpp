@@ -25,6 +25,9 @@ ATTPlayer::ATTPlayer()
 	if (SK_PLAYER.Succeeded()) GetMesh()->SetSkeletalMesh(SK_PLAYER.Object);
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
+	Audio->AddSound("Attack", TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
+	Audio->AddSound("TargetAttack", TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
+
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
 	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
@@ -211,9 +214,9 @@ void ATTPlayer::AttackCheck()
 
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
-			Audio->PlaySound(TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
+			Audio->PlaySoundAtLocation(TEXT("TargetAttack"), HitResult.Location);
 		}
-	Audio->PlaySound(TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
+	Audio->PlaySound2D(TEXT("Attack"));
 }
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
