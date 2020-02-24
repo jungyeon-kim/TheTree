@@ -2,6 +2,7 @@
 #include "TTPlayerController.h"
 #include "TTPlayerWeapon.h"
 #include "TTAnimInstance.h"
+#include "TTAudioComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
@@ -10,18 +11,17 @@ ATTPlayer::ATTPlayer()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-	SoundCue = CreateDefaultSubobject<USoundCue>(TEXT("SOUNDCUE"));
-	Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("AUDIO"));
+	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
 	
 	RootComponent = GetCapsuleComponent();
-	SpringArm->SetupAttachment(GetCapsuleComponent());
+	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
-	Audio->AttachTo(RootComponent);
+	Audio->SetupAttachment(RootComponent);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 	
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Characters/Player/SK_Player.SK_Player") };
-	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animations/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Character/Player/SK_Player.SK_Player") };
+	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animation/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
 	if (SK_PLAYER.Succeeded()) GetMesh()->SetSkeletalMesh(SK_PLAYER.Object);
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
@@ -40,8 +40,6 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->GravityScale = 3.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
-	ConstructorHelpers::FObjectFinder<USoundCue> SOUND_QUE{TEXT("/Game/Assets/Sounds/PlayerSounds/Player_Attack_SoundCue.Player_Attack_SoundCue")};
-	if (SOUND_QUE.Succeeded()) SoundCue = SOUND_QUE.Object;
 }
 
 void ATTPlayer::PostInitializeComponents()
@@ -65,8 +63,6 @@ void ATTPlayer::PostInitializeComponents()
 		else TTAnimInstance->StopAllMontages(0.25f);
 	});
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
-	if (SoundCue->IsValidLowLevelFast())
-		Audio->SetSound(SoundCue);
 }
 
 void ATTPlayer::BeginPlay()
@@ -215,8 +211,9 @@ void ATTPlayer::AttackCheck()
 
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
+			Audio->PlaySound(TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
 		}
-	Audio->Play();
+	Audio->PlaySound(TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
 }
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -290,7 +287,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 	}
 	case ECharacterState::BATTLE:
 	{
-		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.7f;
+		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.8f;
 		break;
 	}
 	case ECharacterState::DEAD:

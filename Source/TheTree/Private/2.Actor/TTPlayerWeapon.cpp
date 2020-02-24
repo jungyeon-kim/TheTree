@@ -9,7 +9,7 @@ ATTPlayerWeapon::ATTPlayerWeapon()
 	RootComponent = Weapon;
 	Weapon->SetCollisionProfileName(TEXT("NoCollision"));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_WEAPON{ TEXT("/Game/Assets/StaticMeshes/Weapon/SM_Player_Weapon.SM_Player_Weapon") };
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_WEAPON{ TEXT("/Game/Assets/StaticMesh/Weapon/SM_Player_Weapon.SM_Player_Weapon") };
 	if (SM_WEAPON.Succeeded()) Weapon->SetStaticMesh(SM_WEAPON.Object);
 }
 
