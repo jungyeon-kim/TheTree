@@ -28,6 +28,7 @@ ATTPlayer::ATTPlayer()
 
 	Audio->AddSound(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
 	Audio->AddSound(TEXT("TargetAttack"), TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
+	Audio->AddSound(TEXT("AttackVoice"), TEXT("/Game/Assets/Sound/Player/Player_AttackVoice_SoundCue.Player_AttackVoice_SoundCue"));
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
@@ -67,6 +68,10 @@ void ATTPlayer::PostInitializeComponents()
 		else TTAnimInstance->StopAllMontages(0.25f);
 	});
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
+	TTAnimInstance->OnPlaySound.AddLambda([&]()
+	{
+		Audio->PlaySound2D(TEXT("AttackVoice"));
+	});
 }
 
 void ATTPlayer::BeginPlay()

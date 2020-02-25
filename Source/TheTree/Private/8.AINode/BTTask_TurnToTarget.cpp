@@ -19,14 +19,11 @@ EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 	const auto& Target{ Cast<ATTPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ATTAIController::TargetKey)) };
 	if (!Target) return EBTNodeResult::Failed;
 
-	if (!TTEnemy->GetCurrentMontage())
-	{
-		FVector ForwardVector{ Target->GetActorLocation() - TTEnemy->GetActorLocation() };
-		ForwardVector.Z = 0.0f;
-		FRotator TargetRot{ FRotationMatrix::MakeFromX(ForwardVector).Rotator() };
-		TTEnemy->SetActorRotation(
-			FMath::RInterpTo(TTEnemy->GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 10.0f));
-	}
+	FVector ForwardVector{ Target->GetActorLocation() - TTEnemy->GetActorLocation() };
+	ForwardVector.Z = 0.0f;
+	FRotator TargetRot{ FRotationMatrix::MakeFromX(ForwardVector).Rotator() };
+	TTEnemy->SetActorRotation(
+		FMath::RInterpTo(TTEnemy->GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 10.0f));
 
 	return EBTNodeResult::Succeeded;
 }
