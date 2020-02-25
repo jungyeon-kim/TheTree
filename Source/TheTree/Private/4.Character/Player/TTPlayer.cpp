@@ -1,7 +1,7 @@
 #include "TTPlayer.h"
 #include "TTPlayerController.h"
 #include "TTPlayerWeapon.h"
-#include "TTAnimInstance.h"
+#include "TTPlayerAnimInstance.h"
 #include "TTAudioComponent.h"
 #include "DrawDebugHelpers.h"
 
@@ -21,7 +21,7 @@ ATTPlayer::ATTPlayer()
 	
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Character/Player/SK_Player.SK_Player") };
-	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animation/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
+	static ConstructorHelpers::FClassFinder<UTTPlayerAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animation/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
 	if (SK_PLAYER.Succeeded()) GetMesh()->SetSkeletalMesh(SK_PLAYER.Object);
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
@@ -49,7 +49,7 @@ void ATTPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TTAnimInstance = Cast<UTTAnimInstance>(GetMesh()->GetAnimInstance());
+	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnAttackMontageEnded);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnDodgeMontageEnded);

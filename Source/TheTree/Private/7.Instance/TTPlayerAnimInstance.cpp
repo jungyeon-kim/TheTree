@@ -1,6 +1,6 @@
-#include "TTAnimInstance.h"
+#include "TTPlayerAnimInstance.h"
 
-UTTAnimInstance::UTTAnimInstance()
+UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerAttackMontage.PlayerAttackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DODGE_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDodgeMontage.PlayerDodgeMontage") };
@@ -12,7 +12,7 @@ UTTAnimInstance::UTTAnimInstance()
 	if (OUTWEAPON_MONTAGE.Succeeded()) OutWeaponMontage = OUTWEAPON_MONTAGE.Object;
 }
 
-void UTTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
@@ -25,26 +25,26 @@ void UTTAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UTTAnimInstance::PlayAttackMontange()
+void UTTPlayerAnimInstance::PlayAttackMontange()
 {
 	TTCHECK(!bIsDead);
 	Montage_Play(AttackMontage, 1.0f);
 }
 
-void UTTAnimInstance::JumpToAttackMontageSection(int32 NewSection)
+void UTTPlayerAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
 	TTCHECK(!bIsDead);
 	TTCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
 }
 
-void UTTAnimInstance::PlayDodgeMontage()
+void UTTPlayerAnimInstance::PlayDodgeMontage()
 {
 	TTCHECK(!bIsDead);
 	Montage_Play(DodgeMontage, 1.0f);
 }
 
-void UTTAnimInstance::PlayInOutWeaponMontage()
+void UTTPlayerAnimInstance::PlayInOutWeaponMontage()
 {
 	TTCHECK(!bIsDead);
 	if (bIsBattleOn)
@@ -59,32 +59,32 @@ void UTTAnimInstance::PlayInOutWeaponMontage()
 	}
 }
 
-bool UTTAnimInstance::GetIsBattleOn() const
+bool UTTPlayerAnimInstance::GetIsBattleOn() const
 {
 	return bIsBattleOn;
 }
 
-void UTTAnimInstance::SetDeadAnim()
+void UTTPlayerAnimInstance::SetDeadAnim()
 {
 	bIsDead = true;
 }
 
-void UTTAnimInstance::AnimNotify_AttackHitCheck()
+void UTTPlayerAnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();
 }
 
-void UTTAnimInstance::AnimNotify_NextAttackCheck()
+void UTTPlayerAnimInstance::AnimNotify_NextAttackCheck()
 {
 	OnNextAttackCheck.Broadcast();
 }
 
-void UTTAnimInstance::AnimNotify_SwapWeapon()
+void UTTPlayerAnimInstance::AnimNotify_SwapWeapon()
 {
 	OnSwapWeapon.Broadcast();
 }
 
-FName UTTAnimInstance::GetAttackMontageSectionName(int32 Section) const
+FName UTTPlayerAnimInstance::GetAttackMontageSectionName(int32 Section) const
 {
 	TTCHECK(FMath::IsWithinInclusive(Section, 1, 4), NAME_None);
 	return *FString::Printf(TEXT("Attack%d"), Section);

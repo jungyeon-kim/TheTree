@@ -2,14 +2,14 @@
 
 #include "TheTree.h"
 #include "Animation/AnimInstance.h"
-#include "TTAnimInstance.generated.h"
+#include "TTPlayerAnimInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
-DECLARE_MULTICAST_DELEGATE(FOnNextHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSwapWeaponDelegate);
 
 UCLASS()
-class THETREE_API UTTAnimInstance : public UAnimInstance
+class THETREE_API UTTPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 private:
@@ -38,11 +38,11 @@ private:
 	void AnimNotify_SwapWeapon();
 	FName GetAttackMontageSectionName(int32 Section) const;
 public:
-	FOnNextHitCheckDelegate OnAttackHitCheck{};
+	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 	FOnNextAttackCheckDelegate OnNextAttackCheck{};
 	FOnSwapWeaponDelegate OnSwapWeapon{};
 public:
-	UTTAnimInstance();
+	UTTPlayerAnimInstance();
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 

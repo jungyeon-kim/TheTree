@@ -22,7 +22,7 @@ private:
 	UPROPERTY()
 	class ATTPlayerController* TTPlayerController;
 	UPROPERTY()
-	class UTTAnimInstance* TTAnimInstance;
+	class UTTPlayerAnimInstance* TTAnimInstance;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bIsAttacking;
