@@ -4,6 +4,11 @@
 #include "AIController.h"
 #include "TTAIController.generated.h"
 
+enum class EAIType
+{
+	BASIC
+};
+
 UCLASS()
 class THETREE_API ATTAIController : public AAIController
 {
@@ -13,11 +18,6 @@ private:
 	class UBlackboardData* BBAsset;
 	UPROPERTY()
 	class UBehaviorTree* BTAsset;
-public:
-	enum class EAIType
-	{
-		BASIC
-	};
 public:
 	static const FName HomePosKey;
 	static const FName PatrolPosKey;

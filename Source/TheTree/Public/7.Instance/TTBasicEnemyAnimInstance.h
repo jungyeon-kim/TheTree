@@ -6,6 +6,11 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
+enum class EMontageType
+{
+	ATTACK
+};
+
 UCLASS()
 class THETREE_API UTTBasicEnemyAnimInstance : public UAnimInstance
 {
@@ -24,11 +29,6 @@ private:
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
-public:
-	enum class EMontageType
-	{
-		ATTACK
-	};
 public:
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 public:

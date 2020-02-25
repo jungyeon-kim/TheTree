@@ -1,0 +1,33 @@
+#include "BTTask_Attack.h"
+#include "TTAIController.h"
+#include "TTBasicEnemy.h"
+
+UBTTask_Attack::UBTTask_Attack()
+{
+	NodeName = TEXT("Attack");
+	bNotifyTick = true;
+}
+
+EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
+
+	const auto& TTEnemy{ Cast<ATTBasicEnemy>(OwnerComp.GetAIOwner()->GetPawn()) };
+	if (!TTEnemy) return EBTNodeResult::Failed;
+
+	TTEnemy->Attack();
+	bIsAttacking = true;
+	TTEnemy->OnAttackEnded.AddLambda([&]()
+	{
+		bIsAttacking = false;
+	});
+
+	return EBTNodeResult::InProgress;
+}
+
+void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	if (!bIsAttacking) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+}

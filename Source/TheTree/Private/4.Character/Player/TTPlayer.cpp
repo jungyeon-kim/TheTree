@@ -17,6 +17,7 @@ ATTPlayer::ATTPlayer()
 	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
 	Audio->SetupAttachment(RootComponent);
+	GetMesh()->SetCollisionProfileName(TEXT("Player"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 	
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -25,8 +26,8 @@ ATTPlayer::ATTPlayer()
 	if (SK_PLAYER.Succeeded()) GetMesh()->SetSkeletalMesh(SK_PLAYER.Object);
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
-	Audio->AddSound("Attack", TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
-	Audio->AddSound("TargetAttack", TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
+	Audio->AddSound(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
+	Audio->AddSound(TEXT("TargetAttack"), TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
@@ -36,7 +37,7 @@ ATTPlayer::ATTPlayer()
 	ArmRotationSpeed = 10.0f;
 	MaxCombo = 4;
 	DeadTimer = 5.0f;
-	GeneralMoveSpeed = 1000;
+	GeneralMoveSpeed = 1000.0f;
 	AdvancedMoveSpeed = GeneralMoveSpeed * 1.2f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 	GetCharacterMovement()->JumpZVelocity = 1100.0f;
@@ -71,7 +72,7 @@ void ATTPlayer::PostInitializeComponents()
 void ATTPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	TTPlayerController = Cast<ATTPlayerController>(GetController());
 	CurrentWeapon = GetWorld()->SpawnActor<ATTPlayerWeapon>();
 	if (CurrentWeapon) CurrentWeapon->AttachToComponent(GetMesh(), 
@@ -221,7 +222,7 @@ void ATTPlayer::AttackCheck()
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage->GetName() == "PlayerAttackMontage")
+	if (Montage->GetName() == TEXT("PlayerAttackMontage"))
 	{
 		bIsAttacking = false;
 		AttackEndComboState();
@@ -230,12 +231,12 @@ void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 
 void ATTPlayer::OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage->GetName() == "PlayerDodgeMontage") bIsDodging = false;
+	if (Montage->GetName() == TEXT("PlayerDodgeMontage")) bIsDodging = false;
 }
 
 void ATTPlayer::OnInOutWeaponMontageEnded(UAnimMontage * Montage, bool bInterrupted)
 {
-	if (Montage->GetName() == "PlayerInWeaponMontage" || Montage->GetName() == "PlayerOutWeaponMontage")
+	if (Montage->GetName() == TEXT("PlayerInWeaponMontage") || Montage->GetName() == TEXT("PlayerOutWeaponMontage"))
 		bIsSwappingWeapon = false;
 }
 
@@ -314,7 +315,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 
 void ATTPlayer::Jump()
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
+	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
 		&& CurrentState == ECharacterState::NOBATTLE)
 	{
 		bPressedJump = true;
@@ -333,7 +334,7 @@ void ATTPlayer::Dodge()
 
 void ATTPlayer::SwapBattleMode()
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
+	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 	{
 		TTAnimInstance->PlayInOutWeaponMontage();
 		if (TTAnimInstance->GetIsBattleOn()) SetCharacterState(ECharacterState::BATTLE);
@@ -344,13 +345,13 @@ void ATTPlayer::SwapBattleMode()
 
 void ATTPlayer::UpDown(float NewAxisValue)
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
+	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), NewAxisValue);
 }
 
 void ATTPlayer::LeftRight(float NewAxisValue)
 {
-	if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
+	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), NewAxisValue);
 }
 

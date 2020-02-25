@@ -9,7 +9,7 @@ const FName ATTAIController::TargetKey{ TEXT("Target") };
 
 ATTAIController::ATTAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_Object{ TEXT("/Game/Book/AI/BB_ABCharacter.BB_ABCharacter") };
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BB_Object{ TEXT("/Game/Blueprints/AI/BB_Enemy.BB_Enemy") };
 	if (BB_Object.Succeeded()) BBAsset = BB_Object.Object;
 }
 
