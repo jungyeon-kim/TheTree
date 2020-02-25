@@ -174,9 +174,6 @@ void ATTPlayer::AttackEndComboState()
 
 void ATTPlayer::AttackCheck()
 {
-	FHitResult HitResult{};
-	FCollisionQueryParams Params{ NAME_None, false, this };
-
 	if (CurrentCombo == 4)
 	{
 		AttackLength = 1.0f;
@@ -188,35 +185,38 @@ void ATTPlayer::AttackCheck()
 		AttackRadius = 100.0f;
 	}
 
-	bool bResult = GetWorld()->SweepSingleByChannel(
+	TArray<FOverlapResult> HitResult{};
+	FCollisionQueryParams Params{ NAME_None, false, this };
+	FVector Trace{ GetActorForwardVector() * AttackLength };
+	FVector Center{ GetActorLocation() + Trace * 0.75f };
+	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
+
+	bool bResult = GetWorld()->OverlapMultiByChannel(
 		HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackLength,
-		FQuat::Identity,
+		Center,
+		CapsuleRot,
 		ECollisionChannel::ECC_GameTraceChannel3,
-		FCollisionShape::MakeSphere(AttackRadius),
+		FCollisionShape::MakeCapsule(AttackRadius, AttackLength),
 		Params);
 
+	if (bResult)
+		for(const auto& Result : HitResult)
+			if (Result.Actor.IsValid())
+			{
+				TTLOG(Warning, TEXT("Hit Actor Name: %s"), *Result.Actor->GetName());
+
+				FDamageEvent DamageEvent{};
+				Result.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
+				Audio->PlaySoundAtLocation(TEXT("TargetAttack"), Result.GetActor()->GetActorLocation());
+			}
+	Audio->PlaySound2D(TEXT("Attack"));
+
 #if ENABLE_DRAW_DEBUG
-	FVector Trace{ GetActorForwardVector() * AttackLength };
-	FVector Center{ GetActorLocation() + Trace * 0.5f };
 	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
-	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 	FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
 	float DebugLifeTime{ 5.0f };
 	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 #endif
-
-	if (bResult)
-		if (HitResult.Actor.IsValid())
-		{
-			TTLOG(Warning, TEXT("Hit Actor Name: %s"), *HitResult.Actor->GetName());
-
-			FDamageEvent DamageEvent{};
-			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
-			Audio->PlaySoundAtLocation(TEXT("TargetAttack"), HitResult.Location);
-		}
-	Audio->PlaySound2D(TEXT("Attack"));
 }
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
