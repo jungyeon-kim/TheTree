@@ -83,6 +83,8 @@ public:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, Category = "Effect")
+	UParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
