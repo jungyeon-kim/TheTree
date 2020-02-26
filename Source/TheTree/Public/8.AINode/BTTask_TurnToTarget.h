@@ -8,6 +8,9 @@ UCLASS()
 class THETREE_API UBTTask_TurnToTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(EditAnywhere, Category = "Option")
+	float InterpSpeed;
 public:
 	UBTTask_TurnToTarget();
 

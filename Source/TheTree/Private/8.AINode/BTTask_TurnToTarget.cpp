@@ -7,6 +7,7 @@
 UBTTask_TurnToTarget::UBTTask_TurnToTarget()
 {
 	NodeName = TEXT("Turn");
+	InterpSpeed = 10.0f;
 }
 
 EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -23,7 +24,7 @@ EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 	ForwardVector.Z = 0.0f;
 	FRotator TargetRot{ FRotationMatrix::MakeFromX(ForwardVector).Rotator() };
 	TTEnemy->SetActorRotation(
-		FMath::RInterpTo(TTEnemy->GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 10.0f));
+		FMath::RInterpTo(TTEnemy->GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 
 	return EBTNodeResult::Succeeded;
 }

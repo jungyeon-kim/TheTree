@@ -30,10 +30,6 @@ protected:
 	FTimerHandle DeadTimerHandle{};
 protected:
 	virtual void BeginPlay() override;
-	virtual void AttackCheck();
-
-	UFUNCTION()
-	virtual void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
@@ -47,8 +43,9 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 		AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void Attack();
 
-	virtual ECharacterState GetCharacterState() const;
-	virtual void SetCharacterState(ECharacterState NewState);
+	void Attack();
+
+	ECharacterState GetCharacterState() const;
+	void SetCharacterState(ECharacterState NewState);
 };

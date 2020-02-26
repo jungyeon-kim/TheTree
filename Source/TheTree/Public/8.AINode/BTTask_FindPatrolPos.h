@@ -8,6 +8,9 @@ UCLASS()
 class THETREE_API UBTTask_FindPatrolPos : public UBTTaskNode
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(EditAnywhere, Category = "Option")
+	float DetectRadius;
 public:
 	UBTTask_FindPatrolPos();
 

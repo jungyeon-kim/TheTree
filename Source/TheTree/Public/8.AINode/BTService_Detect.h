@@ -9,6 +9,8 @@ class THETREE_API UBTService_Detect : public UBTService
 {
 	GENERATED_BODY()
 private:
+	UPROPERTY(EditAnywhere, Category = "Option")
+	float DetectRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bIsAttacking;
 protected:

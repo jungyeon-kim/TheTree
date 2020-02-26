@@ -8,6 +8,9 @@ UCLASS()
 class THETREE_API UBTDecorator_IsInAttackRange : public UBTDecorator
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(EditAnywhere, Category = "Option")
+	float InAttackRange;
 public:
 	UBTDecorator_IsInAttackRange();
 protected:

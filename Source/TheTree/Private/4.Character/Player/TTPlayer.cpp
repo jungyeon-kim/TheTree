@@ -74,6 +74,26 @@ void ATTPlayer::PostInitializeComponents()
 	});
 }
 
+void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
+	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
+	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
+
+	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
+	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
+	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ATTPlayer::LookUp);
+	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATTPlayer::Turn);
+}
+
+void ATTPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+}
+
 void ATTPlayer::BeginPlay()
 {
 	Super::BeginPlay();
@@ -99,50 +119,9 @@ void ATTPlayer::Tick(float DeltaTime)
 	}
 }
 
-void ATTPlayer::SetControlMode(EControlMode NewControlMode)
-{
-	CurrentControlMode = NewControlMode;
-
-	switch (CurrentControlMode)
-	{
-	case EControlMode::THIRD_PERSON:
-		ArmLengthTo = 450.0f;
-		SpringArm->bUsePawnControlRotation = true;
-		SpringArm->bInheritPitch = true;
-		SpringArm->bInheritYaw = true;
-		SpringArm->bInheritRoll = true;
-		SpringArm->bDoCollisionTest = true;
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
-		break;
-	}
-}
-
-void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
-	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
-	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
-
-	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
-	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ATTPlayer::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATTPlayer::Turn);
-}
-
 float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	return 0.0f;
-}
-
-void ATTPlayer::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
 }
 
 void ATTPlayer::Attack()
@@ -206,15 +185,17 @@ void ATTPlayer::AttackCheck()
 		Params);
 
 	if (bResult)
-		for(const auto& Result : HitResult)
+	{
+		for (const auto& Result : HitResult)
 			if (Result.Actor.IsValid())
 			{
 				TTLOG(Warning, TEXT("Hit Actor Name: %s"), *Result.Actor->GetName());
 
 				FDamageEvent DamageEvent{};
 				Result.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
-				Audio->PlaySoundAtLocation(TEXT("TargetAttack"), Result.GetActor()->GetActorLocation());
 			}
+		Audio->PlaySound2D(TEXT("TargetAttack"));
+	}
 	Audio->PlaySound2D(TEXT("Attack"));
 
 #if ENABLE_DRAW_DEBUG
@@ -315,6 +296,27 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		), DeadTimer, false);
 		break;
 	}
+	}
+}
+
+void ATTPlayer::SetControlMode(EControlMode NewControlMode)
+{
+	CurrentControlMode = NewControlMode;
+
+	switch (CurrentControlMode)
+	{
+	case EControlMode::THIRD_PERSON:
+		ArmLengthTo = 450.0f;
+		SpringArm->bUsePawnControlRotation = true;
+		SpringArm->bInheritPitch = true;
+		SpringArm->bInheritYaw = true;
+		SpringArm->bInheritRoll = true;
+		SpringArm->bDoCollisionTest = true;
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
+		break;
 	}
 }
 

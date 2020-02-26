@@ -6,6 +6,7 @@
 UBTDecorator_IsInAttackRange::UBTDecorator_IsInAttackRange()
 {
 	NodeName = TEXT("CanAttack");
+	InAttackRange = 400.0f;
 }
 
 bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
@@ -18,6 +19,6 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	const auto& Target{ Cast<ATTPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ATTAIController::TargetKey)) };
 	if (!Target) return false;
 
-	bResult = Target->GetDistanceTo(ControllingPawn) <= 400.0f;
+	bResult = Target->GetDistanceTo(ControllingPawn) <= InAttackRange;
 	return bResult;
 }

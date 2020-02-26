@@ -6,11 +6,12 @@
 UBTTask_FindPatrolPos::UBTTask_FindPatrolPos()
 {
 	NodeName = TEXT("FindPatrolPos");
+	DetectRadius = 800.0f;
 }
 
-EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
+EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
+	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
 
 	const auto& ControllingPawn{ OwnerComp.GetAIOwner()->GetPawn() };
 	if (!ControllingPawn) return EBTNodeResult::Failed;
@@ -21,7 +22,7 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent & 
 	FVector Origin{ OwnerComp.GetBlackboardComponent()->GetValueAsVector(ATTAIController::HomePosKey) };
 	FNavLocation NextPatrol{};
 
-	if (NavSystem->GetRandomPointInNavigableRadius(Origin, 800.0f, NextPatrol))
+	if (NavSystem->GetRandomPointInNavigableRadius(Origin, DetectRadius, NextPatrol))
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(ATTAIController::PatrolPosKey, NextPatrol.Location);
 		return EBTNodeResult::Succeeded;

@@ -1,5 +1,6 @@
 #include "BTService_Detect.h"
 #include "TTAIController.h"
+#include "TTBasicEnemy.h"
 #include "TTPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
@@ -8,22 +9,22 @@ UBTService_Detect::UBTService_Detect()
 {
 	NodeName = TEXT("Detect");
 	Interval = 0.5f;
+	DetectRadius = 1200.0f;
 }
 
 void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	const auto& ControllingPawn{ OwnerComp.GetAIOwner()->GetPawn() };
-	if (!ControllingPawn) return;
+	const auto& TTEnemy{ Cast<ATTBasicEnemy>(OwnerComp.GetAIOwner()->GetPawn()) };
+	if (!TTEnemy) return;
 
-	const auto& World{ ControllingPawn->GetWorld() };
-	FVector Center{ ControllingPawn->GetActorLocation() };
-	float DetectRadius{ 1200.0f };
+	const auto& World{ TTEnemy->GetWorld() };
+	FVector Center{ TTEnemy->GetActorLocation() };
 	if (!World) return;
 
 	TArray<FOverlapResult> OverlapResults{};
-	FCollisionQueryParams CollisionQueryParam{ NAME_None, false, ControllingPawn };
+	FCollisionQueryParams CollisionQueryParam{ NAME_None, false, TTEnemy };
 
 	bool bResult = World->OverlapMultiByChannel(
 		OverlapResults,
@@ -41,21 +42,15 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 			if (TTPlayer)
 			{
-				if (TTPlayer->GetController()->IsPlayerController())
-				{
-					OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, TTPlayer);
-					DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Blue, false, 0.2f);
-					return;
-				}
-				else
-				{
-					OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, nullptr);
-					DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
-				}
+				TTEnemy->SetCharacterState(ECharacterState::BATTLE);
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, TTPlayer);
+				DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Blue, false, 0.2f);
+				return;
 			}
 		}
 	else
 	{
+		TTEnemy->SetCharacterState(ECharacterState::NOBATTLE);
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, nullptr);
 		DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 	}
