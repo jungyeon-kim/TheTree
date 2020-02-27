@@ -27,26 +27,26 @@ void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UTTPlayerAnimInstance::PlayAttackMontange()
 {
-	TTCHECK(!bIsDead);
+	TTCHECK(!bIsDead && AttackMontage);
 	Montage_Play(AttackMontage, 1.0f);
 }
 
 void UTTPlayerAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
-	TTCHECK(!bIsDead);
+	TTCHECK(!bIsDead && AttackMontage);
 	TTCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
 }
 
 void UTTPlayerAnimInstance::PlayDodgeMontage()
 {
-	TTCHECK(!bIsDead);
+	TTCHECK(!bIsDead && DodgeMontage);
 	Montage_Play(DodgeMontage, 1.0f);
 }
 
 void UTTPlayerAnimInstance::PlayInOutWeaponMontage()
 {
-	TTCHECK(!bIsDead);
+	TTCHECK(!bIsDead && InWeaponMontage && OutWeaponMontage);
 	if (bIsBattleOn)
 	{
 		Montage_Play(InWeaponMontage, 1.0f);

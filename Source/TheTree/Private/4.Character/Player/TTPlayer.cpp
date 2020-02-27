@@ -2,6 +2,7 @@
 #include "TTPlayerController.h"
 #include "TTPlayerWeapon.h"
 #include "TTPlayerAnimInstance.h"
+#include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "DrawDebugHelpers.h"
 
@@ -11,7 +12,7 @@ ATTPlayer::ATTPlayer()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-	Effect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EFFECT"));
+	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
 	
 	RootComponent = GetCapsuleComponent();
@@ -25,15 +26,10 @@ ATTPlayer::ATTPlayer()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_PLAYER{ TEXT("/Game/Assets/Character/Player/SK_Player.SK_Player") };
 	static ConstructorHelpers::FClassFinder<UTTPlayerAnimInstance> PLAYER_ANIM{ TEXT("/Game/Blueprints/Animation/Player/PlayerAnimBlueprint.PlayerAnimBlueprint_C") };
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_IMPACT{ TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact") };
 	if (SK_PLAYER.Succeeded()) GetMesh()->SetSkeletalMesh(SK_PLAYER.Object);
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
-	if (P_IMPACT.Succeeded())
-	{
-		Effect->SetTemplate(P_IMPACT.Object);
-		Effect->bAutoActivate = false;
-	}
 
+	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact"));
 	Audio->AddSound(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
 	Audio->AddSound(TEXT("TargetAttack"), TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
 	Audio->AddSound(TEXT("AttackVoice"), TEXT("/Game/Assets/Sound/Player/Player_AttackVoice_SoundCue.Player_AttackVoice_SoundCue"));
@@ -201,9 +197,7 @@ void ATTPlayer::AttackCheck()
 
 				FDamageEvent DamageEvent{};
 				Result.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
-				Effect->SetWorldLocation(Result.GetActor()->GetActorLocation());
-				Effect->SetWorldScale3D(FVector(8.0f, 8.0f, 8.0f));
-				Effect->Activate(true);
+				Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 			}
 		Audio->PlaySound2D(TEXT("TargetAttack"));
 	}

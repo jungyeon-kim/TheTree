@@ -9,8 +9,6 @@ class THETREE_API UTTAudioComponent : public UAudioComponent
 {
 	GENERATED_BODY()
 private:
-	UPROPERTY(VisibleAnywhere, Category = "World")
-	UGameplayStatics* GamePlay;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	TMap<FString, class USoundCue*> SoundCue;
 public:

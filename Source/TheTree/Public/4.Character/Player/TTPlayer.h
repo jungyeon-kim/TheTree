@@ -84,7 +84,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
-	UParticleSystemComponent* Effect;
+	class UTTParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")

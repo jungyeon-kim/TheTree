@@ -19,7 +19,7 @@ void UTTBasicEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UTTBasicEnemyAnimInstance::PlayAttackMontange()
 {
-	TTCHECK(!bIsDead);
+	TTCHECK(!bIsDead && AttackMontage);
 	Montage_Play(AttackMontage, 1.0f);
 }
 
