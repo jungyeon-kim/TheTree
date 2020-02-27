@@ -82,10 +82,11 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction(TEXT("SwapDebugMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapDebugMode);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
 	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
 	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
@@ -203,12 +204,14 @@ void ATTPlayer::AttackCheck()
 	}
 	Audio->PlaySound2D(TEXT("Attack"));
 
-#if ENABLE_DRAW_DEBUG
-	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
-	FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
-	float DebugLifeTime{ 5.0f };
-	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
-#endif
+
+	if (FTTDebug::bIsDebugging)
+	{
+		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
+		FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
+		float DebugLifeTime{ 5.0f };
+		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
+	}
 }
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -325,16 +328,6 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 	}
 }
 
-void ATTPlayer::Jump()
-{
-	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
-		&& CurrentState == ECharacterState::NOBATTLE)
-	{
-		bPressedJump = true;
-		JumpKeyHoldTime = 0.0f;
-	}
-}
-
 void ATTPlayer::Dodge()
 {
 	if (!bIsDodging && !bIsSwappingWeapon)
@@ -352,6 +345,16 @@ void ATTPlayer::SwapBattleMode()
 		if (TTAnimInstance->GetIsBattleOn()) SetCharacterState(ECharacterState::BATTLE);
 		else SetCharacterState(ECharacterState::NOBATTLE);
 		bIsSwappingWeapon = true;
+	}
+}
+
+void ATTPlayer::Jump()
+{
+	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
+		&& CurrentState == ECharacterState::NOBATTLE)
+	{
+		bPressedJump = true;
+		JumpKeyHoldTime = 0.0f;
 	}
 }
 
@@ -375,4 +378,10 @@ void ATTPlayer::LookUp(float NewAxisValue)
 void ATTPlayer::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
+}
+
+void ATTPlayer::SwapDebugMode()
+{
+	if (!FTTDebug::bIsDebugging) FTTDebug::bIsDebugging = true;
+	else FTTDebug::bIsDebugging = false;
 }

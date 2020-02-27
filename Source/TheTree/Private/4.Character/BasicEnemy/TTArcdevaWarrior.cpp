@@ -83,15 +83,16 @@ void ATTArcdevaWarrior::AttackCheck()
 			HitResult.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
 		}
 
-#if ENABLE_DRAW_DEBUG
-	FVector Trace{ GetActorForwardVector() * AttackLength };
-	FVector Center{ GetActorLocation() + Trace * 0.5f };
-	float HalfHeight{ AttackLength * 0.5f + AttackRadius };
-	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
-	FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };
-	float DebugLifeTime{ 5.0f };
-	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
-#endif
+	if (FTTDebug::bIsDebugging)
+	{
+		FVector Trace{ GetActorForwardVector() * AttackLength };
+		FVector Center{ GetActorLocation() + Trace * 0.5f };
+		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
+		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
+		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };
+		float DebugLifeTime{ 5.0f };
+		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
+	}
 }
 
 void ATTArcdevaWarrior::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

@@ -46,9 +46,9 @@ private:
 	FTimerHandle DeadTimerHandle{};
 private:
 	void Attack();
-	void Jump();
 	void Dodge();
 	void SwapBattleMode();
+	void Jump();
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
@@ -63,6 +63,8 @@ private:
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
+
+	void SwapDebugMode();
 protected:
 	enum class EControlMode
 	{
