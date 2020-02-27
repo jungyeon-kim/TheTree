@@ -14,13 +14,16 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	const auto& TTEnemy{ Cast<ATTBasicEnemy>(OwnerComp.GetAIOwner()->GetPawn()) };
 	if (!TTEnemy) return EBTNodeResult::Failed;
-
-	TTEnemy->Attack();
-	bIsAttacking = true;
-	TTEnemy->OnAttackEnded.AddLambda([&]()
+	
+	if (!TTEnemy->GetCurrentMontage())
 	{
-		bIsAttacking = false;
-	});
+		TTEnemy->Attack();
+		bIsAttacking = true;
+		TTEnemy->OnAttackEnded.AddLambda([&]()
+		{
+			bIsAttacking = false;
+		});
+	}
 
 	return EBTNodeResult::InProgress;
 }

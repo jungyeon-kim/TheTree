@@ -212,7 +212,7 @@ void ATTPlayer::AttackCheck()
 	{
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
-		float DebugLifeTime{ 5.0f };
+		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
 }

@@ -51,7 +51,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	else
 	{
 		TTEnemy->SetCharacterState(ECharacterState::NOBATTLE);
-		if (!TTEnemy->GetCurrentMontage()) OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, nullptr);
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, nullptr);
 		if (FTTDebug::bIsDebugging) DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 	}
 }
