@@ -23,6 +23,12 @@ void UTTBasicEnemyAnimInstance::PlayAttackMontange()
 	Montage_Play(AttackMontage, 1.0f);
 }
 
+void UTTBasicEnemyAnimInstance::PlayHitReactMontange()
+{
+	TTCHECK(!bIsDead && HitReactMontage);
+	Montage_Play(HitReactMontage, 1.0f);
+}
+
 void UTTBasicEnemyAnimInstance::SetDeadAnim()
 {
 	bIsDead = true;
@@ -34,6 +40,9 @@ void UTTBasicEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR
 	{
 	case EMontageType::ATTACK:
 		AttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
+		break;
+	case EMontageType::HITREACT:
+		HitReactMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
 		break;
 	}
 }

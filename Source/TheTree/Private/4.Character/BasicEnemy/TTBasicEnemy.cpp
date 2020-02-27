@@ -55,14 +55,14 @@ void ATTBasicEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-float ATTBasicEnemy::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	return 0.0f;
-}
-
 void ATTBasicEnemy::Attack()
 {
 	TTAnimInstance->PlayAttackMontange();
+}
+
+void ATTBasicEnemy::HitReact()
+{
+	TTAnimInstance->PlayHitReactMontange();
 }
 
 ECharacterState ATTBasicEnemy::GetCharacterState() const
@@ -77,33 +77,24 @@ void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
 	switch (CurrentState)
 	{
 	case ECharacterState::LOADING:
-	{
 		SetActorHiddenInGame(true);
 		bCanBeDamaged = false;
 
 		break;
-	}
 	case ECharacterState::READY:
-	{
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
 		TTAIController->RunAI();
 
 		SetCharacterState(ECharacterState::NOBATTLE);
 		break;
-	}
 	case ECharacterState::NOBATTLE:
-	{
 		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 		break;
-	}
 	case ECharacterState::BATTLE:
-	{
 		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.8f;
 		break;
-	}
 	case ECharacterState::DEAD:
-	{
 		SetActorEnableCollision(false);
 		GetMesh()->SetHiddenInGame(false);
 		bCanBeDamaged = false;
@@ -116,6 +107,5 @@ void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
 		}
 		), DeadTimer, false);
 		break;
-	}
 	}
 }

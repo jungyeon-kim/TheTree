@@ -8,8 +8,8 @@ ATTArcdevaWarrior::ATTArcdevaWarrior()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_ENEMY{ TEXT("/Game/Assets/Character/BasicEnemy/Arcdeva_Warrior/SK_Arcdeva_Warrior.SK_Arcdeva_Warrior") };
-	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaAnimBlueprint.ArcdevaAnimBlueprint_C") };
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_ENEMY{ TEXT("/Game/Assets/Character/BasicEnemy/ArcdevaWarrior/SK_Arcdeva_Warrior.SK_Arcdeva_Warrior") };
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaAnimBlueprint.ArcdevaAnimBlueprint_C") };
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
@@ -21,7 +21,8 @@ void ATTArcdevaWarrior::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaAttackMontage.ArcdevaAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaAttackMontage.ArcdevaAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::HITREACT, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorHitReactMontage.ArcdevaWarriorHitReactMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnAttackMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaWarrior::AttackCheck);
 }
@@ -41,6 +42,20 @@ void ATTArcdevaWarrior::BeginPlay()
 void ATTArcdevaWarrior::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+float ATTArcdevaWarrior::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!TTAnimInstance->GetCurrentActiveMontage())
+	{
+		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
+		float ForceAmount{ 1300.0f };
+
+		GetCharacterMovement()->Launch(LaunchVector.GetSafeNormal2D() * ForceAmount);
+		HitReact();
+	}
+
+	return 0.0f;
 }
 
 void ATTArcdevaWarrior::AttackCheck()
