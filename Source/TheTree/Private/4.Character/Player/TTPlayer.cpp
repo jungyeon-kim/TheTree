@@ -2,6 +2,7 @@
 #include "TTPlayerController.h"
 #include "TTPlayerWeapon.h"
 #include "TTPlayerAnimInstance.h"
+#include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "DrawDebugHelpers.h"
@@ -12,6 +13,7 @@ ATTPlayer::ATTPlayer()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	CameraShake = UTTCameraShake::StaticClass();
 	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
 	
@@ -200,6 +202,7 @@ void ATTPlayer::AttackCheck()
 				Result.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 			}
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.0f);
 		Audio->PlaySound2D(TEXT("TargetAttack"));
 	}
 	Audio->PlaySound2D(TEXT("Attack"));

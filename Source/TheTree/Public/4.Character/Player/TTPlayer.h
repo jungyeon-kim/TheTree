@@ -85,6 +85,8 @@ public:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TSubclassOf<UCameraShake> CameraShake;
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
 	class UTTParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
