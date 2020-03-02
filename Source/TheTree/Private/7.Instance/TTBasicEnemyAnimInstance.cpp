@@ -15,6 +15,8 @@ void UTTBasicEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		const auto& Character{ Cast<ACharacter>(Pawn) };
 		if (Character) bIsOnAir = Character->GetMovementComponent()->IsFalling();
 	}
+
+	if (GetCurrentStateName(GetStateMachineIndex(FName("BaseAction"))) == FName("HitReact")) bIsDamaged = false;
 }
 
 void UTTBasicEnemyAnimInstance::PlayAttackMontange()
@@ -23,10 +25,9 @@ void UTTBasicEnemyAnimInstance::PlayAttackMontange()
 	Montage_Play(AttackMontage, 1.0f);
 }
 
-void UTTBasicEnemyAnimInstance::PlayHitReactMontange()
+void UTTBasicEnemyAnimInstance::SetHitReactAnim()
 {
-	TTCHECK(!bIsDead && HitReactMontage);
-	Montage_Play(HitReactMontage, 1.0f);
+	bIsDamaged = true;
 }
 
 void UTTBasicEnemyAnimInstance::SetDeadAnim()
@@ -40,9 +41,6 @@ void UTTBasicEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR
 	{
 	case EMontageType::ATTACK:
 		AttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	case EMontageType::HITREACT:
-		HitReactMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
 		break;
 	}
 }

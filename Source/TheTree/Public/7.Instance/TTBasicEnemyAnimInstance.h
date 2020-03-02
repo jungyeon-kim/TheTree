@@ -8,7 +8,7 @@ DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
 enum class EMontageType
 {
-	ATTACK, HITREACT
+	ATTACK
 };
 
 UCLASS()
@@ -21,13 +21,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool bIsOnAir;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
+	bool bIsDamaged;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool bIsDead;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool bIsBattleOn;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Hit", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* HitReactMontage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
@@ -39,8 +39,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontange();
-	void PlayHitReactMontange();
 
+	void SetHitReactAnim();
 	void SetDeadAnim();
 	void SetMontage(EMontageType MontageType, const TCHAR* MontagePath);
 };

@@ -43,7 +43,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	void Attack();
-	void HitReact();
 
 	ECharacterState GetCharacterState() const;
 	void SetCharacterState(ECharacterState NewState);

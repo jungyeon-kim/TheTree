@@ -60,11 +60,6 @@ void ATTBasicEnemy::Attack()
 	TTAnimInstance->PlayAttackMontange();
 }
 
-void ATTBasicEnemy::HitReact()
-{
-	TTAnimInstance->PlayHitReactMontange();
-}
-
 ECharacterState ATTBasicEnemy::GetCharacterState() const
 {
 	return CurrentState;

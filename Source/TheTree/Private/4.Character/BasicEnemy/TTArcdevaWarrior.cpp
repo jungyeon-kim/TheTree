@@ -22,7 +22,6 @@ void ATTArcdevaWarrior::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaAttackMontage.ArcdevaAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::HITREACT, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorHitReactMontage.ArcdevaWarriorHitReactMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnAttackMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaWarrior::AttackCheck);
 }
@@ -51,8 +50,8 @@ float ATTArcdevaWarrior::TakeDamage(float DamageAmount, const FDamageEvent& Dama
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };
 
+		TTAnimInstance->SetHitReactAnim();
 		GetCharacterMovement()->Launch(LaunchVector.GetSafeNormal2D() * ForceAmount);
-		HitReact();
 	}
 
 	return 0.0f;
