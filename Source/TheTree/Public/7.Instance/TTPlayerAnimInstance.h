@@ -30,6 +30,8 @@ private:
 	UAnimMontage* InWeaponMontage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "InOutWeapon", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* OutWeaponMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Death", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* DeathMontage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
@@ -54,7 +56,8 @@ public:
 	void JumpToAttackMontageSection(int32 NewSection);
 	void PlayDodgeMontage();
 	void PlayInOutWeaponMontage();
+	void PlayDeathMontage();
 
 	bool GetIsBattleOn() const;
-	void SetDeadAnim();
+	void SetDead();
 };

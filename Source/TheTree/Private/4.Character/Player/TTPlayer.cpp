@@ -90,7 +90,6 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("SwapDebugMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapDebugMode);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
 	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
 	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
@@ -219,7 +218,7 @@ void ATTPlayer::AttackCheck()
 	Audio->PlaySound2D(TEXT("Attack"));
 
 
-	if (FTTDebug::bIsDebugging)
+	if (FTTWorld::bIsDebugging)
 	{
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FColor DrawColor{ bResult ? FColor::Green : FColor::Red };
@@ -316,14 +315,16 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		DisableInput(TTPlayerController);
 		TurnToTarget(LastDamageInstigator, 100.0f);
 		TTAnimInstance->StopAllMontages(0.25f);
-		TTAnimInstance->SetDeadAnim();
-
+		TTAnimInstance->PlayDeathMontage();
+		TTAnimInstance->SetDead();
+		
+		FTimerHandle DelayTimerHandle[2]{}, DeadTimerHandle{};
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 0.1f); }), 0.25f, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), 0.5f, false);
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-			[&]()
-		{
-			TTPlayerController->RestartLevel();
-		}
-		), DeadTimer, false);
+			[&]() { TTPlayerController->RestartLevel(); }), DeadTimer, false);
 		break;
 	}
 	}
@@ -332,7 +333,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 {
 	CurrentControlMode = NewControlMode;
-
+	
 	switch (CurrentControlMode)
 	{
 	case EControlMode::THIRD_PERSON:
@@ -399,10 +400,4 @@ void ATTPlayer::LookUp(float NewAxisValue)
 void ATTPlayer::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
-}
-
-void ATTPlayer::SwapDebugMode()
-{
-	if (!FTTDebug::bIsDebugging) FTTDebug::bIsDebugging = true;
-	else FTTDebug::bIsDebugging = false;
 }

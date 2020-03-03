@@ -25,12 +25,12 @@ void UTTBasicEnemyAnimInstance::PlayAttackMontange()
 	Montage_Play(AttackMontage, 1.0f);
 }
 
-void UTTBasicEnemyAnimInstance::SetHitReactAnim()
+void UTTBasicEnemyAnimInstance::SetDamaged()
 {
 	bIsDamaged = true;
 }
 
-void UTTBasicEnemyAnimInstance::SetDeadAnim()
+void UTTBasicEnemyAnimInstance::SetDead()
 {
 	bIsDead = true;
 }

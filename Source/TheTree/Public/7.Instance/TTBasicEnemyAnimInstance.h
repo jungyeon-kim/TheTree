@@ -40,7 +40,7 @@ public:
 
 	void PlayAttackMontange();
 
-	void SetHitReactAnim();
-	void SetDeadAnim();
+	void SetDamaged();
+	void SetDead();
 	void SetMontage(EMontageType MontageType, const TCHAR* MontagePath);
 };

@@ -42,8 +42,6 @@ private:
 	bool bIsDodging;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Dodge", Meta = (AllowPrivateAccess = true))
 	bool bIsSwappingWeapon;
-
-	FTimerHandle DeadTimerHandle{};
 private:
 	void Attack();
 	void Dodge();
@@ -64,8 +62,6 @@ private:
 	void AttackEndComboState();
 	void AttackCheck();
 	void TurnToTarget(AActor* Target, float InterpSpeed);
-
-	void SwapDebugMode();
 protected:
 	enum class EControlMode
 	{

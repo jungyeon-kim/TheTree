@@ -6,10 +6,12 @@ UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DODGE_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDodgeMontage.PlayerDodgeMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> INWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerInWeaponMontage.PlayerInWeaponMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> OUTWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayeroutWeaponMontage.PlayerOutWeaponMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DEATH_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDeathMontage.PlayerDeathMontage") };
 	if (ATTACK_MONTAGE.Succeeded()) AttackMontage = ATTACK_MONTAGE.Object;
 	if (DODGE_MONTAGE.Succeeded()) DodgeMontage = DODGE_MONTAGE.Object;
 	if (INWEAPON_MONTAGE.Succeeded()) InWeaponMontage = INWEAPON_MONTAGE.Object;
 	if (OUTWEAPON_MONTAGE.Succeeded()) OutWeaponMontage = OUTWEAPON_MONTAGE.Object;
+	if (DEATH_MONTAGE.Succeeded()) DeathMontage = DEATH_MONTAGE.Object;
 }
 
 void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -59,12 +61,18 @@ void UTTPlayerAnimInstance::PlayInOutWeaponMontage()
 	}
 }
 
+void UTTPlayerAnimInstance::PlayDeathMontage()
+{
+	TTCHECK(!bIsDead && DeathMontage);
+	Montage_Play(DeathMontage, 1.0f);
+}
+
 bool UTTPlayerAnimInstance::GetIsBattleOn() const
 {
 	return bIsBattleOn;
 }
 
-void UTTPlayerAnimInstance::SetDeadAnim()
+void UTTPlayerAnimInstance::SetDead()
 {
 	bIsDead = true;
 }

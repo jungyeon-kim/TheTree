@@ -9,6 +9,13 @@ void ATTPlayerController::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+void ATTPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	InputComponent->BindAction(TEXT("SwapDebugMode"), EInputEvent::IE_Pressed, this, &ATTPlayerController::SwapDebugMode);
+}
+
 void ATTPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -22,7 +29,8 @@ void ATTPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 }
 
-void ATTPlayerController::OnPossess(APawn* InPawn)
+void ATTPlayerController::SwapDebugMode()
 {
-	Super::OnPossess(InPawn);
+	if (!FTTWorld::bIsDebugging) FTTWorld::bIsDebugging = true;
+	else FTTWorld::bIsDebugging = false;
 }

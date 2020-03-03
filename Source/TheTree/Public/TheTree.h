@@ -15,15 +15,6 @@ DECLARE_LOG_CATEGORY_EXTERN(TheTree, Log, All);
 // If the condition is not true, red log is returned.In a function with a return value, the return value must be given as the second argument.
 #define TTCHECK(Expr, ...) { if(!(Expr)) { TTLOG(Error, TEXT("ASSERTION : %s"), TEXT("'"#Expr"'")); return __VA_ARGS__; } }
 
-//Struct containing instances for debugging
-struct FTTDebug 
-{ 
-	static bool bIsDebugging; 
-};
-
-// Flag to turn debug mode ON / OFF.
-bool FTTDebug::bIsDebugging{};
-
 UENUM()
 enum class ECharacterState
 {
@@ -34,3 +25,15 @@ enum class ECharacterState
 	BATTLE,
 	DEAD
 };
+
+// Struct containing instances for global access.
+struct FTTWorld
+{ 
+private:
+	FTTWorld() = default;
+public:
+	static bool bIsDebugging;
+};
+
+// Flag to turn debug mode ON / OFF.
+bool FTTWorld::bIsDebugging{};

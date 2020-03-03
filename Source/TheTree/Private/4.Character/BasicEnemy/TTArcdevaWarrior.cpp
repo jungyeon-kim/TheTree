@@ -57,7 +57,7 @@ float ATTArcdevaWarrior::TakeDamage(float DamageAmount, const FDamageEvent& Dama
 		float ForceAmount{ 1300.0f };
 
 		TurnToTarget(LastDamageInstigator, 100.0f);
-		TTAnimInstance->SetHitReactAnim();
+		TTAnimInstance->SetDamaged();
 		GetCharacterMovement()->Launch(LaunchVector.GetSafeNormal2D() * ForceAmount);
 	}
 
@@ -89,7 +89,7 @@ void ATTArcdevaWarrior::AttackCheck()
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 		}
 
-	if (FTTDebug::bIsDebugging)
+	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ GetActorForwardVector() * AttackLength };
 		FVector Center{ GetActorLocation() + Trace * 0.5f };

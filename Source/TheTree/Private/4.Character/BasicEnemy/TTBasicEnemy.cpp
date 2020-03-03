@@ -108,7 +108,7 @@ void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
 		TTAIController->RunAI();
-
+		
 		SetCharacterState(ECharacterState::NOBATTLE);
 		break;
 	}
@@ -127,7 +127,7 @@ void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
 		GetCapsuleComponent()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 		TTAIController->StopAI();
 		TTAnimInstance->StopAllMontages(0.25f);
-		TTAnimInstance->SetDeadAnim();
+		TTAnimInstance->SetDead();
 
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]()
