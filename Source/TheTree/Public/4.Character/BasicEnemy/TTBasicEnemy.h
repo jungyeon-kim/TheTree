@@ -27,12 +27,18 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	float AttackRadius;
 
+	UPROPERTY()
+	AActor* LastDamageInstigator;
 	FTimerHandle DeadTimerHandle{};
 protected:
 	virtual void BeginPlay() override;
+
+	void TurnToTarget(AActor* Target, float InterpSpeed);
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	class UTTCharacterStatComponent* CharacterStat;
 
 	FOnAttackEndDelegate OnAttackEnded{};
 public:
@@ -41,6 +47,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
+		AController* EventInstigator, AActor* DamageCauser) override;
 
 	void Attack();
 

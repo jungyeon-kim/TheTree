@@ -5,6 +5,7 @@
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
+#include "TTCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
@@ -16,6 +17,7 @@ ATTPlayer::ATTPlayer()
 	CameraShake = UTTCameraShake::StaticClass();
 	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
+	CharacterStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 	
 	RootComponent = GetCapsuleComponent();
 	SpringArm->SetupAttachment(RootComponent);
@@ -40,8 +42,6 @@ ATTPlayer::ATTPlayer()
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
 	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
 	SpringArm->TargetArmLength = 800.0f;
-	ArmLengthSpeed = 3.0f;
-	ArmRotationSpeed = 10.0f;
 	MaxCombo = 4;
 	DeadTimer = 5.0f;
 	GeneralMoveSpeed = 1000.0f;
@@ -56,6 +56,12 @@ ATTPlayer::ATTPlayer()
 void ATTPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	CharacterStat->SetObjectStat(FName("Player"));
+	CharacterStat->OnHPIsZero.AddLambda([&]()
+	{
+		SetCharacterState(ECharacterState::DEAD);
+	});
 
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
@@ -119,8 +125,7 @@ void ATTPlayer::Tick(float DeltaTime)
 
 	if (bIsAttacking)
 	{
-		FVector CameraForwardVector{ Camera->GetForwardVector() };
-		CameraForwardVector.Z = 0.0f;
+		FVector CameraForwardVector{ Camera->GetForwardVector().GetSafeNormal2D() };
 		FRotator TargetRot{ FRotationMatrix::MakeFromX(CameraForwardVector).Rotator() };
 		SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), 10.0f));
 	}
@@ -128,7 +133,13 @@ void ATTPlayer::Tick(float DeltaTime)
 
 float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return 0.0f;
+	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
+	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
+	
+	LastDamageInstigator = DamageCauser;
+	CharacterStat->SetDamage(FinalDamage);
+	
+	return FinalDamage;
 }
 
 void ATTPlayer::Attack()
@@ -199,10 +210,10 @@ void ATTPlayer::AttackCheck()
 				TTLOG(Warning, TEXT("Hit Actor Name: %s"), *Result.Actor->GetName());
 
 				FDamageEvent DamageEvent{};
-				Result.Actor->TakeDamage(20.0f, DamageEvent, GetController(), this);
+				Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
 		Audio->PlaySound2D(TEXT("TargetAttack"));
 	}
 	Audio->PlaySound2D(TEXT("Attack"));
@@ -215,6 +226,14 @@ void ATTPlayer::AttackCheck()
 		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
+}
+
+void ATTPlayer::TurnToTarget(AActor* Target, float InterpSpeed)
+{
+	FVector DirectionToTarget{ Target->GetActorLocation() - GetActorLocation() };
+	FRotator TargetRot{ FRotationMatrix::MakeFromX(DirectionToTarget.GetSafeNormal2D()).Rotator() };
+
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 }
 
 void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
@@ -293,11 +312,11 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 	}
 	case ECharacterState::DEAD:
 	{
-		SetActorEnableCollision(false);
-		GetMesh()->SetHiddenInGame(false);
-		bCanBeDamaged = false;
-
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 		DisableInput(TTPlayerController);
+		TurnToTarget(LastDamageInstigator, 100.0f);
+		TTAnimInstance->StopAllMontages(0.25f);
+		TTAnimInstance->SetDeadAnim();
 
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]()
@@ -317,7 +336,6 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 	switch (CurrentControlMode)
 	{
 	case EControlMode::THIRD_PERSON:
-		ArmLengthTo = 450.0f;
 		SpringArm->bUsePawnControlRotation = true;
 		SpringArm->bInheritPitch = true;
 		SpringArm->bInheritYaw = true;

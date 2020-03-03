@@ -21,8 +21,7 @@ EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 	if (!Target) return EBTNodeResult::Failed;
 
 	FVector ForwardVector{ Target->GetActorLocation() - TTEnemy->GetActorLocation() };
-	ForwardVector.Z = 0.0f;
-	FRotator TargetRot{ FRotationMatrix::MakeFromX(ForwardVector).Rotator() };
+	FRotator TargetRot{ FRotationMatrix::MakeFromX(ForwardVector.GetSafeNormal2D()).Rotator() };
 	TTEnemy->SetActorRotation(
 		FMath::RInterpTo(TTEnemy->GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 

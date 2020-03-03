@@ -2,6 +2,7 @@
 #include "TTBasicEnemyAnimInstance.h"
 #include "TTAIController.h"
 #include "TTAudioComponent.h"
+#include "TTCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTBasicEnemy::ATTBasicEnemy()
@@ -11,6 +12,7 @@ ATTBasicEnemy::ATTBasicEnemy()
 	AIControllerClass = ATTAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
+	CharacterStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 
 	RootComponent = GetCapsuleComponent();
 	Audio->SetupAttachment(RootComponent);
@@ -23,6 +25,7 @@ ATTBasicEnemy::ATTBasicEnemy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
+	DeadTimer = 20.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
 }
@@ -30,6 +33,11 @@ ATTBasicEnemy::ATTBasicEnemy()
 void ATTBasicEnemy::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	CharacterStat->OnHPIsZero.AddLambda([&]()
+	{
+		SetCharacterState(ECharacterState::DEAD);
+	});
 
 	TTAnimInstance = Cast<UTTBasicEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
@@ -55,6 +63,24 @@ void ATTBasicEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+float ATTBasicEnemy::TakeDamage(float DamageAmount, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
+
+	LastDamageInstigator = DamageCauser;
+	CharacterStat->SetDamage(FinalDamage);
+
+	return FinalDamage;
+}
+
+void ATTBasicEnemy::TurnToTarget(AActor* Target, float InterpSpeed)
+{
+	FVector DirectionToTarget{ Target->GetActorLocation() - GetActorLocation() };
+	FRotator TargetRot{ FRotationMatrix::MakeFromX(DirectionToTarget.GetSafeNormal2D()).Rotator() };
+
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
+}
+
 void ATTBasicEnemy::Attack()
 {
 	TTAnimInstance->PlayAttackMontange();
@@ -72,28 +98,36 @@ void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
 	switch (CurrentState)
 	{
 	case ECharacterState::LOADING:
+	{
 		SetActorHiddenInGame(true);
 		bCanBeDamaged = false;
-
 		break;
+	}
 	case ECharacterState::READY:
+	{
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
 		TTAIController->RunAI();
 
 		SetCharacterState(ECharacterState::NOBATTLE);
 		break;
+	}
 	case ECharacterState::NOBATTLE:
+	{
 		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 		break;
+	}
 	case ECharacterState::BATTLE:
+	{
 		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.8f;
 		break;
+	}
 	case ECharacterState::DEAD:
-		SetActorEnableCollision(false);
-		GetMesh()->SetHiddenInGame(false);
-		bCanBeDamaged = false;
+	{
+		GetCapsuleComponent()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 		TTAIController->StopAI();
+		TTAnimInstance->StopAllMontages(0.25f);
+		TTAnimInstance->SetDeadAnim();
 
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]()
@@ -102,5 +136,6 @@ void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
 		}
 		), DeadTimer, false);
 		break;
+	}
 	}
 }

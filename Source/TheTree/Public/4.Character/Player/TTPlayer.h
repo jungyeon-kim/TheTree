@@ -63,6 +63,7 @@ private:
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
+	void TurnToTarget(AActor* Target, float InterpSpeed);
 
 	void SwapDebugMode();
 protected:
@@ -71,12 +72,9 @@ protected:
 		THIRD_PERSON
 	};
 protected:
-	float ArmLengthTo{};
-	float ArmLengthSpeed{};
-	float ArmRotationSpeed{};
-	FRotator ArmRotationTo{};
+	UPROPERTY()
+	AActor* LastDamageInstigator;
 	EControlMode CurrentControlMode{};
-	FVector DirectionToMove{};
 protected:
 	virtual void BeginPlay() override;
 	void SetControlMode(EControlMode NewControlMode);
@@ -95,8 +93,8 @@ public:
 	class ATTPlayerWeapon* CurrentWeapon;
 	//UPROPERTY(VisibleAnywhere, Category = "UI")
 	//class UWidgetComponent* HPBarWidget;
-	//UPROPERTY(VisibleAnywhere, Category = "Stat")
-	//class UTTCharacterStatComponent* CharacterStat;
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	class UTTCharacterStatComponent* CharacterStat;
 public:	
 	ATTPlayer();
 
