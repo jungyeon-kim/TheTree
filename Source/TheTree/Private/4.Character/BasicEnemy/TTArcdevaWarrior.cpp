@@ -1,6 +1,7 @@
 #include "TTArcdevaWarrior.h"
 #include "TTBasicEnemyAnimInstance.h"
 #include "TTAIController.h"
+#include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
@@ -13,6 +14,8 @@ ATTArcdevaWarrior::ATTArcdevaWarrior()
 	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaAnimBlueprint.ArcdevaAnimBlueprint_C") };
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
+
+	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/ParagonCountess/FX/Particles/Abilities/Primary/FX/p_CountessImpact.P_CountessImpact"));
 
 	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
@@ -33,7 +36,7 @@ void ATTArcdevaWarrior::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	TTAIController->SetBehaviorTree(EAIType::BASIC, TEXT("/Game/Blueprints/AI/BT_Basic.BT_Basic"));
+	TTAIController->SetBehaviorTree(EAIType::BASIC, TEXT("/Game/Blueprints/AI/BT_ArcdevaWarrior.BT_ArcdevaWarrior"));
 }
 
 void ATTArcdevaWarrior::BeginPlay()
@@ -87,6 +90,7 @@ void ATTArcdevaWarrior::AttackCheck()
 
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 2.5f);
 		}
 
 	if (FTTWorld::bIsDebugging)

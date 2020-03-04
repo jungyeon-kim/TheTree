@@ -35,6 +35,8 @@ protected:
 
 	void TurnToTarget(AActor* Target, float InterpSpeed);
 public:
+	UPROPERTY(VisibleAnywhere, Category = "Effect")
+		class UTTParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Stat")

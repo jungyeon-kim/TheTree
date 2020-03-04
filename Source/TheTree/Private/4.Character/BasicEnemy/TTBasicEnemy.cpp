@@ -1,6 +1,7 @@
 #include "TTBasicEnemy.h"
 #include "TTBasicEnemyAnimInstance.h"
 #include "TTAIController.h"
+#include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
@@ -11,10 +12,12 @@ ATTBasicEnemy::ATTBasicEnemy()
 
 	AIControllerClass = ATTAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
 	CharacterStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 
 	RootComponent = GetCapsuleComponent();
+	Effect->SetupAttachment(RootComponent);
 	Audio->SetupAttachment(RootComponent);
 	GetMesh()->SetCollisionProfileName(TEXT("Enemy"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
