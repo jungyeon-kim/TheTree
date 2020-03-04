@@ -4,6 +4,7 @@
 #include "Animation/AnimInstance.h"
 #include "TTBasicEnemyAnimInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
 enum class EMontageType
@@ -30,8 +31,11 @@ private:
 	UAnimMontage* AttackMontage;
 private:
 	UFUNCTION()
+	void AnimNotify_AttackStart();
+	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
 public:
+	FOnAttackStartDelegate OnAttackStart{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 public:
 	UTTBasicEnemyAnimInstance();

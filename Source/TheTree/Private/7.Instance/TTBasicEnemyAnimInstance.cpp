@@ -45,6 +45,11 @@ void UTTBasicEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR
 	}
 }
 
+void UTTBasicEnemyAnimInstance::AnimNotify_AttackStart()
+{
+	OnAttackStart.Broadcast();
+}
+
 void UTTBasicEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();

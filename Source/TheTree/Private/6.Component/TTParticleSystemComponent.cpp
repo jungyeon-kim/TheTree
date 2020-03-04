@@ -13,7 +13,7 @@ void UTTParticleSystemComponent::PlayEffect(FString EffectName, FVector Location
 {
 	if (Effect.Find(EffectName)) UGameplayStatics::SpawnEmitterAtLocation(
 		this, Effect[EffectName], Location);
-	else TTLOG(Error, TEXT("Can't find EffectName"));
+	else TTLOG(Error, TEXT("Can't find EffectName (%s)"), *EffectName);
 }
 
 void UTTParticleSystemComponent::PlayEffect(FString EffectName, FVector Location, float Scale)

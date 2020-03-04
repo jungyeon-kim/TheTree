@@ -34,9 +34,9 @@ ATTPlayer::ATTPlayer()
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact"));
-	Audio->AddSound(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
-	Audio->AddSound(TEXT("TargetAttack"), TEXT("/Game/Assets/Sound/Player/Player_TargetAttack_SoundCue.Player_TargetAttack_SoundCue"));
-	Audio->AddSound(TEXT("AttackVoice"), TEXT("/Game/Assets/Sound/Player/Player_AttackVoice_SoundCue.Player_AttackVoice_SoundCue"));
+	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
+	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/Player/Player_HitAttack_SoundCue.Player_HitAttack_SoundCue"));
+	Audio->AddSoundCue(TEXT("AttackVoice"), TEXT("/Game/Assets/Sound/Player/Player_AttackVoice_SoundCue.Player_AttackVoice_SoundCue"));
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
@@ -82,7 +82,7 @@ void ATTPlayer::PostInitializeComponents()
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
 	TTAnimInstance->OnPlaySound.AddLambda([&]()
 	{
-		Audio->PlaySound2D(TEXT("AttackVoice"));
+		Audio->PlaySoundCue2D(TEXT("AttackVoice"));
 	});
 }
 
@@ -206,16 +206,14 @@ void ATTPlayer::AttackCheck()
 		for (const auto& Result : HitResult)
 			if (Result.Actor.IsValid())
 			{
-				TTLOG(Warning, TEXT("Hit Actor Name: %s"), *Result.Actor->GetName());
-
 				FDamageEvent DamageEvent{};
 				Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
-		Audio->PlaySound2D(TEXT("TargetAttack"));
+		Audio->PlaySoundCue2D(TEXT("HitAttack"));
 	}
-	Audio->PlaySound2D(TEXT("Attack"));
+	Audio->PlaySoundCue2D(TEXT("Attack"));
 
 
 	if (FTTWorld::bIsDebugging)

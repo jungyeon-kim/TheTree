@@ -11,11 +11,11 @@ ATTArcdevaWarrior::ATTArcdevaWarrior()
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_ENEMY{ TEXT("/Game/Assets/Character/BasicEnemy/ArcdevaWarrior/SK_Arcdeva_Warrior.SK_Arcdeva_Warrior") };
-	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaAnimBlueprint.ArcdevaAnimBlueprint_C") };
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAnimBlueprint.ArcdevaWarriorAnimBlueprint_C") };
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
-	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/ParagonCountess/FX/Particles/Abilities/Primary/FX/p_CountessImpact.P_CountessImpact"));
+	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaWarrior_HitImpact.P_ArcdevaWarrior_HitImpact"));
 
 	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
@@ -27,7 +27,7 @@ void ATTArcdevaWarrior::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(FName("ArcdevaWarrior"));
 
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaAttackMontage.ArcdevaAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAttackMontage.ArcdevaWarriorAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnAttackMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaWarrior::AttackCheck);
 }
@@ -86,8 +86,6 @@ void ATTArcdevaWarrior::AttackCheck()
 	if (bResult)
 		if (HitResult.Actor.IsValid())
 		{
-			TTLOG(Warning, TEXT("Hit Actor Name: %s"), *HitResult.Actor->GetName());
-
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 2.5f);
@@ -107,5 +105,5 @@ void ATTArcdevaWarrior::AttackCheck()
 
 void ATTArcdevaWarrior::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage->GetName() == TEXT("ArcdevaAttackMontage")) OnAttackEnded.Broadcast();
+	if (Montage->GetName() == TEXT("ArcdevaWarriorAttackMontage")) OnAttackEnded.Broadcast();
 }
