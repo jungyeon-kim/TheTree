@@ -24,6 +24,8 @@ private:
 	bool bIsBattleOn;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* ChargeAttackMontage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackStart();

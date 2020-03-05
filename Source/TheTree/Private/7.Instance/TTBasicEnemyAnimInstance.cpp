@@ -27,6 +27,10 @@ void UTTBasicEnemyAnimInstance::PlayMontage(EMontageType MontageType)
 		TTCHECK(!bIsDead && AttackMontage);
 		Montage_Play(AttackMontage, 1.0f);
 		break;
+	case EMontageType::ATTACK_CHARGE:
+		TTCHECK(!bIsDead && ChargeAttackMontage);
+		Montage_Play(ChargeAttackMontage, 1.0f);
+		break;
 	}
 }
 
@@ -46,6 +50,9 @@ void UTTBasicEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR
 	{
 	case EMontageType::ATTACK:
 		AttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
+		break;
+	case EMontageType::ATTACK_CHARGE:
+		ChargeAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
 		break;
 	}
 }
