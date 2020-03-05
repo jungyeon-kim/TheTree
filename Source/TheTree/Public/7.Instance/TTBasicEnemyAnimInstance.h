@@ -7,11 +7,6 @@
 DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
-enum class EMontageType
-{
-	ATTACK
-};
-
 UCLASS()
 class THETREE_API UTTBasicEnemyAnimInstance : public UAnimInstance
 {
@@ -42,7 +37,7 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontange();
+	void PlayMontage(EMontageType MontageType);
 
 	void SetDamaged();
 	void SetDead();

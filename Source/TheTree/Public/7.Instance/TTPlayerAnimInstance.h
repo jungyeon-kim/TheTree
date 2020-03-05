@@ -52,11 +52,8 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontange();
+	void PlayMontage(EMontageType MontageType);
 	void JumpToAttackMontageSection(int32 NewSection);
-	void PlayDodgeMontage();
-	void PlayInOutWeaponMontage();
-	void PlayDeathMontage();
 
 	bool GetIsBattleOn() const;
 	void SetDead();

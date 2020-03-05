@@ -19,10 +19,15 @@ void UTTBasicEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (GetCurrentStateName(GetStateMachineIndex(FName("BaseAction"))) == FName("HitReact")) bIsDamaged = false;
 }
 
-void UTTBasicEnemyAnimInstance::PlayAttackMontange()
+void UTTBasicEnemyAnimInstance::PlayMontage(EMontageType MontageType)
 {
-	TTCHECK(!bIsDead && AttackMontage);
-	Montage_Play(AttackMontage, 1.0f);
+	switch (MontageType)
+	{
+	case EMontageType::ATTACK:
+		TTCHECK(!bIsDead && AttackMontage);
+		Montage_Play(AttackMontage, 1.0f);
+		break;
+	}
 }
 
 void UTTBasicEnemyAnimInstance::SetDamaged()

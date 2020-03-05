@@ -30,7 +30,7 @@ void ATTArcdevaWarrior::PostInitializeComponents()
 	CharacterStat->SetObjectStat(FName("ArcdevaWarrior"));
 
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAttackMontage.ArcdevaWarriorAttackMontage"));
-	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnAttackMontageEnded);
+	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaWarrior::AttackCheck);
 }
 
@@ -107,7 +107,12 @@ void ATTArcdevaWarrior::AttackCheck()
 	}
 }
 
-void ATTArcdevaWarrior::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void ATTArcdevaWarrior::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage->GetName() == TEXT("ArcdevaWarriorAttackMontage")) OnAttackEnded.Broadcast();
+	switch (FTTWorld::HashCode(*Montage->GetName()))
+	{
+	case FTTWorld::HashCode(TEXT("ArcdevaWarriorAttackMontage")):
+		OnAttackEnded.Broadcast();
+		break;
+	}
 }

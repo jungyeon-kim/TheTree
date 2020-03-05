@@ -1,6 +1,7 @@
 #include "BTTask_Attack.h"
 #include "TTAIController.h"
 #include "TTBasicEnemy.h"
+#include "TTBasicEnemyAnimInstance.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -17,7 +18,8 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	
 	if (!TTEnemy->GetCurrentMontage())
 	{
-		TTEnemy->Attack();
+		TTEnemy->PlayMontage(AttackTypeName);
+
 		bIsAttacking = true;
 		TTEnemy->OnAttackEnded.AddLambda([&]()
 		{

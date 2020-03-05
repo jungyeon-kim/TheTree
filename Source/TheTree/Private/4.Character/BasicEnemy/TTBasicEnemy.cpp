@@ -84,9 +84,9 @@ void ATTBasicEnemy::TurnToTarget(AActor* Target, float InterpSpeed)
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 }
 
-void ATTBasicEnemy::Attack()
+void ATTBasicEnemy::PlayMontage(EMontageType MontageType)
 {
-	TTAnimInstance->PlayAttackMontange();
+	TTAnimInstance->PlayMontage(MontageType);
 }
 
 ECharacterState ATTBasicEnemy::GetCharacterState() const

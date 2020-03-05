@@ -26,6 +26,14 @@ enum class ECharacterState
 	DEAD
 };
 
+UENUM()
+enum class EMontageType
+{
+	ATTACK, ATTACK_CHARGE,
+	DODGE, INOUTWEAPON,
+	DEATH
+};
+
 // Struct containing instances for global access.
 struct FTTWorld
 { 
@@ -33,6 +41,18 @@ private:
 	FTTWorld() = default;
 public:
 	static bool bIsDebugging;
+public:
+	// Function to convert string to hashcode
+	static constexpr uint32 HashCode(const TCHAR* Str)
+	{
+		uint32 Hash{};
+		while (*Str)
+		{
+			Hash = 65599 * Hash + Str[0];
+			++Str;
+		}
+		return Hash ^ (Hash >> 16);
+	}
 };
 
 // Flag to turn debug mode ON / OFF.

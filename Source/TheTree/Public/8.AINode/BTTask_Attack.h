@@ -11,6 +11,8 @@ class THETREE_API UBTTask_Attack : public UBTTaskNode
 private:
 	UPROPERTY()
 	class ATTBasicEnemy* TTEnemy;
+	UPROPERTY(EditAnywhere, Category = "Option")
+	EMontageType AttackTypeName;
 
 	bool bIsAttacking{};
 protected:

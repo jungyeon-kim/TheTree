@@ -65,9 +65,7 @@ void ATTPlayer::PostInitializeComponents()
 
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
-	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnAttackMontageEnded);
-	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnDodgeMontageEnded);
-	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnInOutWeaponMontageEnded);
+	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPlayer::AttackCheck);
 	TTAnimInstance->OnNextAttackCheck.AddLambda([&]()
 	{
@@ -153,7 +151,7 @@ void ATTPlayer::Attack()
 	{
 		TTCHECK(!CurrentCombo);
 		AttackStartComboState();
-		TTAnimInstance->PlayAttackMontange();
+		TTAnimInstance->PlayMontage(EMontageType::ATTACK);
 		TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
 		bIsAttacking = true;
 	}
@@ -233,24 +231,22 @@ void ATTPlayer::TurnToTarget(AActor* Target, float InterpSpeed)
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 }
 
-void ATTPlayer::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (Montage->GetName() == TEXT("PlayerAttackMontage"))
+	switch (FTTWorld::HashCode(*Montage->GetName()))
 	{
+	case FTTWorld::HashCode(TEXT("PlayerAttackMontage")):
 		bIsAttacking = false;
 		AttackEndComboState();
-	}
-}
-
-void ATTPlayer::OnDodgeMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (Montage->GetName() == TEXT("PlayerDodgeMontage")) bIsDodging = false;
-}
-
-void ATTPlayer::OnInOutWeaponMontageEnded(UAnimMontage * Montage, bool bInterrupted)
-{
-	if (Montage->GetName() == TEXT("PlayerInWeaponMontage") || Montage->GetName() == TEXT("PlayerOutWeaponMontage"))
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
+		bIsDodging = false;
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerInWeaponMontage")):
+	case FTTWorld::HashCode(TEXT("PlayerOutWeaponMontage")):
 		bIsSwappingWeapon = false;
+		break;
+	}
 }
 
 ECharacterState ATTPlayer::GetCharacterState() const
@@ -313,7 +309,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		DisableInput(TTPlayerController);
 		TurnToTarget(LastDamageInstigator, 100.0f);
 		TTAnimInstance->StopAllMontages(0.25f);
-		TTAnimInstance->PlayDeathMontage();
+		TTAnimInstance->PlayMontage(EMontageType::DEATH);
 		TTAnimInstance->SetDead();
 		
 		FTimerHandle DelayTimerHandle[2]{}, DeadTimerHandle{};
@@ -352,7 +348,7 @@ void ATTPlayer::Dodge()
 {
 	if (!bIsDodging && !bIsSwappingWeapon)
 	{
-		TTAnimInstance->PlayDodgeMontage();
+		TTAnimInstance->PlayMontage(EMontageType::DODGE);
 		bIsDodging = true;
 	}
 }
@@ -361,7 +357,7 @@ void ATTPlayer::SwapBattleMode()
 {
 	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 	{
-		TTAnimInstance->PlayInOutWeaponMontage();
+		TTAnimInstance->PlayMontage(EMontageType::INOUTWEAPON);
 		if (TTAnimInstance->GetIsBattleOn()) SetCharacterState(ECharacterState::BATTLE);
 		else SetCharacterState(ECharacterState::NOBATTLE);
 		bIsSwappingWeapon = true;

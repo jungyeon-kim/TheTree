@@ -27,10 +27,36 @@ void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UTTPlayerAnimInstance::PlayAttackMontange()
+void UTTPlayerAnimInstance::PlayMontage(EMontageType MontageType)
 {
-	TTCHECK(!bIsDead && AttackMontage);
-	Montage_Play(AttackMontage, 1.0f);
+	switch (MontageType)
+	{
+	case EMontageType::ATTACK:
+		TTCHECK(!bIsDead && AttackMontage);
+		Montage_Play(AttackMontage, 1.0f);
+		break;
+	case EMontageType::DODGE:
+		TTCHECK(!bIsDead && DodgeMontage);
+		Montage_Play(DodgeMontage, 1.0f);
+		break;
+	case EMontageType::INOUTWEAPON:
+		TTCHECK(!bIsDead && InWeaponMontage && OutWeaponMontage);
+		if (bIsBattleOn)
+		{
+			Montage_Play(InWeaponMontage, 1.0f);
+			bIsBattleOn = false;
+		}
+		else
+		{
+			Montage_Play(OutWeaponMontage, 1.0f);
+			bIsBattleOn = true;
+		}
+		break;
+	case EMontageType::DEATH:
+		TTCHECK(!bIsDead && DeathMontage);
+		Montage_Play(DeathMontage, 1.0f);
+		break;
+	}
 }
 
 void UTTPlayerAnimInstance::JumpToAttackMontageSection(int32 NewSection)
@@ -38,38 +64,6 @@ void UTTPlayerAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 	TTCHECK(!bIsDead && AttackMontage);
 	TTCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
-}
-
-void UTTPlayerAnimInstance::PlayDodgeMontage()
-{
-	TTCHECK(!bIsDead && DodgeMontage);
-	Montage_Play(DodgeMontage, 1.0f);
-}
-
-void UTTPlayerAnimInstance::PlayInOutWeaponMontage()
-{
-	TTCHECK(!bIsDead && InWeaponMontage && OutWeaponMontage);
-	if (bIsBattleOn)
-	{
-		Montage_Play(InWeaponMontage, 1.0f);
-		bIsBattleOn = false;
-	}
-	else
-	{
-		Montage_Play(OutWeaponMontage, 1.0f);
-		bIsBattleOn = true;
-	}
-}
-
-void UTTPlayerAnimInstance::PlayDeathMontage()
-{
-	TTCHECK(!bIsDead && DeathMontage);
-	Montage_Play(DeathMontage, 1.0f);
-}
-
-bool UTTPlayerAnimInstance::GetIsBattleOn() const
-{
-	return bIsBattleOn;
 }
 
 void UTTPlayerAnimInstance::SetDead()
@@ -101,4 +95,9 @@ FName UTTPlayerAnimInstance::GetAttackMontageSectionName(int32 Section) const
 {
 	TTCHECK(FMath::IsWithinInclusive(Section, 1, 4), NAME_None);
 	return *FString::Printf(TEXT("Attack%d"), Section);
+}
+
+bool UTTPlayerAnimInstance::GetIsBattleOn() const
+{
+	return bIsBattleOn;
 }
