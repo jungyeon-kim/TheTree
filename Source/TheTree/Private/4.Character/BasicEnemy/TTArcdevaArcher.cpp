@@ -99,7 +99,8 @@ void ATTArcdevaArcher::AttackCheck()
 		{
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 2.5f);
+			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+				GetActorForwardVector().Rotation(), 2.5f);
 			Audio->PlaySound2D(TEXT("HitAttack"));
 		}
 

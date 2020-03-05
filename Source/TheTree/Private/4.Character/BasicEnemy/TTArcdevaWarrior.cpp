@@ -16,6 +16,8 @@ ATTArcdevaWarrior::ATTArcdevaWarrior()
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaWarrior_HitImpact.P_ArcdevaWarrior_HitImpact"));
+	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_Attack_SoundCue.ArcdevaWarrior_Attack_SoundCue"));
+	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_HitAttack_SoundCue.ArcdevaWarrior_HitAttack_SoundCue"));
 
 	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
@@ -89,7 +91,9 @@ void ATTArcdevaWarrior::AttackCheck()
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 2.5f);
+			Audio->PlaySoundCue2D(TEXT("HitAttack"));
 		}
+	Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
 
 	if (FTTWorld::bIsDebugging)
 	{
