@@ -174,6 +174,8 @@ void ATTPlayer::AttackEndComboState()
 
 void ATTPlayer::AttackCheck()
 {
+	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
+
 	if (CurrentCombo == 4)
 	{
 		AttackLength = 1.0f;

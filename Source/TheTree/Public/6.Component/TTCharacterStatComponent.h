@@ -11,14 +11,22 @@ class THETREE_API UTTCharacterStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 private:
-	struct FTTCharacterData* CurrentStatData{};
+	struct FTTCharacterData* TTCharacterData{};
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	FName ObjectName;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
+	float CurrentMaxHP;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
+	float CurrentMaxSta;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentSta;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
+	float CurrentAtk;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
+	float CurrentDef;
 protected:
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;

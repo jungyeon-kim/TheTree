@@ -1,7 +1,6 @@
 #include "BTTask_Attack.h"
 #include "TTAIController.h"
 #include "TTBasicEnemy.h"
-#include "TTBasicEnemyAnimInstance.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {

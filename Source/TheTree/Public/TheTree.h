@@ -31,6 +31,7 @@ enum class EMontageType
 {
 	ATTACK, ATTACK_CHARGE,
 	DODGE, INOUTWEAPON,
+	DEFENSE,
 	DEATH
 };
 

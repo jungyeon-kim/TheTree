@@ -17,8 +17,8 @@ ATTArcdevaArcher::ATTArcdevaArcher()
 
 	Effect->AddEffect(TEXT("Shot"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaArcher_Shot.P_ArcdevaArcher_Shot"));
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaArcher_HitImpact.P_ArcdevaArcher_HitImpact"));
-	Audio->AddSound(TEXT("AttackStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/Arcdeva_Archer_AttackStart.Arcdeva_Archer_AttackStart"));
-	Audio->AddSound(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/Arcdeva_Archer_HitAttack.Arcdeva_Archer_HitAttack"));
+	Audio->AddSound(TEXT("AttackStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_AttackStart.ArcdevaArcher_AttackStart"));
+	Audio->AddSound(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_HitAttack.ArcdevaArcher_HitAttack"));
 
 	GeneralMoveSpeed = 800.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
@@ -41,7 +41,7 @@ void ATTArcdevaArcher::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	TTAIController->SetBehaviorTree(EAIType::BASIC, TEXT("/Game/Blueprints/AI/BT_ArcdevaArcher.BT_ArcdevaArcher"));
+	TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_ArcdevaArcher.BT_ArcdevaArcher"));
 }
 
 void ATTArcdevaArcher::BeginPlay()
@@ -81,6 +81,8 @@ void ATTArcdevaArcher::AttackStart()
 
 void ATTArcdevaArcher::AttackCheck()
 {
+	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
+
 	AttackLength = 3000.0f;
 	AttackRadius = 20.0f;
 

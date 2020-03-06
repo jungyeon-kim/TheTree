@@ -5,6 +5,7 @@
 #include "TTBasicEnemy.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnDefenseEndDelegate);
 
 UCLASS()
 class THETREE_API ATTBasicEnemy : public ACharacter
@@ -35,6 +36,8 @@ protected:
 
 	void TurnToTarget(AActor* Target, float InterpSpeed);
 public:
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TSubclassOf<UCameraShake> CameraShake;
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
 		class UTTParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
@@ -43,6 +46,7 @@ public:
 	class UTTCharacterStatComponent* CharacterStat;
 
 	FOnAttackEndDelegate OnAttackEnded{};
+	FOnDefenseEndDelegate OnDefenseEnded{};
 public:
 	ATTBasicEnemy();
 

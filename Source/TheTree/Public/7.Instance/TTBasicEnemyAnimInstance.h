@@ -5,6 +5,7 @@
 #include "TTBasicEnemyAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnDefenseStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
 UCLASS()
@@ -26,13 +27,18 @@ private:
 	UAnimMontage* AttackMontage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ChargeAttackMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Defense", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* DefenseMontage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackStart();
 	UFUNCTION()
+	void AnimNotify_DefenseStart();
+	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
 public:
 	FOnAttackStartDelegate OnAttackStart{};
+	FOnDefenseStartDelegate OnDefenseStart{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 public:
 	UTTBasicEnemyAnimInstance();

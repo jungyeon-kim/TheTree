@@ -38,7 +38,7 @@ void ATTArcdevaWarrior::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	TTAIController->SetBehaviorTree(EAIType::BASIC, TEXT("/Game/Blueprints/AI/BT_ArcdevaWarrior.BT_ArcdevaWarrior"));
+	TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_ArcdevaWarrior.BT_ArcdevaWarrior"));
 }
 
 void ATTArcdevaWarrior::BeginPlay()
@@ -71,6 +71,8 @@ float ATTArcdevaWarrior::TakeDamage(float DamageAmount, const FDamageEvent& Dama
 
 void ATTArcdevaWarrior::AttackCheck()
 {
+	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
+
 	AttackLength = 200.0f;
 	AttackRadius = 50.0f;
 

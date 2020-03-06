@@ -4,11 +4,6 @@
 #include "AIController.h"
 #include "TTAIController.generated.h"
 
-enum class EAIType
-{
-	BASIC
-};
-
 UCLASS()
 class THETREE_API ATTAIController : public AAIController
 {
@@ -29,5 +24,5 @@ public:
 	void RunAI();
 	void StopAI();
 
-	void SetBehaviorTree(EAIType AIType, const TCHAR* BehaviroTreePath);
+	void SetBehaviorTree(const TCHAR* BehaviroTreePath);
 };

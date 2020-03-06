@@ -32,12 +32,7 @@ void ATTAIController::StopAI()
 	if (BehaviorTreeComponent) BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
 }
 
-void ATTAIController::SetBehaviorTree(EAIType AIType, const TCHAR* BehaviroTreePath)
+void ATTAIController::SetBehaviorTree(const TCHAR* BehaviroTreePath)
 {
-	switch (AIType)
-	{
-	case EAIType::BASIC:
-		BTAsset = LoadObject<UBehaviorTree>(NULL, BehaviroTreePath);
-		break;
-	}
+	BTAsset = LoadObject<UBehaviorTree>(NULL, BehaviroTreePath);
 }
