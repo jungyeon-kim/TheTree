@@ -32,7 +32,7 @@ enum class EMontageType
 	ATTACK, ATTACK_CHARGE,
 	DODGE, INOUTWEAPON,
 	DEFENSE,
-	DEATH
+	KNOCKBACK, DEATH
 };
 
 // Struct containing instances for global access.

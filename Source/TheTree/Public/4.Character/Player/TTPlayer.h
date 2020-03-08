@@ -19,10 +19,6 @@ private:
 	float GeneralMoveSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", Meta = (AllowPrivateAccess = true))
 	float AdvancedMoveSpeed;
-	UPROPERTY()
-	class ATTPlayerController* TTPlayerController;
-	UPROPERTY()
-	class UTTPlayerAnimInstance* TTAnimInstance;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bIsAttacking;
@@ -42,6 +38,13 @@ private:
 	bool bIsDodging;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Dodge", Meta = (AllowPrivateAccess = true))
 	bool bIsSwappingWeapon;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "KnockBack", Meta = (AllowPrivateAccess = true))
+	bool bIsKnockBacking;
+
+	UPROPERTY()
+	class ATTPlayerController* TTPlayerController;
+	UPROPERTY()
+	class UTTPlayerAnimInstance* TTAnimInstance;
 private:
 	void Attack();
 	void Dodge();

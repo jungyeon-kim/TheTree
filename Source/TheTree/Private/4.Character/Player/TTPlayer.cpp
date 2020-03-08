@@ -135,6 +135,14 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 	
 	LastDamageInstigator = DamageCauser;
 	CharacterStat->SetDamage(FinalDamage);
+
+	if (DamageEvent.GetTypeID() == 1)	// 1(FPointDamageEvent) is critical damage type.
+	{
+		TTAnimInstance->StopAllMontages(0.25f);
+		TurnToTarget(LastDamageInstigator, 100.0f);
+		TTAnimInstance->PlayMontage(EMontageType::KNOCKBACK);
+		bIsKnockBacking = true;
+	}
 	
 	return FinalDamage;
 }
@@ -248,6 +256,9 @@ void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	case FTTWorld::HashCode(TEXT("PlayerOutWeaponMontage")):
 		bIsSwappingWeapon = false;
 		break;
+	case FTTWorld::HashCode(TEXT("PlayerKnockBackMontage")):
+		bIsKnockBacking = false;
+		break;
 	}
 }
 
@@ -348,7 +359,7 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 
 void ATTPlayer::Dodge()
 {
-	if (!bIsDodging && !bIsSwappingWeapon)
+	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking)
 	{
 		TTAnimInstance->PlayMontage(EMontageType::DODGE);
 		bIsDodging = true;

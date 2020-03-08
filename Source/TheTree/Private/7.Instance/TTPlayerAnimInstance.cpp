@@ -5,12 +5,14 @@ UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerAttackMontage.PlayerAttackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DODGE_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDodgeMontage.PlayerDodgeMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> INWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerInWeaponMontage.PlayerInWeaponMontage") };
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> OUTWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayeroutWeaponMontage.PlayerOutWeaponMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> OUTWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerOutWeaponMontage.PlayerOutWeaponMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> KNOCKBACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerKnockBackMontage.PlayerKnockBackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DEATH_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDeathMontage.PlayerDeathMontage") };
 	if (ATTACK_MONTAGE.Succeeded()) AttackMontage = ATTACK_MONTAGE.Object;
 	if (DODGE_MONTAGE.Succeeded()) DodgeMontage = DODGE_MONTAGE.Object;
 	if (INWEAPON_MONTAGE.Succeeded()) InWeaponMontage = INWEAPON_MONTAGE.Object;
 	if (OUTWEAPON_MONTAGE.Succeeded()) OutWeaponMontage = OUTWEAPON_MONTAGE.Object;
+	if (KNOCKBACK_MONTAGE.Succeeded()) KnockBackMontage = KNOCKBACK_MONTAGE.Object;
 	if (DEATH_MONTAGE.Succeeded()) DeathMontage = DEATH_MONTAGE.Object;
 }
 
@@ -51,6 +53,10 @@ void UTTPlayerAnimInstance::PlayMontage(EMontageType MontageType)
 			Montage_Play(OutWeaponMontage, 1.0f);
 			bIsBattleOn = true;
 		}
+		break;
+	case EMontageType::KNOCKBACK:
+		TTCHECK(!bIsDead && KnockBackMontage);
+		Montage_Play(KnockBackMontage, 1.0f);
 		break;
 	case EMontageType::DEATH:
 		TTCHECK(!bIsDead && DeathMontage);

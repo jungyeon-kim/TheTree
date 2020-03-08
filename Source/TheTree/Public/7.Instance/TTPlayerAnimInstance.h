@@ -30,6 +30,8 @@ private:
 	UAnimMontage* InWeaponMontage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "InOutWeapon", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* OutWeaponMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "KnockBack", Meta = (AllowPrivateAccess = true))
+	UAnimMontage* KnockBackMontage;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Death", Meta = (AllowPrivateAccess = true))
 	UAnimMontage* DeathMontage;
 private:

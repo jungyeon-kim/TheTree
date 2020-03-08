@@ -108,9 +108,9 @@ void ATTArcdevaLancer::AttackCheck()
 	if (bResult)
 		if (HitResult.Actor.IsValid())
 		{
-			FDamageEvent DamageEvent{};
 			if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerAttackMontage"))
 			{
+				FDamageEvent DamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 7.0f);
@@ -118,7 +118,8 @@ void ATTArcdevaLancer::AttackCheck()
 			}
 			else
 			{
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, DamageEvent, GetController(), this);
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
 				Audio->PlaySound2D(TEXT("HitChargeAttack"));
