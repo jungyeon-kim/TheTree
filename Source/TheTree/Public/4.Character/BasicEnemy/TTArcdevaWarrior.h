@@ -1,11 +1,11 @@
 #pragma once
 
 #include "TheTree.h"
-#include "TTBasicEnemy.h"
+#include "TTEnemyBase.h"
 #include "TTArcdevaWarrior.generated.h"
 
 UCLASS()
-class THETREE_API ATTArcdevaWarrior : public ATTBasicEnemy
+class THETREE_API ATTArcdevaWarrior : public ATTEnemyBase
 {
 	GENERATED_BODY()
 protected:

@@ -1,5 +1,5 @@
 #include "TTArcdevaLancer.h"
-#include "TTBasicEnemyAnimInstance.h"
+#include "TTEnemyAnimInstance.h"
 #include "TTAIController.h"
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"

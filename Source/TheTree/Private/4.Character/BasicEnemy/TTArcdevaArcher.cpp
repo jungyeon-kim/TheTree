@@ -1,5 +1,5 @@
 #include "TTArcdevaArcher.h"
-#include "TTBasicEnemyAnimInstance.h"
+#include "TTEnemyAnimInstance.h"
 #include "TTAIController.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"

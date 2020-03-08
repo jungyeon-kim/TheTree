@@ -1,6 +1,6 @@
 #include "BTTask_TurnToTarget.h"
 #include "TTAIController.h"
-#include "TTBasicEnemy.h"
+#include "TTEnemyBase.h"
 #include "TTPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -14,7 +14,7 @@ EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
 
-	const auto& TTEnemy{ Cast<ATTBasicEnemy>(OwnerComp.GetAIOwner()->GetPawn()) };
+	const auto& TTEnemy{ Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn()) };
 	if (!TTEnemy) return EBTNodeResult::Failed;
 
 	const auto& Target{ Cast<ATTPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ATTAIController::TargetKey)) };

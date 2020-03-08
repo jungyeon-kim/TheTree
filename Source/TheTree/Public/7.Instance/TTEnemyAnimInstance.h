@@ -2,14 +2,14 @@
 
 #include "TheTree.h"
 #include "Animation/AnimInstance.h"
-#include "TTBasicEnemyAnimInstance.generated.h"
+#include "TTEnemyAnimInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDefenseStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
 UCLASS()
-class THETREE_API UTTBasicEnemyAnimInstance : public UAnimInstance
+class THETREE_API UTTEnemyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 private:
@@ -41,7 +41,7 @@ public:
 	FOnDefenseStartDelegate OnDefenseStart{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 public:
-	UTTBasicEnemyAnimInstance();
+	UTTEnemyAnimInstance();
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 

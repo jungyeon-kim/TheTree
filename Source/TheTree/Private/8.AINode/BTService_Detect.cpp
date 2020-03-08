@@ -1,6 +1,6 @@
 #include "BTService_Detect.h"
 #include "TTAIController.h"
-#include "TTBasicEnemy.h"
+#include "TTEnemyBase.h"
 #include "TTPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
@@ -16,7 +16,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	const auto& TTEnemy{ Cast<ATTBasicEnemy>(OwnerComp.GetAIOwner()->GetPawn()) };
+	const auto& TTEnemy{ Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn()) };
 	if (!TTEnemy) return;
 
 	const auto& World{ TTEnemy->GetWorld() };

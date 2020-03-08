@@ -1,5 +1,5 @@
-#include "TTBasicEnemy.h"
-#include "TTBasicEnemyAnimInstance.h"
+#include "TTEnemyBase.h"
+#include "TTEnemyAnimInstance.h"
 #include "TTAIController.h"
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
@@ -7,7 +7,7 @@
 #include "TTCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 
-ATTBasicEnemy::ATTBasicEnemy()
+ATTEnemyBase::ATTEnemyBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -35,7 +35,7 @@ ATTBasicEnemy::ATTBasicEnemy()
 	SetCharacterState(ECharacterState::LOADING);
 }
 
-void ATTBasicEnemy::PostInitializeComponents()
+void ATTEnemyBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
@@ -44,11 +44,11 @@ void ATTBasicEnemy::PostInitializeComponents()
 		SetCharacterState(ECharacterState::DEAD);
 	});
 
-	TTAnimInstance = Cast<UTTBasicEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	TTAnimInstance = Cast<UTTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 }
 
-void ATTBasicEnemy::PossessedBy(AController* NewController)
+void ATTEnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
@@ -56,19 +56,19 @@ void ATTBasicEnemy::PossessedBy(AController* NewController)
 	TTCHECK(TTAIController);
 }
 
-void ATTBasicEnemy::BeginPlay()
+void ATTEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 
 	SetCharacterState(ECharacterState::READY);
 }
 
-void ATTBasicEnemy::Tick(float DeltaTime)
+void ATTEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-float ATTBasicEnemy::TakeDamage(float DamageAmount, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+float ATTEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 
@@ -78,7 +78,7 @@ float ATTBasicEnemy::TakeDamage(float DamageAmount, const FDamageEvent & DamageE
 	return FinalDamage;
 }
 
-void ATTBasicEnemy::TurnToTarget(AActor* Target, float InterpSpeed)
+void ATTEnemyBase::TurnToTarget(AActor* Target, float InterpSpeed)
 {
 	FVector DirectionToTarget{ Target->GetActorLocation() - GetActorLocation() };
 	FRotator TargetRot{ FRotationMatrix::MakeFromX(DirectionToTarget.GetSafeNormal2D()).Rotator() };
@@ -86,17 +86,17 @@ void ATTBasicEnemy::TurnToTarget(AActor* Target, float InterpSpeed)
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 }
 
-void ATTBasicEnemy::PlayMontage(EMontageType MontageType)
+void ATTEnemyBase::PlayMontage(EMontageType MontageType)
 {
 	TTAnimInstance->PlayMontage(MontageType);
 }
 
-ECharacterState ATTBasicEnemy::GetCharacterState() const
+ECharacterState ATTEnemyBase::GetCharacterState() const
 {
 	return CurrentState;
 }
 
-void ATTBasicEnemy::SetCharacterState(ECharacterState NewState)
+void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 {
 	CurrentState = NewState;
 

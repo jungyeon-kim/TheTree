@@ -2,13 +2,13 @@
 
 #include "TheTree.h"
 #include "GameFramework/Character.h"
-#include "TTBasicEnemy.generated.h"
+#include "TTEnemyBase.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDefenseEndDelegate);
 
 UCLASS()
-class THETREE_API ATTBasicEnemy : public ACharacter
+class THETREE_API ATTEnemyBase : public ACharacter
 {
 	GENERATED_BODY()
 protected:
@@ -21,7 +21,7 @@ protected:
 	UPROPERTY()
 	class ATTAIController* TTAIController;
 	UPROPERTY()
-	class UTTBasicEnemyAnimInstance* TTAnimInstance;
+	class UTTEnemyAnimInstance* TTAnimInstance;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	float AttackLength;
@@ -48,7 +48,7 @@ public:
 	FOnAttackEndDelegate OnAttackEnded{};
 	FOnDefenseEndDelegate OnDefenseEnded{};
 public:
-	ATTBasicEnemy();
+	ATTEnemyBase();
 
 	virtual void PostInitializeComponents() override;
 	virtual void PossessedBy(AController* NewController) override;

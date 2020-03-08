@@ -1,10 +1,10 @@
-#include "TTBasicEnemyAnimInstance.h"
+#include "TTEnemyAnimInstance.h"
 
-UTTBasicEnemyAnimInstance::UTTBasicEnemyAnimInstance()
+UTTEnemyAnimInstance::UTTEnemyAnimInstance()
 {
 }
 
-void UTTBasicEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UTTEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
@@ -19,7 +19,7 @@ void UTTBasicEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (GetCurrentStateName(GetStateMachineIndex(FName("BaseAction"))) == FName("HitReact")) bIsDamaged = false;
 }
 
-void UTTBasicEnemyAnimInstance::PlayMontage(EMontageType MontageType)
+void UTTEnemyAnimInstance::PlayMontage(EMontageType MontageType)
 {
 	switch (MontageType)
 	{
@@ -38,17 +38,17 @@ void UTTBasicEnemyAnimInstance::PlayMontage(EMontageType MontageType)
 	}
 }
 
-void UTTBasicEnemyAnimInstance::SetDamaged()
+void UTTEnemyAnimInstance::SetDamaged()
 {
 	bIsDamaged = true;
 }
 
-void UTTBasicEnemyAnimInstance::SetDead()
+void UTTEnemyAnimInstance::SetDead()
 {
 	bIsDead = true;
 }
 
-void UTTBasicEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR* MontagePath)
+void UTTEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR* MontagePath)
 {
 	switch (MontageType)
 	{
@@ -64,17 +64,17 @@ void UTTBasicEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR
 	}
 }
 
-void UTTBasicEnemyAnimInstance::AnimNotify_AttackStart()
+void UTTEnemyAnimInstance::AnimNotify_AttackStart()
 {
 	OnAttackStart.Broadcast();
 }
 
-void UTTBasicEnemyAnimInstance::AnimNotify_DefenseStart()
+void UTTEnemyAnimInstance::AnimNotify_DefenseStart()
 {
 	OnDefenseStart.Broadcast();
 }
 
-void UTTBasicEnemyAnimInstance::AnimNotify_AttackHitCheck()
+void UTTEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();
 }

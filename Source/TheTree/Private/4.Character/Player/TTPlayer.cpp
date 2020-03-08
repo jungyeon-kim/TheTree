@@ -329,7 +329,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
 			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 0.1f); }), 0.25f, false);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
-			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), 0.5f, false);
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), 0.35f, false);
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]() { TTPlayerController->RestartLevel(); }), DeadTimer, false);
 		break;

@@ -1,6 +1,6 @@
 #include "BTTask_Attack.h"
 #include "TTAIController.h"
-#include "TTBasicEnemy.h"
+#include "TTEnemyBase.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -12,7 +12,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
 
-	TTEnemy = Cast<ATTBasicEnemy>(OwnerComp.GetAIOwner()->GetPawn());
+	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!TTEnemy) return EBTNodeResult::Failed;
 	
 	if (!TTEnemy->GetCurrentMontage())
