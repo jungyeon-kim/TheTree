@@ -14,17 +14,14 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!TTEnemy) return EBTNodeResult::Failed;
-	
-	if (!TTEnemy->GetCurrentMontage())
-	{
-		TTEnemy->PlayMontage(AttackTypeName);
 
-		bIsAttacking = true;
-		TTEnemy->OnAttackEnded.AddLambda([&]()
-		{
-			bIsAttacking = false;
-		});
-	}
+	TTEnemy->PlayMontage(AttackTypeName);
+
+	bIsAttacking = true;
+	TTEnemy->OnAttackEnded.AddLambda([&]()
+	{
+		bIsAttacking = false;
+	});
 
 	return EBTNodeResult::InProgress;
 }

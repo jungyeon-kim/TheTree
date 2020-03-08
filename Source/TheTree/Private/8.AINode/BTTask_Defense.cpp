@@ -16,20 +16,17 @@ EBTNodeResult::Type UBTTask_Defense::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!TTEnemy) return EBTNodeResult::Failed;
 
-	if (!TTEnemy->GetCurrentMontage())
+	float PrevDef{ TTEnemy->CharacterStat->GetDef() };
+
+	TTEnemy->CharacterStat->SetDef(Def);
+	TTEnemy->PlayMontage(DefenseTypeName);
+
+	bIsDefensing = true;
+	TTEnemy->OnDefenseEnded.AddLambda([&]()
 	{
-		float PrevDef{ TTEnemy->CharacterStat->GetDef() };
-
-		TTEnemy->CharacterStat->SetDef(Def);
-		TTEnemy->PlayMontage(DefenseTypeName);
-
-		bIsDefensing = true;
-		TTEnemy->OnDefenseEnded.AddLambda([&]()
-		{
-			TTEnemy->CharacterStat->SetDef(PrevDef);
-			bIsDefensing = false;
-		});
-	}
+		TTEnemy->CharacterStat->SetDef(PrevDef);
+		bIsDefensing = false;
+	});
 
 	return EBTNodeResult::InProgress;
 }

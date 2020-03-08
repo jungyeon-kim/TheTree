@@ -136,7 +136,7 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 	LastDamageInstigator = DamageCauser;
 	CharacterStat->SetDamage(FinalDamage);
 
-	if (DamageEvent.GetTypeID() == 1)	// 1(FPointDamageEvent) is critical damage type.
+	if (!bIsKnockBacking && DamageEvent.GetTypeID() == 1)	// 1(FPointDamageEvent) is critical damage type.
 	{
 		TTAnimInstance->StopAllMontages(0.25f);
 		TurnToTarget(LastDamageInstigator, 100.0f);
