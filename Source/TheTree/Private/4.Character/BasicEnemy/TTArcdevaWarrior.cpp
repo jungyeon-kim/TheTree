@@ -8,7 +8,7 @@
 
 ATTArcdevaWarrior::ATTArcdevaWarrior()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_ENEMY{ TEXT("/Game/Assets/Character/BasicEnemy/ArcdevaWarrior/SK_Arcdeva_Warrior.SK_Arcdeva_Warrior") };
 	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAnimBlueprint.ArcdevaWarriorAnimBlueprint_C") };
@@ -78,6 +78,7 @@ void ATTArcdevaWarrior::AttackCheck()
 
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
+
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		GetActorLocation(),

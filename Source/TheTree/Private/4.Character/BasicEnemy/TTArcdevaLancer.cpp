@@ -9,7 +9,7 @@
 
 ATTArcdevaLancer::ATTArcdevaLancer()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_ENEMY{ TEXT("/Game/Assets/Character/BasicEnemy/ArcdevaLancer/SK_Arcdeva_Lancer.SK_Arcdeva_Lancer") };
 	static ConstructorHelpers::FClassFinder<UAnimInstance> ENEMY_ANIM{ TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerAnimBlueprint.ArcdevaLancerAnimBlueprint_C") };
@@ -23,6 +23,8 @@ ATTArcdevaLancer::ATTArcdevaLancer()
 	Audio->AddSound(TEXT("ShieldDefenseStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefenceStart.ArcdevaLancer_ShieldDefenceStart"));
 	Audio->AddSound(TEXT("ShieldDefense"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefence.ArcdevaLancer_ShieldDefence"));
 
+	GetCapsuleComponent()->SetCapsuleSize(100.0f, 150.0f);
+	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -150.0f));
 	GeneralMoveSpeed = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 }
@@ -96,6 +98,7 @@ void ATTArcdevaLancer::AttackCheck()
 
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
+
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		GetActorLocation(),
@@ -130,7 +133,7 @@ void ATTArcdevaLancer::AttackCheck()
 	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ GetActorForwardVector() * AttackLength };
-		FVector Center{ GetActorLocation() + Trace * 0.5f };
+		FVector Center{ GetActorLocation() + Trace };
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };

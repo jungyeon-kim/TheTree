@@ -107,3 +107,8 @@ bool UTTPlayerAnimInstance::GetIsBattleOn() const
 {
 	return bIsBattleOn;
 }
+
+void UTTPlayerAnimInstance::SetIsBattleOn(bool Flag)
+{
+	bIsBattleOn = Flag;
+}

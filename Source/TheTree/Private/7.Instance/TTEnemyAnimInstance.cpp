@@ -31,6 +31,18 @@ void UTTEnemyAnimInstance::PlayMontage(EMontageType MontageType)
 		TTCHECK(!bIsDead && ChargeAttackMontage);
 		Montage_Play(ChargeAttackMontage, 1.0f);
 		break;
+	case EMontageType::ATTACK_QUAKE:
+		TTCHECK(!bIsDead && QuakeAttackMontage);
+		Montage_Play(QuakeAttackMontage, 1.0f);
+		break;
+	case EMontageType::ATTACK_JUMP:
+		TTCHECK(!bIsDead && JumpAttackMontage);
+		Montage_Play(JumpAttackMontage, 1.0f);
+		break;
+	case EMontageType::ATTACK_SUMMON:
+		TTCHECK(!bIsDead && SummonAttackMontage);
+		Montage_Play(SummonAttackMontage, 1.0f);
+		break;
 	case EMontageType::DEFENSE:
 		TTCHECK(!bIsDead && DefenseMontage);
 		Montage_Play(DefenseMontage, 1.0f);
@@ -57,6 +69,15 @@ void UTTEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR* Mon
 		break;
 	case EMontageType::ATTACK_CHARGE:
 		ChargeAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
+		break;
+	case EMontageType::ATTACK_QUAKE:
+		QuakeAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
+		break;
+	case EMontageType::ATTACK_JUMP:
+		JumpAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
+		break;
+	case EMontageType::ATTACK_SUMMON:
+		SummonAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
 		break;
 	case EMontageType::DEFENSE:
 		DefenseMontage= LoadObject<UAnimMontage>(NULL, MontagePath);

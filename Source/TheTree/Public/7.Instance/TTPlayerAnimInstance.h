@@ -58,5 +58,6 @@ public:
 	void JumpToAttackMontageSection(int32 NewSection);
 
 	bool GetIsBattleOn() const;
+	void SetIsBattleOn(bool Flag);
 	void SetDead();
 };

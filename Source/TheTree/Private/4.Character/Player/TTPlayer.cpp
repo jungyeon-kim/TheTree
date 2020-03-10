@@ -138,6 +138,12 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 
 	if (!bIsKnockBacking && DamageEvent.GetTypeID() == 1)	// 1(FPointDamageEvent) is critical damage type.
 	{
+		if (CurrentState == ECharacterState::NOBATTLE)
+		{
+			TTAnimInstance->SetIsBattleOn(true);
+			SetWeapon();
+			SetCharacterState(ECharacterState::BATTLE);
+		}
 		TTAnimInstance->StopAllMontages(0.25f);
 		TurnToTarget(LastDamageInstigator, 100.0f);
 		TTAnimInstance->PlayMontage(EMontageType::KNOCKBACK);
