@@ -7,7 +7,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSwapWeaponDelegate);
-DECLARE_MULTICAST_DELEGATE(FOnPlaySoundDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnPlayAttackVoiceDelegate);
 
 UCLASS()
 class THETREE_API UTTPlayerAnimInstance : public UAnimInstance
@@ -42,13 +42,13 @@ private:
 	UFUNCTION()
 	void AnimNotify_SwapWeapon();
 	UFUNCTION()
-	void AnimNotify_PlaySound();
+	void AnimNotify_PlayAttackVoice();
 	FName GetAttackMontageSectionName(int32 Section) const;
 public:
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 	FOnNextAttackCheckDelegate OnNextAttackCheck{};
 	FOnSwapWeaponDelegate OnSwapWeapon{};
-	FOnPlaySoundDelegate OnPlaySound{};
+	FOnPlayAttackVoiceDelegate OnPlayAttackVoice{};
 public:
 	UTTPlayerAnimInstance();
 

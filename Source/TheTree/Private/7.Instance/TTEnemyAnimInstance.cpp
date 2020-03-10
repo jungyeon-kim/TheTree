@@ -99,3 +99,8 @@ void UTTEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();
 }
+
+void UTTEnemyAnimInstance::AnimNotify_PlayTalk()
+{
+	OnPlayTalk.Broadcast();
+}

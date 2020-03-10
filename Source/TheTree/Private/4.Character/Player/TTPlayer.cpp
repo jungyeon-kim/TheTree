@@ -78,7 +78,7 @@ void ATTPlayer::PostInitializeComponents()
 		else TTAnimInstance->StopAllMontages(0.25f);
 	});
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
-	TTAnimInstance->OnPlaySound.AddLambda([&]()
+	TTAnimInstance->OnPlayAttackVoice.AddLambda([&]()
 	{
 		Audio->PlaySoundCue2D(TEXT("AttackVoice"));
 	});

@@ -92,9 +92,9 @@ void UTTPlayerAnimInstance::AnimNotify_SwapWeapon()
 	OnSwapWeapon.Broadcast();
 }
 
-void UTTPlayerAnimInstance::AnimNotify_PlaySound()
+void UTTPlayerAnimInstance::AnimNotify_PlayAttackVoice()
 {
-	OnPlaySound.Broadcast();
+	OnPlayAttackVoice.Broadcast();
 }
 
 FName UTTPlayerAnimInstance::GetAttackMontageSectionName(int32 Section) const

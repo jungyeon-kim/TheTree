@@ -7,6 +7,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDefenseStartDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnPlayTalkDelegate);
 
 UCLASS()
 class THETREE_API UTTEnemyAnimInstance : public UAnimInstance
@@ -42,10 +43,13 @@ private:
 	void AnimNotify_DefenseStart();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
+	UFUNCTION()
+	void AnimNotify_PlayTalk();
 public:
 	FOnAttackStartDelegate OnAttackStart{};
 	FOnDefenseStartDelegate OnDefenseStart{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
+	FOnPlayTalkDelegate OnPlayTalk{};
 public:
 	UTTEnemyAnimInstance();
 

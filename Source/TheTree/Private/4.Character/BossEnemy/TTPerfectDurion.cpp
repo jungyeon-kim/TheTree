@@ -16,9 +16,16 @@ ATTPerfectDurion::ATTPerfectDurion()
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
-	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaWarrior_HitImpact.P_ArcdevaWarrior_HitImpact"));
-	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_Attack_SoundCue.ArcdevaWarrior_Attack_SoundCue"));
-	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_HitAttack_SoundCue.ArcdevaWarrior_HitAttack_SoundCue"));
+	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
+	Effect->AddEffect(TEXT("Hurricane"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_Hurricane.P_PerfectDurion_Hurricane"));
+	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
+	Effect->AddEffect(TEXT("SummonWeapon"), TEXT("/Game/ParagonCountess/FX/Particles/Abilities/BladeSiphon/FX/P_PerfectDurion_SummonWeapon.P_PerfectDurion_SummonWeapon"));
+	Audio->AddSoundCue(TEXT("Talk"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/PerfectDurion_Talk_SoundQue.PerfectDurion_Talk_SoundQue"));
+	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
+	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
+	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
+	Audio->AddSound(TEXT("ExplosionRock"), TEXT("/Game/Assets/Sound/Common/Common_ExplosionRock.Common_ExplosionRock"));
+	Audio->AddSound(TEXT("SummonWeapon"), TEXT("/Game/Assets/Sound/Common/Common_Casting_00.Common_Casting_00"));
 
 	GetCapsuleComponent()->SetCapsuleSize(100.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
@@ -39,6 +46,10 @@ void ATTPerfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_SUMMON, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionSummonAttackMontage.PerfectDurionSummonAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPerfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPerfectDurion::AttackCheck);
+	TTAnimInstance->OnPlayTalk.AddLambda([&]()
+	{
+		Audio->PlaySoundCueAtLocation(TEXT("Talk"), GetActorLocation());
+	});
 }
 
 void ATTPerfectDurion::PossessedBy(AController* NewController)
@@ -73,16 +84,21 @@ void ATTPerfectDurion::AttackCheck()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PerfectDurionAttackMontage")):
+	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
 		AttackLength = 600.0f;
 		AttackRadius = 100.0f;
 		break;
-	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
-		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionQuakeAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 2000.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionJumpAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 300.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
+		AttackLength = 200.0f;
+		AttackRadius = 200.0f;
 		break;
 	}
 
@@ -98,38 +114,93 @@ void ATTPerfectDurion::AttackCheck()
 		FCollisionShape::MakeSphere(AttackRadius),
 		Params);
 
-	if (bResult)
-		if (HitResult.Actor.IsValid())
-		{
-			switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
-			{
-			case FTTWorld::HashCode(TEXT("PerfectDurionAttackMontage")):
+	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
+	{
+	case FTTWorld::HashCode(TEXT("PerfectDurionAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 2.5f);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
-				break;
 			}
-			case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
+		Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
 			{
-				break;
+				FDamageEvent DamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-			case FTTWorld::HashCode(TEXT("PerfectDurionQuakeAttackMontage")):
+		Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("PerfectDurionQuakeAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
 			{
-				break;
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-			case FTTWorld::HashCode(TEXT("PerfectDurionJumpAttackMontage")):
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		Effect->PlayEffect(TEXT("Hurricane"), GetActorLocation(), 5.0f);
+		Audio->PlaySoundCue2D(TEXT("Explosion"));
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("PerfectDurionJumpAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
 			{
-				break;
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-			case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
+		Effect->PlayEffect(TEXT("ExplosionRock"), GetActorLocation(), 5.0f);
+		Audio->PlaySound2D(TEXT("ExplosionRock"));
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
 			{
-				break;
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-			}
-		}
-	Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
+		TTLOG(Warning, TEXT("(%d, %d, %d) (%d, %d, %d)"),
+			GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z,
+			(GetActorLocation() + GetActorForwardVector() * AttackLength).X,
+			(GetActorLocation() + GetActorForwardVector() * AttackLength).Y,
+			(GetActorLocation() + GetActorForwardVector() * AttackLength).Z);
+		Effect->PlayEffect(TEXT("SummonWeapon"), GetActorLocation() + GetActorForwardVector() * AttackLength, 
+			FRotator(0.0f, 0.0f, 90.0f), 2.0f);
+		Audio->PlaySoundAtLocation(TEXT("SummonWeapon"), GetActorLocation());
+		break;
+	}
+	}
 
 	if (FTTWorld::bIsDebugging)
 	{

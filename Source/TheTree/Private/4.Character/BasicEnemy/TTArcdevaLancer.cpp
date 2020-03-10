@@ -133,7 +133,7 @@ void ATTArcdevaLancer::AttackCheck()
 	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ GetActorForwardVector() * AttackLength };
-		FVector Center{ GetActorLocation() + Trace };
+		FVector Center{ GetActorLocation() + Trace * 0.5f };
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };

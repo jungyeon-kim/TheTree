@@ -19,6 +19,6 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	const auto& Target{ Cast<ATTPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ATTAIController::TargetKey)) };
 	if (!Target) return false;
 
-	bResult = Target->GetDistanceTo(ControllingPawn) <= InAttackRange;
+	bResult = Target->GetHorizontalDistanceTo(ControllingPawn) <= InAttackRange;
 	return bResult;
 }
