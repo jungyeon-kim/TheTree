@@ -19,7 +19,7 @@ ATTPerfectDurion::ATTPerfectDurion()
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
 	Effect->AddEffect(TEXT("Hurricane"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_Hurricane.P_PerfectDurion_Hurricane"));
 	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
-	Effect->AddEffect(TEXT("SummonWeapon"), TEXT("/Game/ParagonCountess/FX/Particles/Abilities/BlinkStrike/FX/P_PerfectDurion_SummonWeapon.P_PerfectDurion_SummonWeapon"));
+	Effect->AddEffect(TEXT("SummonWeapon"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_SummonWeapon.P_PerfectDurion_SummonWeapon"));
 	Audio->AddSoundCue(TEXT("Talk"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/PerfectDurion_Talk_SoundQue.PerfectDurion_Talk_SoundQue"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
@@ -95,7 +95,7 @@ void ATTPerfectDurion::AttackCheck()
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionJumpAttackMontage")):
 		AttackLength = 1.0f;
-		AttackRadius = 300.0f;
+		AttackRadius = 400.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
 		AttackLength = 400.0f;
@@ -153,7 +153,7 @@ void ATTPerfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -169,7 +169,7 @@ void ATTPerfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.5f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -185,7 +185,7 @@ void ATTPerfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 10.0f);
