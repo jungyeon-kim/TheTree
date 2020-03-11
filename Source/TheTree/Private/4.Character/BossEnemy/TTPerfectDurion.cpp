@@ -19,13 +19,14 @@ ATTPerfectDurion::ATTPerfectDurion()
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
 	Effect->AddEffect(TEXT("Hurricane"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_Hurricane.P_PerfectDurion_Hurricane"));
 	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
-	Effect->AddEffect(TEXT("SummonWeapon"), TEXT("/Game/ParagonCountess/FX/Particles/Abilities/BladeSiphon/FX/P_PerfectDurion_SummonWeapon.P_PerfectDurion_SummonWeapon"));
+	Effect->AddEffect(TEXT("SummonWeapon"), TEXT("/Game/ParagonCountess/FX/Particles/Abilities/BlinkStrike/FX/P_PerfectDurion_SummonWeapon.P_PerfectDurion_SummonWeapon"));
 	Audio->AddSoundCue(TEXT("Talk"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/PerfectDurion_Talk_SoundQue.PerfectDurion_Talk_SoundQue"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
 	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
 	Audio->AddSound(TEXT("ExplosionRock"), TEXT("/Game/Assets/Sound/Common/Common_ExplosionRock.Common_ExplosionRock"));
 	Audio->AddSound(TEXT("SummonWeapon"), TEXT("/Game/Assets/Sound/Common/Common_Casting_00.Common_Casting_00"));
+	Audio->AddSound(TEXT("SummonBlood"), TEXT("/Game/Assets/Sound/Common/Common_HitBlood_00.Common_HitBlood_00"));
 
 	GetCapsuleComponent()->SetCapsuleSize(100.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
@@ -97,7 +98,7 @@ void ATTPerfectDurion::AttackCheck()
 		AttackRadius = 300.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
-		AttackLength = 200.0f;
+		AttackLength = 400.0f;
 		AttackRadius = 200.0f;
 		break;
 	}
@@ -154,7 +155,7 @@ void ATTPerfectDurion::AttackCheck()
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
-					GetActorForwardVector().Rotation(), 5.0f);
+					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
@@ -170,7 +171,7 @@ void ATTPerfectDurion::AttackCheck()
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
-					GetActorForwardVector().Rotation(), 5.0f);
+					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
@@ -187,17 +188,12 @@ void ATTPerfectDurion::AttackCheck()
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
-					GetActorForwardVector().Rotation(), 5.0f);
+					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		TTLOG(Warning, TEXT("(%d, %d, %d) (%d, %d, %d)"),
-			GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z,
-			(GetActorLocation() + GetActorForwardVector() * AttackLength).X,
-			(GetActorLocation() + GetActorForwardVector() * AttackLength).Y,
-			(GetActorLocation() + GetActorForwardVector() * AttackLength).Z);
-		Effect->PlayEffect(TEXT("SummonWeapon"), GetActorLocation() + GetActorForwardVector() * AttackLength, 
-			FRotator(0.0f, 0.0f, 90.0f), 2.0f);
+		Effect->PlayEffect(TEXT("SummonWeapon"), GetActorLocation() + GetActorForwardVector() * AttackLength, 10.0f);
 		Audio->PlaySoundAtLocation(TEXT("SummonWeapon"), GetActorLocation());
+		Audio->PlaySoundAtLocation(TEXT("SummonBlood"), GetActorLocation());
 		break;
 	}
 	}

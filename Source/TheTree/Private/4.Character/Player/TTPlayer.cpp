@@ -134,7 +134,6 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
 	
 	LastDamageInstigator = DamageCauser;
-	CharacterStat->SetDamage(FinalDamage);
 
 	if (!bIsKnockBacking && DamageEvent.GetTypeID() == 1)	// 1(FPointDamageEvent) is critical damage type.
 	{
@@ -149,6 +148,8 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 		TTAnimInstance->PlayMontage(EMontageType::KNOCKBACK);
 		bIsKnockBacking = true;
 	}
+
+	CharacterStat->SetDamage(FinalDamage);
 	
 	return FinalDamage;
 }
