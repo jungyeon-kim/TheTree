@@ -13,7 +13,7 @@ EBTNodeResult::Type UBTTask_Defense::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 {
 	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
 
-	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
+	const auto& TTEnemy{ Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn()) };
 	if (!TTEnemy) return EBTNodeResult::Failed;
 
 	float PrevDef{ TTEnemy->CharacterStat->GetDef() };
@@ -34,6 +34,9 @@ EBTNodeResult::Type UBTTask_Defense::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 void UBTTask_Defense::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	const auto& TTEnemy{ Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn()) };
+	if (!TTEnemy) return FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
 	if (!bIsDefensing && !TTEnemy->GetCurrentMontage()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }

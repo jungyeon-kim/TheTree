@@ -9,8 +9,6 @@ class THETREE_API UBTTask_Attack : public UBTTaskNode
 {
 	GENERATED_BODY()
 private:
-	UPROPERTY()
-	class ATTEnemyBase* TTEnemy;
 	UPROPERTY(EditAnywhere, Category = "Option")
 	EMontageType AttackTypeName;
 
