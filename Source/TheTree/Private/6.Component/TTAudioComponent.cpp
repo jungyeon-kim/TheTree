@@ -5,36 +5,42 @@ UTTAudioComponent::UTTAudioComponent()
 {
 }
 
-void UTTAudioComponent::AddSound(FString SoundName, const TCHAR* SoundPath)
+void UTTAudioComponent::AddSoundWave(FName SoundName, const TCHAR* SoundPath)
 {
-	SoundWave.Emplace(SoundName, LoadObject<USoundWave>(this, SoundPath));
+	const auto& SoundCheck{ LoadObject<USoundWave>(this, SoundPath) };
+
+	if (SoundCheck->IsValidLowLevel()) SoundWave.Emplace(SoundName, SoundCheck);
+	else TTLOG(Error, TEXT("Can't find SoundPath (%s)"), SoundPath);
 }
 
-void UTTAudioComponent::PlaySound2D(FString SoundName)
+void UTTAudioComponent::PlaySoundWave2D(FName SoundName)
 {
 	if (SoundWave.Find(SoundName)) UGameplayStatics::PlaySound2D(this, SoundWave[SoundName]);
-	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName);
+	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName.ToString());
 }
 
-void UTTAudioComponent::PlaySoundAtLocation(FString SoundName, FVector Location)
+void UTTAudioComponent::PlaySoundWaveAtLocation(FName SoundName, FVector Location)
 {
 	if (SoundWave.Find(SoundName)) UGameplayStatics::PlaySoundAtLocation(this, SoundWave[SoundName], Location);
-	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName);
+	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName.ToString());
 }
 
-void UTTAudioComponent::AddSoundCue(FString SoundName, const TCHAR* SoundPath)
+void UTTAudioComponent::AddSoundCue(FName SoundName, const TCHAR* SoundPath)
 {
-	SoundCue.Emplace(SoundName, LoadObject<USoundCue>(this, SoundPath));
+	const auto& SoundCheck{ LoadObject<USoundCue>(this, SoundPath) };
+
+	if (SoundCheck->IsValidLowLevel()) SoundCue.Emplace(SoundName, SoundCheck);
+	else TTLOG(Error, TEXT("Can't find SoundPath (%s)"), SoundPath);
 }
 
-void UTTAudioComponent::PlaySoundCue2D(FString SoundName)
+void UTTAudioComponent::PlaySoundCue2D(FName SoundName)
 {
 	if (SoundCue.Find(SoundName)) UGameplayStatics::PlaySound2D(this, SoundCue[SoundName]);
-	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName);
+	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName.ToString());
 }
 
-void UTTAudioComponent::PlaySoundCueAtLocation(FString SoundName, FVector Location)
+void UTTAudioComponent::PlaySoundCueAtLocation(FName SoundName, FVector Location)
 {
 	if (SoundCue.Find(SoundName)) UGameplayStatics::PlaySoundAtLocation(this, SoundCue[SoundName], Location);
-	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName);
+	else TTLOG(Error, TEXT("Can't find SoundName (%s)"), *SoundName.ToString());
 }

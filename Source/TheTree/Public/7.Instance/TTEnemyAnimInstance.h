@@ -24,18 +24,8 @@ private:
 	bool bIsDead;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool bIsBattleOn;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* ChargeAttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* QuakeAttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* JumpAttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* SummonAttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Defense", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* DefenseMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	TMap<EMontageType, UAnimMontage*> Montage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackStart();

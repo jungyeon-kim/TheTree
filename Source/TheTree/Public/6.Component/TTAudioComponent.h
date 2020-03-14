@@ -10,16 +10,16 @@ class THETREE_API UTTAudioComponent : public UAudioComponent
 	GENERATED_BODY()
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
-	TMap<FString, USoundWave*> SoundWave;
+	TMap<FName, USoundWave*> SoundWave;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
-	TMap<FString, class USoundCue*> SoundCue;
+	TMap<FName, class USoundCue*> SoundCue;
 public:
 	UTTAudioComponent();
 	
-	void AddSound(FString SoundName, const TCHAR* SoundPath);
-	void PlaySound2D(FString SoundName);
-	void PlaySoundAtLocation(FString SoundName, FVector Location);
-	void AddSoundCue(FString SoundName, const TCHAR* SoundPath);
-	void PlaySoundCue2D(FString SoundName);
-	void PlaySoundCueAtLocation(FString SoundName, FVector Location);
+	void AddSoundWave(FName SoundName, const TCHAR* SoundPath);
+	void PlaySoundWave2D(FName SoundName);
+	void PlaySoundWaveAtLocation(FName SoundName, FVector Location);
+	void AddSoundCue(FName SoundName, const TCHAR* SoundPath);
+	void PlaySoundCue2D(FName SoundName);
+	void PlaySoundCueAtLocation(FName SoundName, FVector Location);
 };

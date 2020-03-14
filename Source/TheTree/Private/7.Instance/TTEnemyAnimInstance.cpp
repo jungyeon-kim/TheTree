@@ -21,33 +21,9 @@ void UTTEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UTTEnemyAnimInstance::PlayMontage(EMontageType MontageType)
 {
-	switch (MontageType)
-	{
-	case EMontageType::ATTACK:
-		TTCHECK(!bIsDead && AttackMontage);
-		Montage_Play(AttackMontage, 1.0f);
-		break;
-	case EMontageType::ATTACK_CHARGE:
-		TTCHECK(!bIsDead && ChargeAttackMontage);
-		Montage_Play(ChargeAttackMontage, 1.0f);
-		break;
-	case EMontageType::ATTACK_QUAKE:
-		TTCHECK(!bIsDead && QuakeAttackMontage);
-		Montage_Play(QuakeAttackMontage, 1.0f);
-		break;
-	case EMontageType::ATTACK_JUMP:
-		TTCHECK(!bIsDead && JumpAttackMontage);
-		Montage_Play(JumpAttackMontage, 1.0f);
-		break;
-	case EMontageType::ATTACK_SUMMON:
-		TTCHECK(!bIsDead && SummonAttackMontage);
-		Montage_Play(SummonAttackMontage, 1.0f);
-		break;
-	case EMontageType::DEFENSE:
-		TTCHECK(!bIsDead && DefenseMontage);
-		Montage_Play(DefenseMontage, 1.0f);
-		break;
-	}
+	TTCHECK(!bIsDead);
+	if (Montage.Find(MontageType)) Montage_Play(Montage[MontageType]);
+	else TTLOG(Error, TEXT("Can't find MontageType"));
 }
 
 void UTTEnemyAnimInstance::SetDamaged()
@@ -62,27 +38,10 @@ void UTTEnemyAnimInstance::SetDead()
 
 void UTTEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR* MontagePath)
 {
-	switch (MontageType)
-	{
-	case EMontageType::ATTACK:
-		AttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	case EMontageType::ATTACK_CHARGE:
-		ChargeAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	case EMontageType::ATTACK_QUAKE:
-		QuakeAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	case EMontageType::ATTACK_JUMP:
-		JumpAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	case EMontageType::ATTACK_SUMMON:
-		SummonAttackMontage = LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	case EMontageType::DEFENSE:
-		DefenseMontage= LoadObject<UAnimMontage>(NULL, MontagePath);
-		break;
-	}
+	const auto& MontageCheck{ LoadObject<UAnimMontage>(this, MontagePath) };
+
+	if (MontageCheck->IsValidLowLevel()) Montage.Emplace(MontageType, MontageCheck);
+	else TTLOG(Error, TEXT("Can't find MontagePath (%s)"), MontagePath);
 }
 
 void UTTEnemyAnimInstance::AnimNotify_AttackStart()

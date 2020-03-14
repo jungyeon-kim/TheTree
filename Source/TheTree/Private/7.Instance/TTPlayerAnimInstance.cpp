@@ -8,12 +8,12 @@ UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> OUTWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerOutWeaponMontage.PlayerOutWeaponMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> KNOCKBACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerKnockBackMontage.PlayerKnockBackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DEATH_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDeathMontage.PlayerDeathMontage") };
-	if (ATTACK_MONTAGE.Succeeded()) AttackMontage = ATTACK_MONTAGE.Object;
-	if (DODGE_MONTAGE.Succeeded()) DodgeMontage = DODGE_MONTAGE.Object;
-	if (INWEAPON_MONTAGE.Succeeded()) InWeaponMontage = INWEAPON_MONTAGE.Object;
-	if (OUTWEAPON_MONTAGE.Succeeded()) OutWeaponMontage = OUTWEAPON_MONTAGE.Object;
-	if (KNOCKBACK_MONTAGE.Succeeded()) KnockBackMontage = KNOCKBACK_MONTAGE.Object;
-	if (DEATH_MONTAGE.Succeeded()) DeathMontage = DEATH_MONTAGE.Object;
+	if (ATTACK_MONTAGE.Succeeded()) Montage.Emplace(EMontageType::ATTACK, ATTACK_MONTAGE.Object);
+	if (DODGE_MONTAGE.Succeeded()) Montage.Emplace(EMontageType::DODGE, DODGE_MONTAGE.Object);
+	if (INWEAPON_MONTAGE.Succeeded()) Montage.Emplace(EMontageType::INWEAPON, INWEAPON_MONTAGE.Object);
+	if (OUTWEAPON_MONTAGE.Succeeded()) Montage.Emplace(EMontageType::OUTWEAPON, OUTWEAPON_MONTAGE.Object);
+	if (KNOCKBACK_MONTAGE.Succeeded()) Montage.Emplace(EMontageType::KNOCKBACK, KNOCKBACK_MONTAGE.Object);
+	if (DEATH_MONTAGE.Succeeded()) Montage.Emplace(EMontageType::DEATH, DEATH_MONTAGE.Object);
 }
 
 void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -31,45 +31,16 @@ void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UTTPlayerAnimInstance::PlayMontage(EMontageType MontageType)
 {
-	switch (MontageType)
-	{
-	case EMontageType::ATTACK:
-		TTCHECK(!bIsDead && AttackMontage);
-		Montage_Play(AttackMontage, 1.0f);
-		break;
-	case EMontageType::DODGE:
-		TTCHECK(!bIsDead && DodgeMontage);
-		Montage_Play(DodgeMontage, 1.0f);
-		break;
-	case EMontageType::INOUTWEAPON:
-		TTCHECK(!bIsDead && InWeaponMontage && OutWeaponMontage);
-		if (bIsBattleOn)
-		{
-			Montage_Play(InWeaponMontage, 1.0f);
-			bIsBattleOn = false;
-		}
-		else
-		{
-			Montage_Play(OutWeaponMontage, 1.0f);
-			bIsBattleOn = true;
-		}
-		break;
-	case EMontageType::KNOCKBACK:
-		TTCHECK(!bIsDead && KnockBackMontage);
-		Montage_Play(KnockBackMontage, 1.0f);
-		break;
-	case EMontageType::DEATH:
-		TTCHECK(!bIsDead && DeathMontage);
-		Montage_Play(DeathMontage, 1.0f);
-		break;
-	}
+	TTCHECK(!bIsDead);
+	if (Montage.Find(MontageType)) Montage_Play(Montage[MontageType]);
+	else TTLOG(Error, TEXT("Can't find MontageType"));
 }
 
 void UTTPlayerAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
-	TTCHECK(!bIsDead && AttackMontage);
-	TTCHECK(Montage_IsPlaying(AttackMontage));
-	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
+	TTCHECK(!bIsDead && Montage[EMontageType::ATTACK]);
+	TTCHECK(Montage_IsPlaying(Montage[EMontageType::ATTACK]));
+	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), Montage[EMontageType::ATTACK]);
 }
 
 void UTTPlayerAnimInstance::SetDead()

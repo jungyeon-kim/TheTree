@@ -21,13 +21,14 @@ ATTArcdevaWarrior::ATTArcdevaWarrior()
 
 	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+	DeadTimer = 20.0f;
 }
 
 void ATTArcdevaWarrior::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(FName("ArcdevaWarrior"));
+	CharacterStat->SetObjectStat(TEXT("ArcdevaWarrior"));
 
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAttackMontage.ArcdevaWarriorAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnMontageEnded);

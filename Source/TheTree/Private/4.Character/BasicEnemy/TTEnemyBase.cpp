@@ -30,7 +30,6 @@ ATTEnemyBase::ATTEnemyBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
-	DeadTimer = 20.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
 }

@@ -57,7 +57,7 @@ void ATTPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(FName("Player"));
+	CharacterStat->SetObjectStat(TEXT("Player"));
 	CharacterStat->OnHPIsZero.AddLambda([&]()
 	{
 		SetCharacterState(ECharacterState::DEAD);
@@ -161,7 +161,7 @@ void ATTPlayer::Attack()
 		TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
 		if (bCanNextCombo) bIsComboInputOn = true;
 	}
-	else if (GetCurrentStateNodeName() == FName("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
+	else if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage()
 		&& CurrentState == ECharacterState::BATTLE)
 	{
 		TTCHECK(!CurrentCombo);
@@ -276,7 +276,7 @@ ECharacterState ATTPlayer::GetCharacterState() const
 
 FName ATTPlayer::GetCurrentStateNodeName() const
 {
-	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(FName("BaseAction")));
+	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(TEXT("BaseAction")));
 }
 
 void ATTPlayer::SetWeapon()
@@ -377,9 +377,18 @@ void ATTPlayer::SwapBattleMode()
 {
 	if (GetCurrentStateNodeName() == TEXT("Ground") && !TTAnimInstance->GetCurrentActiveMontage())
 	{
-		TTAnimInstance->PlayMontage(EMontageType::INOUTWEAPON);
-		if (TTAnimInstance->GetIsBattleOn()) SetCharacterState(ECharacterState::BATTLE);
-		else SetCharacterState(ECharacterState::NOBATTLE);
+		if (TTAnimInstance->GetIsBattleOn())
+		{
+			TTAnimInstance->PlayMontage(EMontageType::INWEAPON);
+			SetCharacterState(ECharacterState::NOBATTLE);
+			TTAnimInstance->SetIsBattleOn(false);
+		}
+		else
+		{
+			TTAnimInstance->PlayMontage(EMontageType::OUTWEAPON);
+			SetCharacterState(ECharacterState::BATTLE);
+			TTAnimInstance->SetIsBattleOn(true);
+		}
 		bIsSwappingWeapon = true;
 	}
 }

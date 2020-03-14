@@ -19,21 +19,22 @@ ATTArcdevaLancer::ATTArcdevaLancer()
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaWarrior_HitImpact.P_ArcdevaWarrior_HitImpact"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_Attack_SoundCue.ArcdevaLancer_Attack_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitAttack_SoundCue.ArcdevaLancer_HitAttack_SoundCue"));
-	Audio->AddSound(TEXT("HitChargeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
-	Audio->AddSound(TEXT("ShieldDefenseStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefenceStart.ArcdevaLancer_ShieldDefenceStart"));
-	Audio->AddSound(TEXT("ShieldDefense"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefence.ArcdevaLancer_ShieldDefence"));
+	Audio->AddSoundWave(TEXT("HitChargeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
+	Audio->AddSoundWave(TEXT("ShieldDefenseStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefenceStart.ArcdevaLancer_ShieldDefenceStart"));
+	Audio->AddSoundWave(TEXT("ShieldDefense"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefence.ArcdevaLancer_ShieldDefence"));
 
 	GetCapsuleComponent()->SetCapsuleSize(100.0f, 150.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -150.0f));
 	GeneralMoveSpeed = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+	DeadTimer = 20.0f;
 }
 
 void ATTArcdevaLancer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(FName("ArcdevaLancer"));
+	CharacterStat->SetObjectStat(TEXT("ArcdevaLancer"));
 
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerAttackMontage.ArcdevaLancerAttackMontage"));
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerChargeAttackMontage.ArcdevaLancerChargeAttackMontage"));
@@ -77,7 +78,7 @@ float ATTArcdevaLancer::TakeDamage(float DamageAmount, const FDamageEvent& Damag
 	else
 	{
 		if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerDefenseMontage"))
-			Audio->PlaySoundAtLocation(TEXT("ShieldDefense"), GetActorLocation());
+			Audio->PlaySoundWaveAtLocation(TEXT("ShieldDefense"), GetActorLocation());
 	}
 
 	return FinalDamage;
@@ -85,7 +86,7 @@ float ATTArcdevaLancer::TakeDamage(float DamageAmount, const FDamageEvent& Damag
 
 void ATTArcdevaLancer::DefenseStart()
 {
-	Audio->PlaySoundAtLocation(TEXT("ShieldDefenseStart"), GetActorLocation());
+	Audio->PlaySoundWaveAtLocation(TEXT("ShieldDefenseStart"), GetActorLocation());
 }
 
 void ATTArcdevaLancer::AttackCheck()
@@ -125,7 +126,7 @@ void ATTArcdevaLancer::AttackCheck()
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
-				Audio->PlaySound2D(TEXT("HitChargeAttack"));
+				Audio->PlaySoundWave2D(TEXT("HitChargeAttack"));
 			}
 		}
 		Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());

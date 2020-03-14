@@ -4,7 +4,7 @@
 UTTCharacterStatComponent::UTTCharacterStatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	bWantsInitializeComponent = true;
+	bWantsInitializeComponent = false;
 }
 
 void UTTCharacterStatComponent::InitializeComponent()

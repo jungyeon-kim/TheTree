@@ -11,8 +11,6 @@ struct FTTCharacterData : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	FName ObjectName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float MaxHP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float MaxSta;
@@ -21,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float Def;
 public:
-	FTTCharacterData() : ObjectName(NAME_None), MaxHP(0.0f), MaxSta(0.0f), Atk(0.0f), Def(0.0f) {}
+	FTTCharacterData() = default;
 };
 
 UCLASS()

@@ -22,18 +22,8 @@ private:
 	bool bIsDead;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool bIsBattleOn;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Dodge", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* DodgeMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "InOutWeapon", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* InWeaponMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "InOutWeapon", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* OutWeaponMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "KnockBack", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* KnockBackMontage;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Death", Meta = (AllowPrivateAccess = true))
-	UAnimMontage* DeathMontage;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
+	TMap<EMontageType, UAnimMontage*> Montage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();

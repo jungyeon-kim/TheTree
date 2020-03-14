@@ -17,18 +17,19 @@ ATTArcdevaArcher::ATTArcdevaArcher()
 
 	Effect->AddEffect(TEXT("Shot"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaArcher_Shot.P_ArcdevaArcher_Shot"));
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaArcher_HitImpact.P_ArcdevaArcher_HitImpact"));
-	Audio->AddSound(TEXT("AttackStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_AttackStart.ArcdevaArcher_AttackStart"));
-	Audio->AddSound(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_HitAttack.ArcdevaArcher_HitAttack"));
+	Audio->AddSoundWave(TEXT("AttackStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_AttackStart.ArcdevaArcher_AttackStart"));
+	Audio->AddSoundWave(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_HitAttack.ArcdevaArcher_HitAttack"));
 
 	GeneralMoveSpeed = 800.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+	DeadTimer = 20.0f;
 }
 
 void ATTArcdevaArcher::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(FName("ArcdevaArcher"));
+	CharacterStat->SetObjectStat(TEXT("ArcdevaArcher"));
 
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherAttackMontage.ArcdevaArcherAttackMontage"));
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherChargeAttackMontage.ArcdevaArcherChargeAttackMontage"));
@@ -76,7 +77,7 @@ void ATTArcdevaArcher::AttackStart()
 {
 	AttackStartForwardVector = GetActorForwardVector();
 	Effect->PlayEffect(TEXT("Shot"), GetActorLocation(), GetActorForwardVector().Rotation(), FVector(9.0f, 2.0f, 2.0f));
-	Audio->PlaySoundAtLocation(TEXT("AttackStart"), GetActorLocation());
+	Audio->PlaySoundWaveAtLocation(TEXT("AttackStart"), GetActorLocation());
 }
 
 void ATTArcdevaArcher::AttackCheck()
@@ -105,7 +106,7 @@ void ATTArcdevaArcher::AttackCheck()
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 				GetActorForwardVector().Rotation(), 2.5f);
-			Audio->PlaySound2D(TEXT("HitAttack"));
+			Audio->PlaySoundWave2D(TEXT("HitAttack"));
 		}
 
 	if (FTTWorld::bIsDebugging)

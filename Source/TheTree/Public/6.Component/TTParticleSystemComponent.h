@@ -10,15 +10,15 @@ class THETREE_API UTTParticleSystemComponent : public UParticleSystemComponent
 	GENERATED_BODY()
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
-	TMap<FString, UParticleSystem*> Effect;
+	TMap<FName, UParticleSystem*> Effect;
 public:
 	UTTParticleSystemComponent();
 
-	void AddEffect(FString EffectName, const TCHAR* EffectPath);
-	void PlayEffect(FString EffectName, FVector Location);
-	void PlayEffect(FString EffectName, FVector Location, float Scale);
-	void PlayEffect(FString EffectName, FVector Location, FVector Scale);
-	void PlayEffect(FString EffectName, FVector Location, FRotator Rotation);
-	void PlayEffect(FString EffectName, FVector Location, FRotator Rotation, float Scale);
-	void PlayEffect(FString EffectName, FVector Location, FRotator Rotation, FVector Scale);
+	void AddEffect(FName EffectName, const TCHAR* EffectPath);
+	void PlayEffect(FName EffectName, FVector Location);
+	void PlayEffect(FName EffectName, FVector Location, float Scale);
+	void PlayEffect(FName EffectName, FVector Location, FVector Scale);
+	void PlayEffect(FName EffectName, FVector Location, FRotator Rotation);
+	void PlayEffect(FName EffectName, FVector Location, FRotator Rotation, float Scale);
+	void PlayEffect(FName EffectName, FVector Location, FRotator Rotation, FVector Scale);
 };

@@ -24,21 +24,22 @@ ATTPerfectDurion::ATTPerfectDurion()
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
 	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
-	Audio->AddSound(TEXT("ExplosionRock"), TEXT("/Game/Assets/Sound/Common/Common_ExplosionRock.Common_ExplosionRock"));
-	Audio->AddSound(TEXT("SummonWeapon"), TEXT("/Game/Assets/Sound/Common/Common_Casting_00.Common_Casting_00"));
-	Audio->AddSound(TEXT("SummonBlood"), TEXT("/Game/Assets/Sound/Common/Common_HitBlood_00.Common_HitBlood_00"));
+	Audio->AddSoundWave(TEXT("ExplosionRock"), TEXT("/Game/Assets/Sound/Common/Common_ExplosionRock.Common_ExplosionRock"));
+	Audio->AddSoundWave(TEXT("SummonWeapon"), TEXT("/Game/Assets/Sound/Common/Common_Casting_00.Common_Casting_00"));
+	Audio->AddSoundWave(TEXT("SummonBlood"), TEXT("/Game/Assets/Sound/Common/Common_HitBlood_00.Common_HitBlood_00"));
 
 	GetCapsuleComponent()->SetCapsuleSize(100.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
 	GeneralMoveSpeed = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+	DeadTimer = 20.0f;
 }
 
 void ATTPerfectDurion::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(FName("PerfectDurion"));
+	CharacterStat->SetObjectStat(TEXT("PerfectDurion"));
 
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionAttackMontage.PerfectDurionAttackMontage"));
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionChargeAttackMontage.PerfectDurionChargeAttackMontage"));
@@ -176,7 +177,7 @@ void ATTPerfectDurion::AttackCheck()
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 		Effect->PlayEffect(TEXT("ExplosionRock"), GetActorLocation(), 5.0f);
-		Audio->PlaySound2D(TEXT("ExplosionRock"));
+		Audio->PlaySoundWave2D(TEXT("ExplosionRock"));
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
@@ -192,8 +193,8 @@ void ATTPerfectDurion::AttackCheck()
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
 		Effect->PlayEffect(TEXT("SummonWeapon"), GetActorLocation() + GetActorForwardVector() * AttackLength, 10.0f);
-		Audio->PlaySoundAtLocation(TEXT("SummonWeapon"), GetActorLocation());
-		Audio->PlaySoundAtLocation(TEXT("SummonBlood"), GetActorLocation());
+		Audio->PlaySoundWaveAtLocation(TEXT("SummonWeapon"), GetActorLocation());
+		Audio->PlaySoundWaveAtLocation(TEXT("SummonBlood"), GetActorLocation());
 		break;
 	}
 	}
