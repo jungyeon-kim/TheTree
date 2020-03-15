@@ -5,6 +5,7 @@
 UBTTask_Attack::UBTTask_Attack()
 {
 	NodeName = TEXT("Attack");
+	bCreateNodeInstance = true;
 	bNotifyTick = true;
 }
 
@@ -12,7 +13,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
 
-	const auto& TTEnemy{ Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn()) };
+	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!TTEnemy) return EBTNodeResult::Failed;
 
 	TTEnemy->PlayMontage(AttackTypeName);
@@ -29,9 +30,6 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-
-	const auto& TTEnemy{ Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn()) };
-	if (!TTEnemy) return FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
 	if (!bIsAttacking && !TTEnemy->GetCurrentMontage()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }

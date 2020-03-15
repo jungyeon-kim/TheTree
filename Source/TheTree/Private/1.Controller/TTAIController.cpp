@@ -34,5 +34,8 @@ void ATTAIController::StopAI()
 
 void ATTAIController::SetBehaviorTree(const TCHAR* BehaviroTreePath)
 {
-	BTAsset = LoadObject<UBehaviorTree>(NULL, BehaviroTreePath);
+	const auto& TreeCheck{ LoadObject<UBehaviorTree>(this, BehaviroTreePath) };
+
+	if (TreeCheck->IsValidLowLevel()) BTAsset = TreeCheck;
+	else TTLOG(Error, TEXT("Can't find BehaviroTreePath (%s)"), BehaviroTreePath);
 }
