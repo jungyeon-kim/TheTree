@@ -20,7 +20,6 @@ ATTPerfectDurion::ATTPerfectDurion()
 	Effect->AddEffect(TEXT("Hurricane"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_Hurricane.P_PerfectDurion_Hurricane"));
 	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
 	Effect->AddEffect(TEXT("SummonWeapon"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_SummonWeapon.P_PerfectDurion_SummonWeapon"));
-	Audio->AddSoundCue(TEXT("Talk"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/PerfectDurion_Talk_SoundQue.PerfectDurion_Talk_SoundQue"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
 	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
@@ -48,10 +47,6 @@ void ATTPerfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_SUMMON, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionSummonAttackMontage.PerfectDurionSummonAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPerfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPerfectDurion::AttackCheck);
-	TTAnimInstance->OnPlayTalk.AddLambda([&]()
-	{
-		Audio->PlaySoundCueAtLocation(TEXT("Talk"), GetActorLocation());
-	});
 }
 
 void ATTPerfectDurion::PossessedBy(AController* NewController)
@@ -175,7 +170,7 @@ void ATTPerfectDurion::AttackCheck()
 					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffect(TEXT("ExplosionRock"), GetActorLocation(), 5.0f);
 		Audio->PlaySoundWave2D(TEXT("ExplosionRock"));
 		break;

@@ -30,7 +30,6 @@ protected:
 
 	UPROPERTY()
 	AActor* LastDamageInstigator;
-	FTimerHandle DeadTimerHandle{};
 protected:
 	virtual void BeginPlay() override;
 
@@ -59,5 +58,7 @@ public:
 	void PlayMontage(EMontageType MontageType);
 
 	ECharacterState GetCharacterState() const;
+
+	void SetPlayRate(float StartTime, float EndTime, float TimeDilation);
 	void SetCharacterState(ECharacterState NewState);
 };

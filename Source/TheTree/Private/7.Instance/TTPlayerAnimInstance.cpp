@@ -63,11 +63,6 @@ void UTTPlayerAnimInstance::AnimNotify_SwapWeapon()
 	OnSwapWeapon.Broadcast();
 }
 
-void UTTPlayerAnimInstance::AnimNotify_PlayAttackVoice()
-{
-	OnPlayAttackVoice.Broadcast();
-}
-
 FName UTTPlayerAnimInstance::GetAttackMontageSectionName(int32 Section) const
 {
 	TTCHECK(FMath::IsWithinInclusive(Section, 1, 4), NAME_None);

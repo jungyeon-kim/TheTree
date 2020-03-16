@@ -36,7 +36,6 @@ ATTPlayer::ATTPlayer()
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/Player/Player_HitAttack_SoundCue.Player_HitAttack_SoundCue"));
-	Audio->AddSoundCue(TEXT("AttackVoice"), TEXT("/Game/Assets/Sound/Player/Player_AttackVoice_SoundCue.Player_AttackVoice_SoundCue"));
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
@@ -78,10 +77,6 @@ void ATTPlayer::PostInitializeComponents()
 		else TTAnimInstance->StopAllMontages(0.25f);
 	});
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
-	TTAnimInstance->OnPlayAttackVoice.AddLambda([&]()
-	{
-		Audio->PlaySoundCue2D(TEXT("AttackVoice"));
-	});
 }
 
 void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -279,6 +274,20 @@ FName ATTPlayer::GetCurrentStateNodeName() const
 	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(TEXT("BaseAction")));
 }
 
+void ATTPlayer::SetPlayRate(float StartTime, float EndTime, float TimeDilation)
+{
+	FTimerHandle DelayTimerHandle[2]{};
+	FTTWorld::TimeDilation = TimeDilation;
+	
+	if (UGameplayStatics::GetGlobalTimeDilation(this) == 1.0f)
+	{
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, FTTWorld::TimeDilation); }), StartTime, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), EndTime, false);
+	}
+}
+
 void ATTPlayer::SetWeapon()
 {
 	TTCHECK(CurrentWeapon);
@@ -331,12 +340,9 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		TTAnimInstance->StopAllMontages(0.25f);
 		TTAnimInstance->PlayMontage(EMontageType::DEATH);
 		TTAnimInstance->SetDead();
+		SetPlayRate(0.25f, 0.35f, 0.1f);
 		
-		FTimerHandle DelayTimerHandle[2]{}, DeadTimerHandle{};
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
-			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 0.1f); }), 0.25f, false);
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
-			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), 0.35f, false);
+		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]() { TTPlayerController->RestartLevel(); }), DeadTimer, false);
 		break;

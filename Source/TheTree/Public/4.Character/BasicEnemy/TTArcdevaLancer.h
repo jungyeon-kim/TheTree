@@ -10,7 +10,6 @@ class THETREE_API ATTArcdevaLancer : public ATTEnemyBase
 	GENERATED_BODY()
 protected:
 	virtual void BeginPlay() override;
-	void DefenseStart();
 	void AttackCheck();
 
 	UFUNCTION()

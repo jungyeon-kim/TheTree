@@ -38,10 +38,6 @@ void ATTImperfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionAttackMontage.ImperfectDurionAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTImperfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTImperfectDurion::AttackCheck);
-	TTAnimInstance->OnPlayTalk.AddLambda([&]()
-	{
-		//Audio->PlaySoundCueAtLocation(TEXT("Talk"), GetActorLocation());
-	});
 }
 
 void ATTImperfectDurion::PossessedBy(AController* NewController)

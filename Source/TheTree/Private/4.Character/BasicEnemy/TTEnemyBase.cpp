@@ -95,6 +95,21 @@ ECharacterState ATTEnemyBase::GetCharacterState() const
 	return CurrentState;
 }
 
+void ATTEnemyBase::SetPlayRate(float StartTime, float EndTime, float TimeDilation)
+{
+	FTimerHandle DelayTimerHandle[2]{};
+	FTTWorld::TimeDilation = TimeDilation;
+
+	if (UGameplayStatics::GetGlobalTimeDilation(this) == 1.0f)
+	{
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, FTTWorld::TimeDilation); }), StartTime, false);
+		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
+			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), EndTime, false);
+	}
+}
+
+
 void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 {
 	CurrentState = NewState;
@@ -133,12 +148,9 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 		TTAnimInstance->StopAllMontages(0.25f);
 		TTAnimInstance->SetDead();
 
+		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-			[&]()
-		{
-			Destroy();
-		}
-		), DeadTimer, false);
+			[&]() { Destroy(); }), DeadTimer, false);
 		break;
 	}
 	}

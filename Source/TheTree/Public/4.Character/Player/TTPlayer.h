@@ -102,6 +102,8 @@ public:
 
 	ECharacterState GetCharacterState() const;
 	FName GetCurrentStateNodeName() const;
+
+	void SetPlayRate(float StartTime, float EndTime, float TimeDilation);
 	void SetWeapon();
 	void SetCharacterState(ECharacterState NewState);
 };

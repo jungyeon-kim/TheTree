@@ -49,17 +49,7 @@ void UTTEnemyAnimInstance::AnimNotify_AttackStart()
 	OnAttackStart.Broadcast();
 }
 
-void UTTEnemyAnimInstance::AnimNotify_DefenseStart()
-{
-	OnDefenseStart.Broadcast();
-}
-
 void UTTEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();
-}
-
-void UTTEnemyAnimInstance::AnimNotify_PlayTalk()
-{
-	OnPlayTalk.Broadcast();
 }

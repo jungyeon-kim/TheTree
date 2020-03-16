@@ -42,6 +42,7 @@ struct FTTWorld
 private:
 	FTTWorld() = default;
 public:
+	static float TimeDilation;
 	static bool bIsDebugging;
 public:
 	// Function to convert string to hashcode
@@ -57,5 +58,7 @@ public:
 	}
 };
 
+// Variable for GlobalTimeDilation.
+float FTTWorld::TimeDilation{};
 // Flag to turn debug mode ON / OFF.
 bool FTTWorld::bIsDebugging{};
