@@ -15,13 +15,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
-	bool bIsOnAir;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool bIsDamaged;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool bIsDead;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
-	bool bIsBattleOn;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
 	TMap<EMontageType, UAnimMontage*> Montage;
 private:
@@ -29,6 +25,10 @@ private:
 	void AnimNotify_AttackStart();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
+	UFUNCTION()
+	void AnimNotify_SetCollisionToEnemy();
+	UFUNCTION()
+	void AnimNotify_SetCollisionToIgnoreOnlyPawn();
 public:
 	FOnAttackStartDelegate OnAttackStart{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};

@@ -9,13 +9,8 @@ void UTTEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	const auto& Pawn{ TryGetPawnOwner() };
-	if (IsValid(Pawn) && !bIsDead)
-	{
-		CurrentPawnSpeed = Pawn->GetVelocity().Size();
-		const auto& Character{ Cast<ACharacter>(Pawn) };
-		if (Character) bIsOnAir = Character->GetMovementComponent()->IsFalling();
-	}
 
+	if (IsValid(Pawn) && !bIsDead) CurrentPawnSpeed = Pawn->GetVelocity().Size();
 	if (GetCurrentStateName(GetStateMachineIndex(FName("BaseAction"))) == FName("HitReact")) bIsDamaged = false;
 }
 
@@ -52,4 +47,16 @@ void UTTEnemyAnimInstance::AnimNotify_AttackStart()
 void UTTEnemyAnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();
+}
+
+void UTTEnemyAnimInstance::AnimNotify_SetCollisionToEnemy()
+{
+	const auto& Character{ Cast<ACharacter>(TryGetPawnOwner()) };
+	if (Character) Character->GetCapsuleComponent()->SetCollisionProfileName("Enemy");
+}
+
+void UTTEnemyAnimInstance::AnimNotify_SetCollisionToIgnoreOnlyPawn()
+{
+	const auto& Character{ Cast<ACharacter>(TryGetPawnOwner()) };
+	if (Character) Character->GetCapsuleComponent()->SetCollisionProfileName("IgnoreOnlyPawn");
 }

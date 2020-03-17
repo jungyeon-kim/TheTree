@@ -91,7 +91,7 @@ void ATTPerfectDurion::AttackCheck()
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionJumpAttackMontage")):
 		AttackLength = 1.0f;
-		AttackRadius = 400.0f;
+		AttackRadius = 450.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
 		AttackLength = 400.0f;

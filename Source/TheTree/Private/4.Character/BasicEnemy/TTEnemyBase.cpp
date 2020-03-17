@@ -27,6 +27,7 @@ ATTEnemyBase::ATTEnemyBase()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	bUseControllerRotationYaw = false;
+	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
@@ -67,7 +68,7 @@ void ATTEnemyBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-float ATTEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+float ATTEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 
