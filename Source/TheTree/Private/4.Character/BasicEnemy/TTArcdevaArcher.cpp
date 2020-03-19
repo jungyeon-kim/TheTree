@@ -84,16 +84,17 @@ void ATTArcdevaArcher::AttackCheck()
 {
 	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
 
-	AttackLength = 3000.0f;
+	FVector HitStartLocation{};
+	AttackLength = 2980.0f;
 	AttackRadius = 20.0f;
+	HitStartLocation = GetActorForwardVector() * AttackRadius;
 
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
-
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		GetActorLocation(),
-		GetActorLocation() + AttackStartForwardVector * AttackLength ,
+		GetActorLocation() + HitStartLocation,
+		GetActorLocation() + AttackStartForwardVector * AttackLength + HitStartLocation,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
 		FCollisionShape::MakeSphere(AttackRadius),
@@ -112,7 +113,7 @@ void ATTArcdevaArcher::AttackCheck()
 	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ AttackStartForwardVector * AttackLength };
-		FVector Center{ GetActorLocation() + Trace * 0.5f };
+		FVector Center{ GetActorLocation() + Trace * 0.5f + HitStartLocation };
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };

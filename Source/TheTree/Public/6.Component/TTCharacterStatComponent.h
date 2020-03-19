@@ -40,6 +40,10 @@ public:
 	FName GetObjectName() const;
 	float GetHPRatio() const;
 	float GetStaRatio() const;
+	float GetMaxHP() const;
+	float GetHP() const;
+	float GetMaxSta() const;
+	float GetSta() const;
 	float GetAtk() const;
 	float GetDef() const;
 	void SetObjectStat(FName NewObjectName);

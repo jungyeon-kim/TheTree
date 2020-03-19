@@ -19,8 +19,13 @@ ATTImperfectDurion::ATTImperfectDurion()
 	Effect->AddEffect(TEXT("AttackImpact"), TEXT("/Game/ParagonMorigesh/FX/Particles/Morigesh/Abilities/LifeDrain/FX/P_ImperfectDurion_AttackImpact.P_ImperfectDurion_AttackImpact"));
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
 	Effect->AddEffect(TEXT("Drain"), TEXT("/Game/ParagonSevarog/FX/Particles/Abilities/Ultimate/FX/P_ImperfectDurion_Drain.P_ImperfectDurion_Drain"));
+	Effect->AddEffect(TEXT("BigHand"), TEXT("/Game/ParagonSevarog/FX/Particles/Abilities/SoulSiphon/FX/P_ImperfectDurion_BigHand.P_ImperfectDurion_BigHand"));
+	Effect->AddEffect(TEXT("Recovery"), TEXT("/Game/ParagonSevarog/FX/Particles/Abilities/SoulStackPassive/FX/P_ImperfectDurion_Recovery.P_ImperfectDurion_Recovery"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
+	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
 	Audio->AddSoundWave(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/ImperfectDurion/ImperfectDurion_Attack.ImperfectDurion_Attack"));
+	Audio->AddSoundWave(TEXT("Drain"), TEXT("/Game/Assets/Sound/BossEnemy/ImperfectDurion/ImperfectDurion_Drain.ImperfectDurion_Drain"));
+	Audio->AddSoundWave(TEXT("BigHand"), TEXT("/Game/Assets/Sound/BossEnemy/ImperfectDurion/ImperfectDurion_BigHand.ImperfectDurion_BigHand"));
 
 	GetCapsuleComponent()->SetCapsuleSize(100.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
@@ -34,8 +39,11 @@ void ATTImperfectDurion::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	CharacterStat->SetObjectStat(TEXT("ImperfectDurion"));
-
+	
 	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionAttackMontage.ImperfectDurionAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::ATTACK_DRAIN, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionDrainAttackMontage.ImperfectDurionDrainAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionChargeAttackMontage.ImperfectDurionChargeAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::ATTACK_QUAKE, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionQuakeAttackMontage.ImperfectDurionQuakeAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTImperfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTImperfectDurion::AttackCheck);
 }
@@ -69,21 +77,36 @@ void ATTImperfectDurion::AttackCheck()
 {
 	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
 
+	FVector HitStartLocation{};
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("ImperfectDurionAttackMontage")):
-		AttackLength = 600.0f;
+		AttackLength = 500.0f;
 		AttackRadius = 100.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
+		break;
+	case FTTWorld::HashCode(TEXT("ImperfectDurionDrainAttackMontage")):
+		AttackLength = 450.0f;
+		AttackRadius = 150.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
+		break;
+	case FTTWorld::HashCode(TEXT("ImperfectDurionChargeAttackMontage")):
+		AttackLength = 1000.0f;
+		AttackRadius = 200.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
+		break;
+	case FTTWorld::HashCode(TEXT("ImperfectDurionQuakeAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 1600.0f;
 		break;
 	}
 
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
-
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackLength,
+		GetActorLocation() + HitStartLocation,
+		GetActorLocation() + GetActorForwardVector() * AttackLength + HitStartLocation,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
 		FCollisionShape::MakeSphere(AttackRadius),
@@ -103,8 +126,58 @@ void ATTImperfectDurion::AttackCheck()
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		Effect->PlayEffect(TEXT("AttackImpact"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.25f, 5.0f);
+		Effect->PlayEffect(TEXT("AttackImpact"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.15f, 5.0f);
 		Audio->PlaySoundWaveAtLocation(TEXT("Attack"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("ImperfectDurionDrainAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FDamageEvent DamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+				CharacterStat->SetHP(CharacterStat->GetHP() + CharacterStat->GetAtk() * 2.0f);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Effect->PlayEffect(TEXT("Recovery"), GetActorLocation(), FVector(3.0f, 3.0f, 5.0f));
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		Effect->PlayEffect(TEXT("Drain"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.25f, 5.0f);
+		Audio->PlaySoundWaveAtLocation(TEXT("Drain"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("ImperfectDurionChargeAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		Effect->PlayEffect(TEXT("BigHand"), GetActorLocation() + GetActorForwardVector() * 400.0f, 
+			GetActorForwardVector().Rotation(), FVector(3.5f, 5.0f, 3.5f));
+		Audio->PlaySoundWaveAtLocation(TEXT("BigHand"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("ImperfectDurionQuakeAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		Audio->PlaySoundCue2D(TEXT("Explosion"));
 		break;
 	}
 	}
@@ -112,7 +185,7 @@ void ATTImperfectDurion::AttackCheck()
 	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ GetActorForwardVector() * AttackLength };
-		FVector Center{ GetActorLocation() + Trace * 0.5f };
+		FVector Center{ GetActorLocation() + Trace * 0.5f + HitStartLocation };
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };
@@ -126,6 +199,9 @@ void ATTImperfectDurion::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	switch (FTTWorld::HashCode(*Montage->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("ImperfectDurionAttackMontage")):
+	case FTTWorld::HashCode(TEXT("ImperfectDurionDrainAttackMontage")):
+	case FTTWorld::HashCode(TEXT("ImperfectDurionChargeAttackMontage")):
+	case FTTWorld::HashCode(TEXT("ImperfectDurionQuakeAttackMontage")):
 		OnAttackEnded.Broadcast();
 		break;
 	}

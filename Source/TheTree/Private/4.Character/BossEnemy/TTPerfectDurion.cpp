@@ -78,12 +78,14 @@ void ATTPerfectDurion::AttackCheck()
 {
 	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
 
+	FVector HitStartLocation{};
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PerfectDurionAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
-		AttackLength = 600.0f;
+		AttackLength = 500.0f;
 		AttackRadius = 100.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionQuakeAttackMontage")):
 		AttackLength = 1.0f;
@@ -94,18 +96,18 @@ void ATTPerfectDurion::AttackCheck()
 		AttackRadius = 450.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
-		AttackLength = 400.0f;
+		AttackLength = 200.0f;
 		AttackRadius = 200.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
 		break;
 	}
 
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
-
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackLength,
+		GetActorLocation() + HitStartLocation,
+		GetActorLocation() + GetActorForwardVector() * AttackLength + HitStartLocation,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
 		FCollisionShape::MakeSphere(AttackRadius),
@@ -170,7 +172,7 @@ void ATTPerfectDurion::AttackCheck()
 					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 8.0f);
 		Effect->PlayEffect(TEXT("ExplosionRock"), GetActorLocation(), 5.0f);
 		Audio->PlaySoundWave2D(TEXT("ExplosionRock"));
 		break;
@@ -197,7 +199,7 @@ void ATTPerfectDurion::AttackCheck()
 	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ GetActorForwardVector() * AttackLength };
-		FVector Center{ GetActorLocation() + Trace * 0.5f };
+		FVector Center{ GetActorLocation() + Trace * 0.5f + HitStartLocation };
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };

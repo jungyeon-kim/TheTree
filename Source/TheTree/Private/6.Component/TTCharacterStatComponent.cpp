@@ -40,6 +40,30 @@ float UTTCharacterStatComponent::GetStaRatio() const
 	return CurrentMaxSta <= 0.0f ? 0.0f : CurrentSta / CurrentMaxSta;
 }
 
+float UTTCharacterStatComponent::GetMaxHP() const
+{
+	TTCHECK(TTCharacterData, 0.0f);
+	return CurrentMaxHP;
+}
+
+float UTTCharacterStatComponent::GetHP() const
+{
+	TTCHECK(TTCharacterData, 0.0f);
+	return CurrentHP;
+}
+
+float UTTCharacterStatComponent::GetMaxSta() const
+{
+	TTCHECK(TTCharacterData, 0.0f);
+	return CurrentMaxSta;
+}
+
+float UTTCharacterStatComponent::GetSta() const
+{
+	TTCHECK(TTCharacterData, 0.0f);
+	return CurrentSta;
+}
+
 float UTTCharacterStatComponent::GetAtk() const
 {
 	TTCHECK(TTCharacterData, 0.0f);

@@ -86,17 +86,18 @@ void ATTArcdevaLancer::AttackCheck()
 {
 	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
 
-	if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerAttackMontage")) AttackLength = 650.0f;
-	else AttackLength = 300.0f;
+	FVector HitStartLocation{};
+	if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerAttackMontage")) AttackLength = 550.0f;
+	else AttackLength = 200.0f;
 	AttackRadius = 100.0f;
+	HitStartLocation = GetActorForwardVector() * AttackRadius;
 
 	FHitResult HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
-
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackLength,
+		GetActorLocation() + HitStartLocation,
+		GetActorLocation() + GetActorForwardVector() * AttackLength + HitStartLocation,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel4,
 		FCollisionShape::MakeSphere(AttackRadius),
@@ -127,7 +128,7 @@ void ATTArcdevaLancer::AttackCheck()
 	if (FTTWorld::bIsDebugging)
 	{
 		FVector Trace{ GetActorForwardVector() * AttackLength };
-		FVector Center{ GetActorLocation() + Trace * 0.5f };
+		FVector Center{ GetActorLocation() + Trace * 0.5f + HitStartLocation };
 		float HalfHeight{ AttackLength * 0.5f + AttackRadius };
 		FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 		FColor DrawColor{ bResult ? FColor::Blue : FColor::Red };
