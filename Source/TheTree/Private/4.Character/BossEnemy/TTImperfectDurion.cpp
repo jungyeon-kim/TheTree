@@ -16,11 +16,11 @@ ATTImperfectDurion::ATTImperfectDurion()
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
-	Effect->AddEffect(TEXT("AttackImpact"), TEXT("/Game/ParagonMorigesh/FX/Particles/Morigesh/Abilities/LifeDrain/FX/P_ImperfectDurion_AttackImpact.P_ImperfectDurion_AttackImpact"));
+	Effect->AddEffect(TEXT("AttackImpact"), TEXT("/Game/Assets/Effect/Particle/P_ImperfectDurion_AttackImpact.P_ImperfectDurion_AttackImpact"));
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
-	Effect->AddEffect(TEXT("Drain"), TEXT("/Game/ParagonSevarog/FX/Particles/Abilities/Ultimate/FX/P_ImperfectDurion_Drain.P_ImperfectDurion_Drain"));
-	Effect->AddEffect(TEXT("BigHand"), TEXT("/Game/ParagonSevarog/FX/Particles/Abilities/SoulSiphon/FX/P_ImperfectDurion_BigHand.P_ImperfectDurion_BigHand"));
-	Effect->AddEffect(TEXT("Recovery"), TEXT("/Game/ParagonSevarog/FX/Particles/Abilities/SoulStackPassive/FX/P_ImperfectDurion_Recovery.P_ImperfectDurion_Recovery"));
+	Effect->AddEffect(TEXT("Drain"), TEXT("/Game/Assets/Effect/Particle/P_ImperfectDurion_Drain.P_ImperfectDurion_Drain"));
+	Effect->AddEffect(TEXT("BigHand"), TEXT("/Game/Assets/Effect/Particle/P_ImperfectDurion_BigHand.P_ImperfectDurion_BigHand"));
+	Effect->AddEffect(TEXT("Recovery"), TEXT("/Game/Assets/Effect/Particle/P_ImperfectDurion_Recovery.P_ImperfectDurion_Recovery"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
 	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
 	Audio->AddSoundWave(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/ImperfectDurion/ImperfectDurion_Attack.ImperfectDurion_Attack"));
@@ -44,6 +44,7 @@ void ATTImperfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_DRAIN, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionDrainAttackMontage.ImperfectDurionDrainAttackMontage"));
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionChargeAttackMontage.ImperfectDurionChargeAttackMontage"));
 	TTAnimInstance->SetMontage(EMontageType::ATTACK_QUAKE, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionQuakeAttackMontage.ImperfectDurionQuakeAttackMontage"));
+	TTAnimInstance->SetMontage(EMontageType::TELEPORT, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionTeleportMontage.ImperfectDurionTeleportMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTImperfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTImperfectDurion::AttackCheck);
 }
@@ -203,6 +204,8 @@ void ATTImperfectDurion::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	case FTTWorld::HashCode(TEXT("ImperfectDurionChargeAttackMontage")):
 	case FTTWorld::HashCode(TEXT("ImperfectDurionQuakeAttackMontage")):
 		OnAttackEnded.Broadcast();
+	case FTTWorld::HashCode(TEXT("ImperfectDurionTeleportMontage")):
+		OnTeleportEnded.Broadcast();
 		break;
 	}
 }

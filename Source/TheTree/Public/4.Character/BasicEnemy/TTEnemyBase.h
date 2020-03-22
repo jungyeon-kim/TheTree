@@ -6,6 +6,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDefenseEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnTeleportEndDelegate);
 
 UCLASS()
 class THETREE_API ATTEnemyBase : public ACharacter
@@ -46,6 +47,7 @@ public:
 
 	FOnAttackEndDelegate OnAttackEnded{};
 	FOnDefenseEndDelegate OnDefenseEnded{};
+	FOnTeleportEndDelegate OnTeleportEnded{};
 public:
 	ATTEnemyBase();
 
