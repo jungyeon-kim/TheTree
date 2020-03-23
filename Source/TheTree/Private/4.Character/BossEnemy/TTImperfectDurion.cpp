@@ -40,11 +40,11 @@ void ATTImperfectDurion::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ImperfectDurion"));
 	
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionAttackMontage.ImperfectDurionAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_DRAIN, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionDrainAttackMontage.ImperfectDurionDrainAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionChargeAttackMontage.ImperfectDurionChargeAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_QUAKE, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionQuakeAttackMontage.ImperfectDurionQuakeAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::TELEPORT, TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionTeleportMontage.ImperfectDurionTeleportMontage"));
+	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionAttackMontage.ImperfectDurionAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("DrainAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionDrainAttackMontage.ImperfectDurionDrainAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionChargeAttackMontage.ImperfectDurionChargeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("QuakeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionQuakeAttackMontage.ImperfectDurionQuakeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("Teleport"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionTeleportMontage.ImperfectDurionTeleportMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTImperfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTImperfectDurion::AttackCheck);
 }

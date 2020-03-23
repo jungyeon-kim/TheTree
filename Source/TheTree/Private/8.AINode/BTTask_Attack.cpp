@@ -12,7 +12,7 @@ UBTTask_Attack::UBTTask_Attack()
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result{ Super::ExecuteTask(OwnerComp, NodeMemory) };
-
+	
 	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!TTEnemy) return EBTNodeResult::Failed;
 

@@ -26,11 +26,11 @@ ATTEnemyBase::ATTEnemyBase()
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
+
 	bUseControllerRotationYaw = false;
-	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	GetCharacterMovement()->RotationRate = { 0.0f, 720.0f, 0.0f };
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 
 	SetCharacterState(ECharacterState::LOADING);
 }
@@ -86,7 +86,7 @@ void ATTEnemyBase::TurnToTarget(AActor* Target, float InterpSpeed)
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, GetWorld()->GetDeltaSeconds(), InterpSpeed));
 }
 
-void ATTEnemyBase::PlayMontage(EMontageType MontageType)
+void ATTEnemyBase::PlayMontage(FName MontageType)
 {
 	TTAnimInstance->PlayMontage(MontageType);
 }

@@ -14,7 +14,7 @@ void UTTEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (GetCurrentStateName(GetStateMachineIndex(FName("BaseAction"))) == FName("HitReact")) bIsDamaged = false;
 }
 
-void UTTEnemyAnimInstance::PlayMontage(EMontageType MontageType)
+void UTTEnemyAnimInstance::PlayMontage(FName MontageType)
 {
 	TTCHECK(!bIsDead);
 	if (Montage.Find(MontageType)) Montage_Play(Montage[MontageType]);
@@ -31,7 +31,7 @@ void UTTEnemyAnimInstance::SetDead()
 	bIsDead = true;
 }
 
-void UTTEnemyAnimInstance::SetMontage(EMontageType MontageType, const TCHAR* MontagePath)
+void UTTEnemyAnimInstance::SetMontage(FName MontageType, const TCHAR* MontagePath)
 {
 	const auto& MontageCheck{ LoadObject<UAnimMontage>(this, MontagePath) };
 

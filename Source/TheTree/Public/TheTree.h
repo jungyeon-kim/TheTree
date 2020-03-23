@@ -26,16 +26,6 @@ enum class ECharacterState
 	DEAD
 };
 
-UENUM()
-enum class EMontageType
-{
-	ATTACK, ATTACK_CHARGE, ATTACK_QUAKE, ATTACK_JUMP, 
-	ATTACK_SUMMON, ATTACK_DRAIN,
-	DEFENSE,
-	DODGE, INWEAPON, OUTWEAPON, TELEPORT,
-	KNOCKBACK, DEATH
-};
-
 // Struct containing instances for global access.
 struct FTTWorld
 { 

@@ -57,7 +57,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 		AController* EventInstigator, AActor* DamageCauser) override;
 
-	void PlayMontage(EMontageType MontageType);
+	void PlayMontage(FName MontageType);
 
 	ECharacterState GetCharacterState() const;
 

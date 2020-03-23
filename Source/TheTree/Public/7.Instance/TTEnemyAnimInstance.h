@@ -19,7 +19,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool bIsDead;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
-	TMap<EMontageType, UAnimMontage*> Montage;
+	TMap<FName, UAnimMontage*> Montage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackStart();
@@ -37,9 +37,9 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayMontage(EMontageType MontageType);
+	void PlayMontage(FName MontageType);
 
 	void SetDamaged();
 	void SetDead();
-	void SetMontage(EMontageType MontageType, const TCHAR* MontagePath);
+	void SetMontage(FName MontageType, const TCHAR* MontagePath);
 };

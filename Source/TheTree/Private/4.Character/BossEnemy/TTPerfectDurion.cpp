@@ -40,11 +40,11 @@ void ATTPerfectDurion::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("PerfectDurion"));
 
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionAttackMontage.PerfectDurionAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionChargeAttackMontage.PerfectDurionChargeAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_QUAKE, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionQuakeAttackMontage.PerfectDurionQuakeAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_JUMP, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionJumpAttackMontage.PerfectDurionJumpAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_SUMMON, TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionSummonAttackMontage.PerfectDurionSummonAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionAttackMontage.PerfectDurionAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionChargeAttackMontage.PerfectDurionChargeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("QuakeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionQuakeAttackMontage.PerfectDurionQuakeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("JumpAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionJumpAttackMontage.PerfectDurionJumpAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("SummonAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionSummonAttackMontage.PerfectDurionSummonAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPerfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPerfectDurion::AttackCheck);
 }

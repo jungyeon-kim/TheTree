@@ -22,7 +22,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	bool bIsBattleOn;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
-	TMap<EMontageType, UAnimMontage*> Montage;
+	TMap<FName, UAnimMontage*> Montage;
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
@@ -40,7 +40,7 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayMontage(EMontageType MontageType);
+	void PlayMontage(FName MontageType);
 	void JumpToAttackMontageSection(int32 NewSection);
 
 	bool GetIsBattleOn() const;

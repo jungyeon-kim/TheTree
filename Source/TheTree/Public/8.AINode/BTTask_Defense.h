@@ -12,7 +12,7 @@ private:
 	UPROPERTY()
 	class ATTEnemyBase* TTEnemy;
 	UPROPERTY(EditAnywhere, Category = "Option")
-	EMontageType DefenseTypeName;
+	FName DefenseTypeName;
 	UPROPERTY(EditAnywhere, Category = "Option")
 	float Def;
 

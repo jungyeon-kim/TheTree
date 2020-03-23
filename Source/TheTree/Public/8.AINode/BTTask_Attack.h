@@ -12,7 +12,7 @@ private:
 	UPROPERTY()
 	class ATTEnemyBase* TTEnemy;
 	UPROPERTY(EditAnywhere, Category = "Option")
-	EMontageType AttackTypeName;
+	FName AttackTypeName;
 
 	bool bIsAttacking{};
 protected:

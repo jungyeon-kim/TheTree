@@ -140,7 +140,7 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 		}
 		TTAnimInstance->StopAllMontages(0.25f);
 		TurnToTarget(LastDamageInstigator, 100.0f);
-		TTAnimInstance->PlayMontage(EMontageType::KNOCKBACK);
+		TTAnimInstance->PlayMontage(TEXT("KnockBack"));
 		bIsKnockBacking = true;
 	}
 
@@ -161,7 +161,7 @@ void ATTPlayer::Attack()
 	{
 		TTCHECK(!CurrentCombo);
 		AttackStartComboState();
-		TTAnimInstance->PlayMontage(EMontageType::ATTACK);
+		TTAnimInstance->PlayMontage(TEXT("BasicAttack"));
 		TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
 		bIsAttacking = true;
 	}
@@ -338,7 +338,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		DisableInput(TTPlayerController);
 		TurnToTarget(LastDamageInstigator, 100.0f);
 		TTAnimInstance->StopAllMontages(0.25f);
-		TTAnimInstance->PlayMontage(EMontageType::DEATH);
+		TTAnimInstance->PlayMontage(TEXT("Death"));
 		TTAnimInstance->SetDead();
 		SetPlayRate(0.25f, 0.35f, 0.1f);
 		
@@ -374,7 +374,7 @@ void ATTPlayer::Dodge()
 {
 	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking)
 	{
-		TTAnimInstance->PlayMontage(EMontageType::DODGE);
+		TTAnimInstance->PlayMontage(TEXT("Dodge"));
 		bIsDodging = true;
 	}
 }
@@ -385,13 +385,13 @@ void ATTPlayer::SwapBattleMode()
 	{
 		if (TTAnimInstance->GetIsBattleOn())
 		{
-			TTAnimInstance->PlayMontage(EMontageType::INWEAPON);
+			TTAnimInstance->PlayMontage(TEXT("InWeapon"));
 			SetCharacterState(ECharacterState::NOBATTLE);
 			TTAnimInstance->SetIsBattleOn(false);
 		}
 		else
 		{
-			TTAnimInstance->PlayMontage(EMontageType::OUTWEAPON);
+			TTAnimInstance->PlayMontage(TEXT("OutWeapon"));
 			SetCharacterState(ECharacterState::BATTLE);
 			TTAnimInstance->SetIsBattleOn(true);
 		}

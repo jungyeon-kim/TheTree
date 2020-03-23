@@ -35,9 +35,9 @@ void ATTArcdevaLancer::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ArcdevaLancer"));
 
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerAttackMontage.ArcdevaLancerAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerChargeAttackMontage.ArcdevaLancerChargeAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::DEFENSE, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerDefenseMontage.ArcdevaLancerDefenseMontage"));
+	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerAttackMontage.ArcdevaLancerAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerChargeAttackMontage.ArcdevaLancerChargeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("Defense"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerDefenseMontage.ArcdevaLancerDefenseMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaLancer::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaLancer::AttackCheck);
 }

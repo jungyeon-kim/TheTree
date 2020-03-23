@@ -14,7 +14,7 @@ private:
 	UPROPERTY()
 	class ATTPlayer* Target;
 	UPROPERTY(EditAnywhere, Category = "Option")
-	EMontageType TeleportTypeName;
+	FName TeleportTypeName;
 
 	bool bIsTeleporting{};
 protected:

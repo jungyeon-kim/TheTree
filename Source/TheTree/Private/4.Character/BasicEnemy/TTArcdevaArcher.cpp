@@ -31,8 +31,8 @@ void ATTArcdevaArcher::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ArcdevaArcher"));
 
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherAttackMontage.ArcdevaArcherAttackMontage"));
-	TTAnimInstance->SetMontage(EMontageType::ATTACK_CHARGE, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherChargeAttackMontage.ArcdevaArcherChargeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherAttackMontage.ArcdevaArcherAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherChargeAttackMontage.ArcdevaArcherChargeAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaArcher::OnMontageEnded);
 	TTAnimInstance->OnAttackStart.AddUObject(this, &ATTArcdevaArcher::AttackStart);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaArcher::AttackCheck);

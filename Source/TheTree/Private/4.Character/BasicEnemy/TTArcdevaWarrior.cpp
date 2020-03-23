@@ -30,7 +30,7 @@ void ATTArcdevaWarrior::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ArcdevaWarrior"));
 
-	TTAnimInstance->SetMontage(EMontageType::ATTACK, TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAttackMontage.ArcdevaWarriorAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAttackMontage.ArcdevaWarriorAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaWarrior::AttackCheck);
 }
