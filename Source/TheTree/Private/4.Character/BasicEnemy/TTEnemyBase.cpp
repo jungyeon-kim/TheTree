@@ -110,7 +110,6 @@ void ATTEnemyBase::SetPlayRate(float StartTime, float EndTime, float TimeDilatio
 	}
 }
 
-
 void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 {
 	CurrentState = NewState;
