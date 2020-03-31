@@ -16,9 +16,15 @@ ATTTrooper::ATTTrooper()
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
+	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
+	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
+	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
+	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
+	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
+
 	GetCapsuleComponent()->SetCapsuleSize(200.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
-	GeneralMoveSpeed = 400.0f;
+	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 	DeadTimer = 20.0f;
 }
@@ -29,6 +35,11 @@ void ATTTrooper::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("Trooper"));
 
+	TTAnimInstance->SetMontage(TEXT("BasicAttack1"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperAttackMontage_00.TrooperAttackMontage_00"));
+	TTAnimInstance->SetMontage(TEXT("BasicAttack2"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperAttackMontage_01.TrooperAttackMontage_01"));
+	TTAnimInstance->SetMontage(TEXT("QuakeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperQuakeAttackMontage.TrooperQuakeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("RoundAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperRoundAttackMontage.TrooperRoundAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("MoveAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperMoveAttackMontage.TrooperMoveAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTTrooper::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTTrooper::AttackCheck);
 }
@@ -65,10 +76,28 @@ void ATTTrooper::AttackCheck()
 	FVector HitStartLocation{};
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
-	case FTTWorld::HashCode(TEXT("TrooperAttackMontage")):
+	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_00")):
 		AttackLength = 500.0f;
-		AttackRadius = 100.0f;
+		AttackRadius = 600.0f;
+		HitStartLocation = GetActorRightVector() * AttackRadius / 1.5f;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_01")):
+		AttackLength = 500.0f;
+		AttackRadius = 600.0f;
+		HitStartLocation = -GetActorRightVector() * AttackRadius / 1.5f;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperQuakeAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 600.0f;
 		HitStartLocation = GetActorForwardVector() * AttackRadius;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperRoundAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 1200.0f;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperMoveAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 600.0f;
 		break;
 	}
 
@@ -85,7 +114,8 @@ void ATTTrooper::AttackCheck()
 
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
-	case FTTWorld::HashCode(TEXT("TrooperAttackMontage")):
+	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_00")):
+	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_01")):
 	{
 		if (bResult)
 			if (HitResult.Actor.IsValid())
@@ -93,6 +123,55 @@ void ATTTrooper::AttackCheck()
 				FDamageEvent DamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("TrooperQuakeAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		Effect->PlayEffect(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 3.0f);
+		Audio->PlaySoundCueAtLocation(TEXT("Explosion"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("TrooperRoundAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FDamageEvent DamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("TrooperMoveAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 10.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
 		break;
 	}
@@ -114,7 +193,11 @@ void ATTTrooper::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	switch (FTTWorld::HashCode(*Montage->GetName()))
 	{
-	case FTTWorld::HashCode(TEXT("TrooperAttackMontage")):
+	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_00")):
+	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_01")):
+	case FTTWorld::HashCode(TEXT("TrooperQuakeAttackMontage")):
+	case FTTWorld::HashCode(TEXT("TrooperRoundAttackMontage")):
+	case FTTWorld::HashCode(TEXT("TrooperMoveAttackMontage")):
 		OnAttackEnded.Broadcast();
 		break;
 	}

@@ -18,7 +18,7 @@ void UTTEnemyAnimInstance::PlayMontage(FName MontageType)
 {
 	TTCHECK(!bIsDead);
 	if (Montage.Find(MontageType)) Montage_Play(Montage[MontageType]);
-	else TTLOG(Error, TEXT("Can't find MontageType"));
+	else TTLOG(Error, TEXT("Can't find MontageType (%s)"), *MontageType.ToString());
 }
 
 void UTTEnemyAnimInstance::SetDamaged()
