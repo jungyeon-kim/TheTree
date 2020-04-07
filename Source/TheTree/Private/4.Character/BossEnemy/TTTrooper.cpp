@@ -18,9 +18,11 @@ ATTTrooper::ATTTrooper()
 
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_HitImpact.P_PerfectDurion_HitImpact"));
 	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
+	Effect->AddEffect(TEXT("Laser"), TEXT("/Game/Assets/Effect/Particle/P_Trooper_Shot.P_Trooper_Shot"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_Attack_SoundQue.Durion_Attack_SoundQue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BossEnemy/PerfectDurion/Durion_HitAttack_SoundQue.Durion_HitAttack_SoundQue"));
 	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
+	Audio->AddSoundWave(TEXT("Laser"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_AttackStart.ArcdevaArcher_AttackStart"));
 
 	GetCapsuleComponent()->SetCapsuleSize(200.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
@@ -40,6 +42,9 @@ void ATTTrooper::PostInitializeComponents()
 	TTAnimInstance->SetMontage(TEXT("QuakeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperQuakeAttackMontage.TrooperQuakeAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("RoundAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperRoundAttackMontage.TrooperRoundAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("MoveAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperMoveAttackMontage.TrooperMoveAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("RangeAttack1"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperRangeAttackMontage_00.TrooperRangeAttackMontage_00"));
+	TTAnimInstance->SetMontage(TEXT("RangeAttack2"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperRangeAttackMontage_01.TrooperRangeAttackMontage_01"));
+	TTAnimInstance->SetMontage(TEXT("LaserAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperLaserAttackMontage.TrooperLaserAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTTrooper::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTTrooper::AttackCheck);
 }
@@ -98,6 +103,18 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperMoveAttackMontage")):
 		AttackLength = 1.0f;
 		AttackRadius = 600.0f;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_00")):
+		AttackLength = 1.0f;
+		AttackRadius = 600.0f;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_01")):
+		AttackLength = 1.0f;
+		AttackRadius = 1100.0f;
+		break;
+	case FTTWorld::HashCode(TEXT("TrooperLaserAttackMontage")):
+		AttackLength = 5000.0f;
+		AttackRadius = 100.0f;
 		break;
 	}
 
@@ -175,6 +192,52 @@ void ATTTrooper::AttackCheck()
 			}
 		break;
 	}
+	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_00")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_01")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		Audio->PlaySoundCue2D(TEXT("Explosion"));
+		break;
+	}
+	case FTTWorld::HashCode(TEXT("TrooperLaserAttackMontage")):
+	{
+		if (bResult)
+			if (HitResult.Actor.IsValid())
+			{
+				FPointDamageEvent CriticalDamageEvent{};
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
+				Audio->PlaySoundCue2D(TEXT("HitAttack"));
+			}
+		Effect->PlayEffect(TEXT("Laser"), GetActorLocation(), GetActorForwardVector().Rotation(), 
+			FVector(10.0f, 3.0f, 3.0f));
+		Audio->PlaySoundWave2D(TEXT("Laser"));
+		break;
+	}
 	}
 
 	if (FTTWorld::bIsDebugging)
@@ -198,6 +261,9 @@ void ATTTrooper::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	case FTTWorld::HashCode(TEXT("TrooperQuakeAttackMontage")):
 	case FTTWorld::HashCode(TEXT("TrooperRoundAttackMontage")):
 	case FTTWorld::HashCode(TEXT("TrooperMoveAttackMontage")):
+	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_00")):
+	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_01")):
+	case FTTWorld::HashCode(TEXT("TrooperLaserAttackMontage")):
 		OnAttackEnded.Broadcast();
 		break;
 	}

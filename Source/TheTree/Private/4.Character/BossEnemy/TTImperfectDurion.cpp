@@ -172,7 +172,7 @@ void ATTImperfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
