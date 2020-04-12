@@ -10,6 +10,7 @@ ATTMapTile::ATTMapTile()
 	if (SM_MESH.Succeeded())
 		MapMesh->SetStaticMesh(SM_MESH.Object);
 	RootComponent = MapMesh;
+	SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 }
 
 void ATTMapTile::BeginPlay()

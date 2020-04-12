@@ -19,6 +19,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Camera", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, Meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* MapMesh;
 };

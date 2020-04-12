@@ -1,11 +1,11 @@
 #include "TTMapGenerator.h"
 #include "TTMapTile.h"
+#include "TTTorch.h"
 #include "GameFramework/PlayerStart.h"
 
 ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 void ATTMapGenerator::BeginPlay()
@@ -32,12 +32,13 @@ void ATTMapGenerator::PostInitializeComponents()
 
 	TArray<bool> Map{ MakeMapTexture() };
 
-	for (int i = 0; i < 7; ++i)
+	for (int i = 0; i < 9; ++i)
 		CelluarAutomata(Map);
 
 	FinalWork(Map);
 
 	bool bOnce{ false };
+	int32 TorchCount{};
 	for (int y = 0; y < MapYSize; ++y)
 	{
 		for (int x = 0; x < MapXSize; ++x)
@@ -45,15 +46,25 @@ void ATTMapGenerator::PostInitializeComponents()
 			if (Map[GetIndexFromXY(x, y)])
 			{
 				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
-					FVector(MapOffsetX + (x * 600.0f), MapOffsetY + (y * 600.0f), MapOffsetZ),
+					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ),
 					FRotator(0.0f, 0.0f, 0.0f));
 			}
-			else
+			else 
+			{
 				if (!bOnce)
 				{
 					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 600.0f), MapOffsetY + (y * 600.0f), 88.0f));
 					bOnce = true;
 				}
+				if (TorchCount > 5 && CountNeighbours(Map, x, y) > 3)
+				{
+					GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
+						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ),
+						FRotator(0.0f, 0.0f, 0.0f));
+					TorchCount = 0;
+				}
+			}
+			++TorchCount;
 		}
 	}
 }
