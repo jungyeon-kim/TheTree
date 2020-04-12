@@ -113,8 +113,9 @@ void ATTTrooper::AttackCheck()
 		AttackRadius = 1100.0f;
 		break;
 	case FTTWorld::HashCode(TEXT("TrooperLaserAttackMontage")):
-		AttackLength = 5000.0f;
+		AttackLength = 4900.0f;
 		AttackRadius = 100.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
 		break;
 	}
 

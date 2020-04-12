@@ -42,9 +42,11 @@ void ATTPerfectDurion::PostInitializeComponents()
 
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionAttackMontage.PerfectDurionAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionChargeAttackMontage.PerfectDurionChargeAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("HoldAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionHoldAttackMontage.PerfectDurionHoldAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("QuakeAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionQuakeAttackMontage.PerfectDurionQuakeAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("JumpAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionJumpAttackMontage.PerfectDurionJumpAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("SummonAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionSummonAttackMontage.PerfectDurionSummonAttackMontage"));
+	TTAnimInstance->SetMontage(TEXT("BackMove"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionBackMoveMontage.PerfectDurionBackMoveMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPerfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPerfectDurion::AttackCheck);
 }
@@ -83,6 +85,7 @@ void ATTPerfectDurion::AttackCheck()
 	{
 	case FTTWorld::HashCode(TEXT("PerfectDurionAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
+	case FTTWorld::HashCode(TEXT("PerfectDurionHoldAttackMontage")):
 		AttackLength = 500.0f;
 		AttackRadius = 100.0f;
 		HitStartLocation = GetActorForwardVector() * AttackRadius;
@@ -131,6 +134,7 @@ void ATTPerfectDurion::AttackCheck()
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
+	case FTTWorld::HashCode(TEXT("PerfectDurionHoldAttackMontage")):
 	{
 		if (bResult)
 			if (HitResult.Actor.IsValid())
@@ -214,10 +218,14 @@ void ATTPerfectDurion::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	{
 	case FTTWorld::HashCode(TEXT("PerfectDurionAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PerfectDurionChargeAttackMontage")):
+	case FTTWorld::HashCode(TEXT("PerfectDurionHoldAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PerfectDurionQuakeAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PerfectDurionJumpAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PerfectDurionSummonAttackMontage")):
 		OnAttackEnded.Broadcast();
+		break;
+	case FTTWorld::HashCode(TEXT("PerfectDurionBackMoveMontage")):
+		OnDodgeEnded.Broadcast();
 		break;
 	}
 }

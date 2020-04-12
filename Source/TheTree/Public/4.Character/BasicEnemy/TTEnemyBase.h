@@ -6,6 +6,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnDefenseEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnDodgeEndDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnTeleportEndDelegate);
 
 UCLASS()
@@ -47,6 +48,7 @@ public:
 
 	FOnAttackEndDelegate OnAttackEnded{};
 	FOnDefenseEndDelegate OnDefenseEnded{};
+	FOnDodgeEndDelegate OnDodgeEnded{};
 	FOnTeleportEndDelegate OnTeleportEnded{};
 public:
 	ATTEnemyBase();
