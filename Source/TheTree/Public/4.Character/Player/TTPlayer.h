@@ -23,6 +23,8 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bIsAttacking;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	bool bIsSkillAttacking;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bCanNextCombo;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bIsComboInputOn;
@@ -46,8 +48,10 @@ private:
 	UPROPERTY()
 	class UTTPlayerAnimInstance* TTAnimInstance;
 private:
+	void AttackStart();
 	void Attack();
-	void Dodge();
+	void SkillAttack(int32 SkillType);
+	void Dodge(int32 DodgeType);
 	void SwapBattleMode();
 	void Jump();
 	void UpDown(float NewAxisValue);
