@@ -37,6 +37,9 @@ ATTPlayer::ATTPlayer()
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/Player/Player_HitAttack_SoundCue.Player_HitAttack_SoundCue"));
+	Audio->AddSoundCue(TEXT("SlidingSlash"), TEXT("/Game/Assets/Sound/Player/Player_SlidingSlash_Shot_SoundCue.Player_SlidingSlash_Shot_SoundCue"));
+	Audio->AddSoundWave(TEXT("HitSlidingSlash"), TEXT("/Game/Assets/Sound/Player/Player_SlidingSlash_Hit.Player_SlidingSlash_Hit"));
+	Audio->AddSoundWave(TEXT("HitDrawSword"), TEXT("/Game/Assets/Sound/Player/Player_DrawSword_Hit.Player_DrawSword_Hit"));
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
@@ -66,6 +69,7 @@ void ATTPlayer::PostInitializeComponents()
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnMontageEnded);
+	TTAnimInstance->OnAttackStart.AddUObject(this, &ATTPlayer::AttackStart);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPlayer::AttackCheck);
 	TTAnimInstance->OnNextAttackCheck.AddLambda([&]()
 	{
@@ -85,7 +89,11 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
-	PlayerInputComponent->BindAction(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("SkillAttack1"), EInputEvent::IE_Pressed, this, &ATTPlayer::SkillAttack, 1);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("SkillAttack2"), EInputEvent::IE_Pressed, this, &ATTPlayer::SkillAttack, 2);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("SkillAttack3"), EInputEvent::IE_Pressed, this, &ATTPlayer::SkillAttack, 3);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("Dodge"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge, 1);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("BackMove"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge, 2);
 	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
 
@@ -116,7 +124,7 @@ void ATTPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsAttacking)
+	if (bIsAttacking || bIsSkillAttacking)
 	{
 		FVector CameraForwardVector{ Camera->GetForwardVector().GetSafeNormal2D() };
 		FRotator TargetRot{ FRotationMatrix::MakeFromX(CameraForwardVector).Rotator() };
@@ -150,6 +158,16 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 	return FinalDamage;
 }
 
+void ATTPlayer::AttackStart()
+{
+	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
+	{
+	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		SetPlayRate(0.0f, 0.07f, 0.1f);
+		break;
+	}
+}
+
 void ATTPlayer::Attack()
 {
 	if (bIsAttacking)
@@ -165,6 +183,31 @@ void ATTPlayer::Attack()
 		TTAnimInstance->PlayMontage(TEXT("BasicAttack"));
 		TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
 		bIsAttacking = true;
+	}
+}
+
+void ATTPlayer::SkillAttack(int32 SkillType)
+{
+	if (!bIsSkillAttacking && !bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking
+		&& GetCurrentStateNodeName() == TEXT("Ground") && CurrentState == ECharacterState::BATTLE)
+	{
+		bIsSkillAttacking = true;
+
+		switch (SkillType)
+		{
+		case 1:
+			TTAnimInstance->PlayMontage(TEXT("SlidingSlashAttack"));
+			break;
+		case 2:
+			TTAnimInstance->PlayMontage(TEXT("GaiaCrushAttack"));
+			break;
+		case 3:
+			TTAnimInstance->PlayMontage(TEXT("DrawSwordAttack"));
+			break;
+		default:
+			bIsSkillAttacking = false;
+			break;
+		}
 	}
 }
 
@@ -187,21 +230,42 @@ void ATTPlayer::AttackCheck()
 {
 	TTCHECK(TTAnimInstance->GetCurrentActiveMontage());
 
-	if (CurrentCombo == 4)
+	FVector HitStartLocation{};
+	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
+	case FTTWorld::HashCode(TEXT("PlayerAttackMontage")):
+		if (CurrentCombo == 4)
+		{
+			AttackLength = 1.0f;
+			AttackRadius = 330.0f;
+		}
+		else
+		{
+			AttackLength = 300.0f;
+			AttackRadius = 100.0f;
+			HitStartLocation = GetActorForwardVector() * AttackRadius;
+		}
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+		AttackLength = 1200.0f;
+		AttackRadius = 200.0f;
+		HitStartLocation = -GetActorForwardVector() * (AttackLength - 300.0f);
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
 		AttackLength = 1.0f;
-		AttackRadius = 330.0f;
-	}
-	else
-	{
-		AttackLength = 300.0f;
-		AttackRadius = 100.0f;
+		AttackRadius = 600.0f;
+		HitStartLocation = GetActorForwardVector() * AttackRadius;
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
+		AttackLength = 1.0f;
+		AttackRadius = 1000.0f;
+		break;
 	}
 
 	TArray<FOverlapResult> HitResult{};
 	FCollisionQueryParams Params{ NAME_None, false, this };
 	FVector Trace{ GetActorForwardVector() * AttackLength };
-	FVector Center{ GetActorLocation() + Trace * 0.75f };
+	FVector Center{ GetActorLocation() + Trace * 0.5f + HitStartLocation };
 	FQuat CapsuleRot{ FRotationMatrix::MakeFromZ(Trace).ToQuat() };
 
 	bool bResult = GetWorld()->OverlapMultiByChannel(
@@ -212,20 +276,67 @@ void ATTPlayer::AttackCheck()
 		FCollisionShape::MakeCapsule(AttackRadius, AttackLength),
 		Params);
 
-	if (bResult)
+	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
-		for (const auto& Result : HitResult)
-			if (Result.Actor.IsValid())
-			{
-				FDamageEvent DamageEvent{};
-				Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-				Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
-			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
-		Audio->PlaySoundCue2D(TEXT("HitAttack"));
+	case FTTWorld::HashCode(TEXT("PlayerAttackMontage")):
+		if (bResult)
+		{
+			for (const auto& Result : HitResult)
+				if (Result.Actor.IsValid())
+				{
+					FDamageEvent DamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+				}
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
+			Audio->PlaySoundCue2D(TEXT("HitAttack"));
+		}
+		Audio->PlaySoundCue2D(TEXT("Attack"));
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+		if (bResult)
+		{
+			for (const auto& Result : HitResult)
+				if (Result.Actor.IsValid())
+				{
+					FDamageEvent DamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, DamageEvent, GetController(), this);
+					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+				}
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
+			Audio->PlaySoundWave2D(TEXT("HitSlidingSlash"));
+		}
+		Audio->PlaySoundCue2D(TEXT("SlidingSlash"));
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		if (bResult)
+		{
+			for (const auto& Result : HitResult)
+				if (Result.Actor.IsValid())
+				{
+					FDamageEvent DamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 5.0f, DamageEvent, GetController(), this);
+					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
+				}
+		}
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
+		if (bResult)
+		{
+			for (const auto& Result : HitResult)
+				if (Result.Actor.IsValid())
+				{
+					FDamageEvent DamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 10.0f, DamageEvent, GetController(), this);
+					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
+				}
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
+			Audio->PlaySoundWave2D(TEXT("HitDrawSword"));
+			SetPlayRate(0.0f, 0.15f, 0.1f);
+		}
+		break;
 	}
-	Audio->PlaySoundCue2D(TEXT("Attack"));
-
 
 	if (FTTWorld::bIsDebugging)
 	{
@@ -254,7 +365,13 @@ void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		bIsAttacking = false;
 		AttackEndComboState();
 		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
+		bIsSkillAttacking = false;
+		break;
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
+	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
 		bIsDodging = false;
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerInWeaponMontage")):
@@ -284,7 +401,8 @@ void ATTPlayer::SetPlayRate(float StartTime, float EndTime, float TimeDilation)
 	
 	if (UGameplayStatics::GetGlobalTimeDilation(this) == 1.0f)
 	{
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
+		if (!StartTime) UGameplayStatics::SetGlobalTimeDilation(this, FTTWorld::TimeDilation);
+		else GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
 			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, FTTWorld::TimeDilation); }), StartTime, false);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
 			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), EndTime, false);
@@ -373,12 +491,24 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 	}
 }
 
-void ATTPlayer::Dodge()
+void ATTPlayer::Dodge(int32 DodgeType)
 {
-	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking)
+	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking && GetCurrentStateNodeName() == TEXT("Ground"))
 	{
-		TTAnimInstance->PlayMontage(TEXT("Dodge"));
 		bIsDodging = true;
+
+		switch (DodgeType)
+		{
+		case 1:
+			TTAnimInstance->PlayMontage(TEXT("Dodge"));
+			break;
+		case 2:
+			TTAnimInstance->PlayMontage(TEXT("BackMove"));
+			break;
+		default:
+			bIsDodging = false;
+			break;
+		}
 	}
 }
 

@@ -3,13 +3,21 @@
 UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerAttackMontage.PlayerAttackMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SLIDINGSLASH_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerSlidingSlashAttackMontage.PlayerSlidingSlashAttackMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> GAIACRUSH_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerGaiaCrushAttackMontage.PlayerGaiaCrushAttackMontage")};
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DRAWSWORD_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDrawSwordAttackMontage.PlayerDrawSwordAttackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DODGE_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDodgeMontage.PlayerDodgeMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> BACKMOVE_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerBackMoveMontage.PlayerBackMoveMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> INWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerInWeaponMontage.PlayerInWeaponMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> OUTWEAPON_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerOutWeaponMontage.PlayerOutWeaponMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> KNOCKBACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerKnockBackMontage.PlayerKnockBackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DEATH_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDeathMontage.PlayerDeathMontage") };
 	if (ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("BasicAttack"), ATTACK_MONTAGE.Object);
+	if (SLIDINGSLASH_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("SlidingSlashAttack"), SLIDINGSLASH_ATTACK_MONTAGE.Object);
+	if (GAIACRUSH_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("GaiaCrushAttack"), GAIACRUSH_ATTACK_MONTAGE.Object);
+	if (DRAWSWORD_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("DrawSwordAttack"), DRAWSWORD_ATTACK_MONTAGE.Object);
 	if (DODGE_MONTAGE.Succeeded()) Montage.Emplace(TEXT("Dodge"), DODGE_MONTAGE.Object);
+	if (BACKMOVE_MONTAGE.Succeeded()) Montage.Emplace(TEXT("BackMove"), BACKMOVE_MONTAGE.Object);
 	if (INWEAPON_MONTAGE.Succeeded()) Montage.Emplace(TEXT("InWeapon"), INWEAPON_MONTAGE.Object);
 	if (OUTWEAPON_MONTAGE.Succeeded()) Montage.Emplace(TEXT("OutWeapon"), OUTWEAPON_MONTAGE.Object);
 	if (KNOCKBACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("KnockBack"), KNOCKBACK_MONTAGE.Object);
@@ -26,6 +34,7 @@ void UTTPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		CurrentPawnSpeed = Pawn->GetVelocity().Size();
 		const auto& Character{ Cast<ACharacter>(Pawn) };
 		if (Character) bIsOnAir = Character->GetMovementComponent()->IsFalling();
+		if (bIsOnAir && GetCurrentActiveMontage()) StopAllMontages(0.25f);
 	}
 }
 
@@ -46,6 +55,11 @@ void UTTPlayerAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 void UTTPlayerAnimInstance::SetDead()
 {
 	bIsDead = true;
+}
+
+void UTTPlayerAnimInstance::AnimNotify_AttackStart()
+{
+	OnAttackStart.Broadcast();
 }
 
 void UTTPlayerAnimInstance::AnimNotify_AttackHitCheck()
