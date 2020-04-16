@@ -7,6 +7,7 @@
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
+#include "TTGhostTrail.h"
 
 ATTPlayer::ATTPlayer()
 {
@@ -233,6 +234,8 @@ void ATTPlayer::AttackCheck()
 		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
+
+	TT_PLAY_GHOSTTRAIL(GetMesh());
 }
 
 void ATTPlayer::TurnToTarget(AActor* Target, float InterpSpeed)
