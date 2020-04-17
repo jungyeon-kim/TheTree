@@ -6,6 +6,7 @@
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
+#include "TTGhostTrail.h"
 #include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
@@ -69,7 +70,8 @@ void ATTPlayer::PostInitializeComponents()
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnMontageEnded);
-	TTAnimInstance->OnAttackStart.AddUObject(this, &ATTPlayer::AttackStart);
+	TTAnimInstance->OnStartInit.AddUObject(this, &ATTPlayer::StartInit);
+	TTAnimInstance->OnEndInit.AddUObject(this, &ATTPlayer::EndInit);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPlayer::AttackCheck);
 	TTAnimInstance->OnNextAttackCheck.AddLambda([&]()
 	{
@@ -160,10 +162,36 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 	return FinalDamage;
 }
 
-void ATTPlayer::AttackStart()
+void ATTPlayer::StartInit()
 {
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
+	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
+		TT_PLAY_GHOSTTRAIL(GetMesh());
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
+		TT_PLAY_GHOSTTRAIL(GetMesh());
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+		TT_PLAY_GHOSTTRAIL(GetMesh());
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		TT_PLAY_GHOSTTRAIL(GetMesh());
+		SetPlayRate(0.0f, 0.07f, 0.1f);
+		break;
+	}
+}
+
+void ATTPlayer::EndInit()
+{
+	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
+	{
+	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+		break;
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
 		SetPlayRate(0.0f, 0.07f, 0.1f);
 		break;
@@ -332,8 +360,8 @@ void ATTPlayer::AttackCheck()
 			for (const auto& Result : HitResult)
 				if (Result.Actor.IsValid())
 				{
-					FDamageEvent DamageEvent{};
-					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, DamageEvent, GetController(), this);
+					FPointDamageEvent CriticalDamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
@@ -347,8 +375,8 @@ void ATTPlayer::AttackCheck()
 			for (const auto& Result : HitResult)
 				if (Result.Actor.IsValid())
 				{
-					FDamageEvent DamageEvent{};
-					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, DamageEvent, GetController(), this);
+					FPointDamageEvent CriticalDamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
@@ -361,8 +389,8 @@ void ATTPlayer::AttackCheck()
 			for (const auto& Result : HitResult)
 				if (Result.Actor.IsValid())
 				{
-					FDamageEvent DamageEvent{};
-					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 5.0f, DamageEvent, GetController(), this);
+					FPointDamageEvent CriticalDamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
 				}
 		}
@@ -374,8 +402,8 @@ void ATTPlayer::AttackCheck()
 			for (const auto& Result : HitResult)
 				if (Result.Actor.IsValid())
 				{
-					FDamageEvent DamageEvent{};
-					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 10.0f, DamageEvent, GetController(), this);
+					FPointDamageEvent CriticalDamageEvent{};
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 10.0f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);

@@ -61,9 +61,14 @@ void UTTPlayerAnimInstance::SetDead()
 	bIsDead = true;
 }
 
-void UTTPlayerAnimInstance::AnimNotify_AttackStart()
+void UTTPlayerAnimInstance::AnimNotify_StartInit()
 {
-	OnAttackStart.Broadcast();
+	OnStartInit.Broadcast();
+}
+
+void UTTPlayerAnimInstance::AnimNotify_EndInit()
+{
+	OnEndInit.Broadcast();
 }
 
 void UTTPlayerAnimInstance::AnimNotify_AttackHitCheck()

@@ -4,7 +4,8 @@
 #include "Animation/AnimInstance.h"
 #include "TTEnemyAnimInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnStartInitDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnEndInitDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 
 UCLASS()
@@ -15,14 +16,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
-	bool bIsDamaged;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn", Meta = (AllowPrivateAccess = true))
 	bool bIsDead;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Montage", Meta = (AllowPrivateAccess = true))
 	TMap<FName, UAnimMontage*> Montage;
 private:
 	UFUNCTION()
-	void AnimNotify_AttackStart();
+	void AnimNotify_StartInit();
+	UFUNCTION()
+	void AnimNotify_EndInit();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
 	UFUNCTION()
@@ -30,7 +31,8 @@ private:
 	UFUNCTION()
 	void AnimNotify_SetCollisionToIgnoreOnlyPawn();
 public:
-	FOnAttackStartDelegate OnAttackStart{};
+	FOnStartInitDelegate OnStartInit{};
+	FOnEndInitDelegate OnEndInit{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 public:
 	UTTEnemyAnimInstance();
@@ -39,7 +41,6 @@ public:
 
 	void PlayMontage(FName MontageType);
 
-	void SetDamaged();
 	void SetDead();
 	void SetMontage(FName MontageType, const TCHAR* MontagePath);
 };

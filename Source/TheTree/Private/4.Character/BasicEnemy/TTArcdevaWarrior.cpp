@@ -30,6 +30,7 @@ void ATTArcdevaWarrior::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ArcdevaWarrior"));
 
+	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorHitReactMontage.ArcdevaWarriorHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaWarrior/ArcdevaWarriorAttackMontage.ArcdevaWarriorAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaWarrior::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaWarrior::AttackCheck);
@@ -56,15 +57,16 @@ float ATTArcdevaWarrior::TakeDamage(float DamageAmount, const FDamageEvent& Dama
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
-	
-	if (!TTAnimInstance->GetCurrentActiveMontage())
+
+	if (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1)
 	{
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };
 
 		TurnToTarget(LastDamageInstigator, 100.0f);
-		TTAnimInstance->SetDamaged();
 		GetCharacterMovement()->Launch(LaunchVector.GetSafeNormal2D() * ForceAmount);
+
+		TTAnimInstance->PlayMontage(TEXT("HitReact"));
 	}
 
 	return FinalDamage;

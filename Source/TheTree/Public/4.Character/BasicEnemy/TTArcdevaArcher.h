@@ -12,7 +12,7 @@ private:
 	FVector AttackStartForwardVector{};
 protected:
 	virtual void BeginPlay() override;
-	void AttackStart();
+	void StartInit();
 	void AttackCheck();
 
 	UFUNCTION()

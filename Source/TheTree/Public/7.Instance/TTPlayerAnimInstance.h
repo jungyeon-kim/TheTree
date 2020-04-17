@@ -4,7 +4,8 @@
 #include "Animation/AnimInstance.h"
 #include "TTPlayerAnimInstance.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackStartDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnStartInitDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnEndInitDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 DECLARE_MULTICAST_DELEGATE(FOnSwapWeaponDelegate);
@@ -26,7 +27,9 @@ private:
 	TMap<FName, UAnimMontage*> Montage;
 private:
 	UFUNCTION()
-	void AnimNotify_AttackStart();
+	void AnimNotify_StartInit();
+	UFUNCTION()
+	void AnimNotify_EndInit();
 	UFUNCTION()
 	void AnimNotify_AttackHitCheck();
 	UFUNCTION()
@@ -35,7 +38,8 @@ private:
 	void AnimNotify_SwapWeapon();
 	FName GetAttackMontageSectionName(int32 Section) const;
 public:
-	FOnAttackStartDelegate OnAttackStart{};
+	FOnStartInitDelegate OnStartInit{};
+	FOnEndInitDelegate OnEndInit{};
 	FOnAttackHitCheckDelegate OnAttackHitCheck{};
 	FOnNextAttackCheckDelegate OnNextAttackCheck{};
 	FOnSwapWeaponDelegate OnSwapWeapon{};
