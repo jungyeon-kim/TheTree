@@ -31,10 +31,11 @@ void ATTArcdevaArcher::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ArcdevaArcher"));
 
+	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherHitReactMontage.ArcdevaArcherHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherAttackMontage.ArcdevaArcherAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherChargeAttackMontage.ArcdevaArcherChargeAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTArcdevaArcher::OnMontageEnded);
-	TTAnimInstance->OnAttackStart.AddUObject(this, &ATTArcdevaArcher::AttackStart);
+	TTAnimInstance->OnStartInit.AddUObject(this, &ATTArcdevaArcher::StartInit);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTArcdevaArcher::AttackCheck);
 }
 
@@ -60,20 +61,21 @@ float ATTArcdevaArcher::TakeDamage(float DamageAmount, const FDamageEvent& Damag
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
 
-	if (!TTAnimInstance->GetCurrentActiveMontage())
+	if (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1)
 	{
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };
 
 		TurnToTarget(LastDamageInstigator, 100.0f);
-		TTAnimInstance->SetDamaged();
 		GetCharacterMovement()->Launch(LaunchVector.GetSafeNormal2D() * ForceAmount);
+
+		TTAnimInstance->PlayMontage(TEXT("HitReact"));
 	}
 
 	return FinalDamage;
 }
 
-void ATTArcdevaArcher::AttackStart()
+void ATTArcdevaArcher::StartInit()
 {
 	AttackStartForwardVector = GetActorForwardVector();
 	Effect->PlayEffect(TEXT("Shot"), GetActorLocation(), GetActorForwardVector().Rotation(), FVector(9.0f, 2.0f, 2.0f));

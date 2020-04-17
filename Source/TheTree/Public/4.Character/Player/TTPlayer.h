@@ -49,9 +49,10 @@ private:
 	UPROPERTY()
 	class UTTPlayerAnimInstance* TTAnimInstance;
 private:
-	void AttackStart();
+	void StartInit();
+	void EndInit();
 	void Attack();
-	void SkillAttack(int32 SkillType);
+	void SkillAttack(int32 SkillAttackType);
 	void Dodge(int32 DodgeType);
 	void SwapBattleMode();
 	void Jump();

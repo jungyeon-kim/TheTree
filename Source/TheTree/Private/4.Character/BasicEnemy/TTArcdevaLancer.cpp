@@ -35,6 +35,7 @@ void ATTArcdevaLancer::PostInitializeComponents()
 
 	CharacterStat->SetObjectStat(TEXT("ArcdevaLancer"));
 
+	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerHitReactMontage.ArcdevaLancerHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerAttackMontage.ArcdevaLancerAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("ChargeAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerChargeAttackMontage.ArcdevaLancerChargeAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("Defense"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerDefenseMontage.ArcdevaLancerDefenseMontage"));
@@ -64,19 +65,21 @@ float ATTArcdevaLancer::TakeDamage(float DamageAmount, const FDamageEvent& Damag
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
 
-	if (!TTAnimInstance->GetCurrentActiveMontage())
+	if (GetCurrentMontage())
+	{
+		if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerDefenseMontage"))
+			Audio->PlaySoundWaveAtLocation(TEXT("ShieldDefense"), GetActorLocation());
+	}
+
+	if (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1)
 	{
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };
 
 		TurnToTarget(LastDamageInstigator, 100.0f);
-		TTAnimInstance->SetDamaged();
 		GetCharacterMovement()->Launch(LaunchVector.GetSafeNormal2D() * ForceAmount);
-	}
-	else
-	{
-		if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerDefenseMontage"))
-			Audio->PlaySoundWaveAtLocation(TEXT("ShieldDefense"), GetActorLocation());
+
+		TTAnimInstance->PlayMontage(TEXT("HitReact"));
 	}
 
 	return FinalDamage;

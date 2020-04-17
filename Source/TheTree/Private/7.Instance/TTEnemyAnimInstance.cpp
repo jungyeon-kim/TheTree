@@ -11,7 +11,6 @@ void UTTEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const auto& Pawn{ TryGetPawnOwner() };
 
 	if (IsValid(Pawn) && !bIsDead) CurrentPawnSpeed = Pawn->GetVelocity().Size();
-	if (GetCurrentStateName(GetStateMachineIndex(FName("BaseAction"))) == FName("HitReact")) bIsDamaged = false;
 }
 
 void UTTEnemyAnimInstance::PlayMontage(FName MontageType)
@@ -19,11 +18,6 @@ void UTTEnemyAnimInstance::PlayMontage(FName MontageType)
 	TTCHECK(!bIsDead);
 	if (Montage.Find(MontageType)) Montage_Play(Montage[MontageType]);
 	else TTLOG(Error, TEXT("Can't find MontageType (%s)"), *MontageType.ToString());
-}
-
-void UTTEnemyAnimInstance::SetDamaged()
-{
-	bIsDamaged = true;
 }
 
 void UTTEnemyAnimInstance::SetDead()
@@ -39,9 +33,14 @@ void UTTEnemyAnimInstance::SetMontage(FName MontageType, const TCHAR* MontagePat
 	else TTLOG(Error, TEXT("Can't find MontagePath (%s)"), MontagePath);
 }
 
-void UTTEnemyAnimInstance::AnimNotify_AttackStart()
+void UTTEnemyAnimInstance::AnimNotify_StartInit()
 {
-	OnAttackStart.Broadcast();
+	OnStartInit.Broadcast();
+}
+
+void UTTEnemyAnimInstance::AnimNotify_EndInit()
+{
+	OnEndInit.Broadcast();
 }
 
 void UTTEnemyAnimInstance::AnimNotify_AttackHitCheck()
