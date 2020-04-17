@@ -3,7 +3,9 @@
 UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerAttackMontage.PlayerAttackMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SMASHATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerSmashAttackMontage.PlayerSmashAttackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SLIDINGSLASH_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerSlidingSlashAttackMontage.PlayerSlidingSlashAttackMontage") };
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> WINDCUTTER_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerWindCutterAttackMontage.PlayerWindCutterAttackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> GAIACRUSH_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerGaiaCrushAttackMontage.PlayerGaiaCrushAttackMontage")};
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DRAWSWORD_ATTACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDrawSwordAttackMontage.PlayerDrawSwordAttackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DODGE_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDodgeMontage.PlayerDodgeMontage") };
@@ -13,6 +15,8 @@ UTTPlayerAnimInstance::UTTPlayerAnimInstance()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> KNOCKBACK_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerKnockBackMontage.PlayerKnockBackMontage") };
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DEATH_MONTAGE{ TEXT("/Game/Blueprints/Animation/Player/PlayerDeathMontage.PlayerDeathMontage") };
 	if (ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("BasicAttack"), ATTACK_MONTAGE.Object);
+	if (SMASHATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("SmashAttack"), SMASHATTACK_MONTAGE.Object);
+	if (WINDCUTTER_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("WindCutterAttack"), WINDCUTTER_ATTACK_MONTAGE.Object);
 	if (SLIDINGSLASH_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("SlidingSlashAttack"), SLIDINGSLASH_ATTACK_MONTAGE.Object);
 	if (GAIACRUSH_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("GaiaCrushAttack"), GAIACRUSH_ATTACK_MONTAGE.Object);
 	if (DRAWSWORD_ATTACK_MONTAGE.Succeeded()) Montage.Emplace(TEXT("DrawSwordAttack"), DRAWSWORD_ATTACK_MONTAGE.Object);

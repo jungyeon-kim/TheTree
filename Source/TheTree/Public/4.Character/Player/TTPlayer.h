@@ -51,7 +51,7 @@ private:
 private:
 	void AttackStart();
 	void Attack();
-	void SkillAttack(int32 SkillType);
+	void SkillAttack(int32 SkillAttackType);
 	void Dodge(int32 DodgeType);
 	void SwapBattleMode();
 	void Jump();
