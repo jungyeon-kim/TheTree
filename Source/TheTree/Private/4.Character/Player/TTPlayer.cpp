@@ -54,6 +54,7 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->GravityScale = 3.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
+
 }
 
 void ATTPlayer::PostInitializeComponents()
@@ -163,9 +164,16 @@ void ATTPlayer::AttackStart()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), 0.1f, 0.5f);
 		SetPlayRate(0.0f, 0.07f, 0.1f);
 		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), 0.01f, 0.12f);
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
+		break;
 	}
+	
 }
 
 void ATTPlayer::Attack()
@@ -259,6 +267,7 @@ void ATTPlayer::AttackCheck()
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		AttackLength = 1.0f;
 		AttackRadius = 1000.0f;
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), 0.01f, 0.1f);
 		break;
 	}
 
@@ -345,8 +354,6 @@ void ATTPlayer::AttackCheck()
 		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
-
-	TT_PLAY_GHOSTTRAIL(GetMesh());
 }
 
 void ATTPlayer::TurnToTarget(AActor* Target, float InterpSpeed)

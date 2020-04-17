@@ -41,10 +41,31 @@ private:
 	UCurveFloat* TrailCurve;
 
 	FTimeline TrailTimeline{};
-	//TArray<UMaterialInstanceDynamic*> 
 };
 
-#define TT_PLAY_GHOSTTRAIL(SkeletalMeshComponent) { FActorSpawnParameters Param{}; Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; ATTGhostTrail* Trail{ GetWorld()->SpawnActor<ATTGhostTrail>(ATTGhostTrail::StaticClass(), SkeletalMeshComponent->GetComponentTransform(), Param)}; Trail->SetSkeletalMesh(SkeletalMeshComponent); Trail->StartTrail(); }
+UCLASS()
+class THETREE_API ATTGhostTrailLoop : public AActor
+{
+public:
+	GENERATED_BODY()
+
+	ATTGhostTrailLoop();
+
+	void SetGhostTrail(USkeletalMeshComponent* Component, float Interval, float LoopLength);
+	void DoWork();
+private:
+	UPROPERTY()
+	USkeletalMeshComponent* SkeletalMesh;
+
+	FTimerHandle TimerHandle;
+	float LoopInterval;
+	float LoopLength;
+};
+
+void PlayGhostTrail(USkeletalMeshComponent* Component);
+void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length);
+#define TT_PLAY_GHOSTTRAIL(SkeletalMeshComponent) PlayGhostTrail(SkeletalMeshComponent)
+#define TT_PLAY_GHOSTTRAIL_LOOP(SkeletalMeshComponent, Interval, Length) PlayGhostTrail(SkeletalMeshComponent, Interval, Length)
 	
 
 

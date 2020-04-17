@@ -18,7 +18,7 @@ ATTGhostTrail::ATTGhostTrail()
 
 	TrailCurve = CreateDefaultSubobject<UCurveFloat>(TEXT("TRAILCURVE"));
 	TrailCurve->FloatCurve.AddKey(0.0f, 1.0f);
-	TrailCurve->FloatCurve.AddKey(0.5f, 0.0f);
+	TrailCurve->FloatCurve.AddKey(0.2f, 0.0f);
 }
 
 void ATTGhostTrail::BeginPlay()
@@ -73,3 +73,50 @@ void ATTGhostTrail::EndTimeline()
 	Destroy();
 }
 
+void PlayGhostTrail(USkeletalMeshComponent* Component)
+{
+	FActorSpawnParameters Param{};
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ATTGhostTrail* Trail{ Component->GetWorld()->SpawnActor<ATTGhostTrail>
+		(ATTGhostTrail::StaticClass(), Component->GetComponentTransform(), Param) };
+	Trail->SetSkeletalMesh(Component); 
+	Trail->StartTrail();
+}
+
+void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length)
+{
+	ATTGhostTrailLoop* TrailLoop{ Component->GetWorld()->SpawnActor<ATTGhostTrailLoop>
+		(ATTGhostTrailLoop::StaticClass()) };
+	TrailLoop->SetGhostTrail(Component, Interval, Length);
+}
+
+ATTGhostTrailLoop::ATTGhostTrailLoop()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+void ATTGhostTrailLoop::SetGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length)
+{
+	SkeletalMesh = Component;
+	LoopInterval = Interval;
+	LoopLength = Length;
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATTGhostTrailLoop::DoWork, Interval, true);
+}
+
+void ATTGhostTrailLoop::DoWork()
+{
+	if (LoopLength > 0.0f) {
+		FActorSpawnParameters Param{};
+		Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		ATTGhostTrail* Trail{ GetWorld()->SpawnActor<ATTGhostTrail>
+		(ATTGhostTrail::StaticClass(), SkeletalMesh->GetComponentTransform(), Param) };
+		Trail->SetSkeletalMesh(SkeletalMesh);
+		Trail->StartTrail();
+	}
+	else {
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+		Destroy();
+	}
+	LoopLength -= LoopInterval;
+}

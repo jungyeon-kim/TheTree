@@ -28,7 +28,9 @@ void ATTMapGenerator::PostInitializeComponents()
 	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
 	if (!StartActor)
 		return;
+	StartActor->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	StartActor->GetRootComponent()->SetMobility(EComponentMobility::Movable);
+	
 
 	TArray<bool> Map{ MakeMapTexture() };
 
@@ -51,9 +53,9 @@ void ATTMapGenerator::PostInitializeComponents()
 			}
 			else 
 			{
-				if (!bOnce)
+				if (!bOnce && CountNeighbours(Map, x, y) < 1)
 				{
-					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 600.0f), MapOffsetY + (y * 600.0f), 88.0f));
+					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 88.0f));
 					bOnce = true;
 				}
 				if (TorchCount > 5 && CountNeighbours(Map, x, y) > 3)
