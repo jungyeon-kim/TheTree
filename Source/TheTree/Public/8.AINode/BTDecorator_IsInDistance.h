@@ -2,17 +2,17 @@
 
 #include "TheTree.h"
 #include "BehaviorTree/BTDecorator.h"
-#include "BTDecorator_IsInAttackRange.generated.h"
+#include "BTDecorator_IsInDistance.generated.h"
 
 UCLASS()
-class THETREE_API UBTDecorator_IsInAttackRange : public UBTDecorator
+class THETREE_API UBTDecorator_IsInDistance : public UBTDecorator
 {
 	GENERATED_BODY()
 private:
 	UPROPERTY(EditAnywhere, Category = "Option")
-	float InAttackRange;
+	float Distance;
 public:
-	UBTDecorator_IsInAttackRange();
+	UBTDecorator_IsInDistance();
 protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 };
