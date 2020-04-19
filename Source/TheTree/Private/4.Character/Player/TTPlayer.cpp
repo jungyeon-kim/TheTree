@@ -55,6 +55,7 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->GravityScale = 3.0f;
 
 	SetCharacterState(ECharacterState::LOADING);
+
 }
 
 void ATTPlayer::PostInitializeComponents()
@@ -167,16 +168,15 @@ void ATTPlayer::StartInit()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
-		TT_PLAY_GHOSTTRAIL(GetMesh());
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), nullptr, 0.05f, 1.0f);	// 기본 제공 머터리얼 사용시
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
-		TT_PLAY_GHOSTTRAIL(GetMesh());
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail2.M_Player_Ghost_Trail2"), 0.05f, 1.0f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
-		TT_PLAY_GHOSTTRAIL(GetMesh());
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), 0.05f, 1.0f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		TT_PLAY_GHOSTTRAIL(GetMesh());
 		SetPlayRate(0.0f, 0.07f, 0.1f);
 		break;
 	}
@@ -193,8 +193,12 @@ void ATTPlayer::EndInit()
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		TT_STOP_GHOSTTRAIL_LOOP(GetMesh());
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		break;
 	}
+	
 }
 
 void ATTPlayer::Attack()
