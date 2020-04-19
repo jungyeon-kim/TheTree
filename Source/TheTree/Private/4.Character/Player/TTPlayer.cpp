@@ -179,8 +179,20 @@ void ATTPlayer::StartInit()
 		//PlayGhostTrail(GetMesh(), Mat, 0.05f, 1.0f);	// MaterialInterface 를 만든후에 상용하려면
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		SetPlayRate(0.0f, 0.07f, 0.1f);
+		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), nullptr, 0.1f, 1.0f);
+		SetPlayRate(0.5f, 0.57f, 0.1f);
 		break;
+	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
+	{
+		FTimerHandle TimerHandle[2]{};
+
+		CurrentWeapon->SetActorRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle[0], FTimerDelegate::CreateLambda(
+			[&]() { CurrentWeapon->SetActorRelativeScale3D(FVector(2.0f, 2.0f, 2.0f)); }), 0.3f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle[1], FTimerDelegate::CreateLambda(
+			[&]() { CurrentWeapon->SetActorRelativeScale3D(FVector(2.5f, 2.5f, 2.5f)); }), 0.6f, false);
+		break;
+	}
 	}
 }
 
@@ -189,9 +201,7 @@ void ATTPlayer::EndInit()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
-		break;
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
-		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 		StopGhostTrail(GetMesh());
 		break;
@@ -200,6 +210,7 @@ void ATTPlayer::EndInit()
 		SetPlayRate(0.0f, 0.07f, 0.1f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
+		CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 		break;
 	}
 	
@@ -312,7 +323,7 @@ void ATTPlayer::AttackCheck()
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		AttackLength = 1.0f;
-		AttackRadius = 1000.0f;
+		AttackRadius = 800.0f;
 		break;
 	}
 
@@ -449,8 +460,12 @@ void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		bIsSkillAttacking = false;
+		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		bIsSkillAttacking = false;
+		if (CurrentWeapon->GetActorScale3D().Size() != FMath::Sqrt(3))
+			CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):

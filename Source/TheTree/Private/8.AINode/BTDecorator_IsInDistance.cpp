@@ -1,15 +1,15 @@
-#include "BTDecorator_IsInAttackRange.h"
+#include "BTDecorator_IsInDistance.h"
 #include "TTAIController.h"
 #include "TTPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-UBTDecorator_IsInAttackRange::UBTDecorator_IsInAttackRange()
+UBTDecorator_IsInDistance::UBTDecorator_IsInDistance()
 {
-	NodeName = TEXT("CanAttack");
-	InAttackRange = 400.0f;
+	NodeName = TEXT("IsInDistance");
+	Distance = 400.0f;
 }
 
-bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
+bool UBTDecorator_IsInDistance::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
 	bool bResult{ Super::CalculateRawConditionValue(OwnerComp, NodeMemory) };
 
@@ -19,6 +19,6 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	const auto& Target{ Cast<ATTPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ATTAIController::TargetKey)) };
 	if (!Target) return false;
 
-	bResult = Target->GetHorizontalDistanceTo(ControllingPawn) <= InAttackRange;
+	bResult = Target->GetHorizontalDistanceTo(ControllingPawn) <= Distance;
 	return bResult;
 }
