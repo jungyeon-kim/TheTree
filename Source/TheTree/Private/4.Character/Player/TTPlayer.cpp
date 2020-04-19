@@ -193,7 +193,6 @@ void ATTPlayer::EndInit()
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		SetPlayRate(0.0f, 0.07f, 0.1f);
 		break;
 	}
 }
