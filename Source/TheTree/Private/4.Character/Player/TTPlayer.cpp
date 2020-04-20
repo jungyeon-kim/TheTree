@@ -66,7 +66,7 @@ void ATTPlayer::PostInitializeComponents()
 	{
 		SetCharacterState(ECharacterState::DEAD);
 	});
-
+	
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnMontageEnded);
@@ -167,19 +167,19 @@ void ATTPlayer::StartInit()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
-		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);	// 기본 제공하는 Material 사용
+		PlayGhostTrail(GetMesh(), 0.05f);	// 기본 제공하는 Material 사용
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
-		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail2.M_Player_Ghost_Trail2"), 0.05f, 1.0f);
+		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail2.M_Player_Ghost_Trail2"), 0.05f);
 		// 경로를 통한 Material 사용
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
-		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), 0.05f, 99.0f);
+		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), 0.05f);
 		//UMaterialInterface* Mat;
 		//PlayGhostTrail(GetMesh(), Mat, 0.05f, 1.0f);	// MaterialInterface 를 만든후에 상용하려면
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), nullptr, 0.1f, 1.0f);
+		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail2.M_Player_Ghost_Trail2"), 0.05f);
 		SetPlayRate(0.5f, 0.57f, 0.1f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
