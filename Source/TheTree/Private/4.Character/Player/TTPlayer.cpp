@@ -72,7 +72,7 @@ void ATTPlayer::PostInitializeComponents()
 	{
 		SetCharacterState(ECharacterState::DEAD);
 	});
-
+	
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnMontageEnded);
@@ -179,7 +179,7 @@ void ATTPlayer::StartInit()
 	{
 		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), RootComponent, FVector::ZeroVector, 2.0f) };
 		Effect->AddManagedEffect(TEXT("SwordAttach2"), SwordAttach2);
-		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);
+		PlayGhostTrail(GetMesh(), 0.05f);
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):

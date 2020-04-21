@@ -15,14 +15,14 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void BeginDestroy() override;
 public:	
 	virtual void Tick(float DeltaTime) override;
 	void SetSkeletalMesh(class USkeletalMeshComponent* Target);
 	void SetMaterial(const TCHAR* Direction);
 	void SetMaterial(UMaterialInterface* Material);
 	void StartTrail();
-
+	void StopTimeline();
 
 	UFUNCTION()
 	void PlayingTimeline(float CurrentTime);
@@ -54,7 +54,7 @@ public:
 
 	ATTGhostTrailLoop();
 
-	void SetGhostTrail(USkeletalMeshComponent* Component, float Interval, float LoopLength);
+	void SetGhostTrail(USkeletalMeshComponent* Component, float Interval);
 	void SetMaterial(const TCHAR* Direction);
 	void SetMaterial(UMaterialInterface* Material);
 	void DoWork();
@@ -69,13 +69,12 @@ private:
 
 	FTimerHandle TimerHandle;
 	float LoopInterval;
-	float LoopLength;
 };
 
 void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath);
-void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath, float Interval, float Length);
-void PlayGhostTrail(USkeletalMeshComponent* Component, UMaterialInterface* Material, float Interval, float Length);
-void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length);
+void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath, float Interval);
+void PlayGhostTrail(USkeletalMeshComponent* Component, UMaterialInterface* Material, float Interval);
+void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval);
 void StopGhostTrail(USkeletalMeshComponent* Component);
 
 

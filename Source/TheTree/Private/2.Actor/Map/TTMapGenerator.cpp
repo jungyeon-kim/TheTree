@@ -17,7 +17,6 @@ void ATTMapGenerator::BeginPlay()
 void ATTMapGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ATTMapGenerator::PostInitializeComponents()
@@ -26,21 +25,23 @@ void ATTMapGenerator::PostInitializeComponents()
 	TArray<AActor*> PlayerStarts{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
 	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
+
 	if (!StartActor)
 		return;
+
 	StartActor->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	StartActor->GetRootComponent()->SetMobility(EComponentMobility::Movable);
 	
-
 	TArray<bool> Map{ MakeMapTexture() };
 
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 15; ++i)
 		CelluarAutomata(Map);
 
 	FinalWork(Map);
 
 	bool bOnce{ false };
 	int32 TorchCount{};
+
 	for (int y = 0; y < MapYSize; ++y)
 	{
 		for (int x = 0; x < MapXSize; ++x)
@@ -48,21 +49,19 @@ void ATTMapGenerator::PostInitializeComponents()
 			if (Map[GetIndexFromXY(x, y)])
 			{
 				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
-					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ),
-					FRotator(0.0f, 0.0f, 0.0f));
+					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{});
 			}
 			else 
 			{
 				if (!bOnce && CountNeighbours(Map, x, y) < 1)
 				{
 					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 88.0f));
-					bOnce = true;
+					bOnce ^= true;
 				}
 				if (TorchCount > 5 && CountNeighbours(Map, x, y) > 3)
 				{
 					GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
-						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ),
-						FRotator(0.0f, 0.0f, 0.0f));
+						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{});
 					TorchCount = 0;
 				}
 			}
