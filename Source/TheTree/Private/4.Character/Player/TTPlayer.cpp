@@ -35,6 +35,12 @@ ATTPlayer::ATTPlayer()
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact"));
+	Effect->AddEffect(TEXT("Dash"), TEXT("/Game/ParagonShinbi/FX/Particles/Abilities/Ultimate/FX/P_Player_Dash.P_Player_Dash"));
+	Effect->AddEffect(TEXT("Lightning"), TEXT("/Game/ParagonKwang/FX/Particles/Abilities/LightStrike/FX/P_Player_Lightning.P_Player_Lightning"));
+	Effect->AddEffect(TEXT("GaiaLightning"), TEXT("/Game/ParagonKwang/FX/Particles/Abilities/LightStrike/FX/P_Player_GaiaLightning.P_Player_GaiaLightning"));
+	Effect->AddEffect(TEXT("GaiaImpact"), TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Sword/FX/P_Player_GaiaImpact.P_Player_GaiaImpact"));
+	Effect->AddEffect(TEXT("SwordAttach1"), TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Sword/FX/P_Player_SwordAttach_00.P_Player_SwordAttach_00"));
+	Effect->AddEffect(TEXT("SwordAttach2"), TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Sword/FX/P_Player_SwordAttach_01.P_Player_SwordAttach_01"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/Player/Player_Attack_SoundCue.Player_Attack_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/Player/Player_HitAttack_SoundCue.Player_HitAttack_SoundCue"));
 	Audio->AddSoundCue(TEXT("SlidingSlash"), TEXT("/Game/Assets/Sound/Player/Player_SlidingSlash_Shot_SoundCue.Player_SlidingSlash_Shot_SoundCue"));
@@ -167,19 +173,28 @@ void ATTPlayer::StartInit()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
-		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);	// 기본 제공하는 Material 사용
-		break;
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
-		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail2.M_Player_Ghost_Trail2"), 0.05f, 1.0f);
-		// 경로를 통한 Material 사용
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
-		PlayGhostTrail(GetMesh(), TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), 0.05f, 99.0f);
-		//UMaterialInterface* Mat;
-		//PlayGhostTrail(GetMesh(), Mat, 0.05f, 1.0f);	// MaterialInterface 를 만든후에 상용하려면
+	{
+		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), RootComponent, FVector::ZeroVector, 2.0f) };
+		Effect->AddManagedEffect(TEXT("SwordAttach2"), SwordAttach2);
+		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);
 		break;
+	}
+	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
+	{
+		const auto& SwordAttach1{ Effect->PlayEffectAttached(TEXT("SwordAttach1"), CurrentWeapon->GetRootComponent(),
+			FVector::ZeroVector, FVector(4.0f, 4.0f, 1.0f)) };
+		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), CurrentWeapon->GetRootComponent(),
+			FVector(0.0f, 0.0f, 100.0f)) };
+		Effect->AddManagedEffect(TEXT("SwordAttach1"), SwordAttach1);
+		Effect->AddManagedEffect(TEXT("SwordAttach2"), SwordAttach2);
+		break;
+	}
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		TT_PLAY_GHOSTTRAIL_LOOP(GetMesh(), nullptr, 0.1f, 1.0f);
+		Effect->PlayEffectAtLocation(TEXT("Lightning"), 
+			GetActorLocation() + GetActorForwardVector() * 200.0f + FVector(0.0f, 0.0f, 250.0f), 5.0f);
 		SetPlayRate(0.5f, 0.57f, 0.1f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
@@ -188,9 +203,13 @@ void ATTPlayer::StartInit()
 
 		CurrentWeapon->SetActorRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle[0], FTimerDelegate::CreateLambda(
-			[&]() { CurrentWeapon->SetActorRelativeScale3D(FVector(2.0f, 2.0f, 2.0f)); }), 0.3f, false);
+			[&]() { if (CurrentWeapon->GetActorRelativeScale3D().Size() != FMath::Sqrt(3)) 
+			CurrentWeapon->SetActorRelativeScale3D(FVector(2.0f, 2.0f, 2.0f)); }), 0.3f, false);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle[1], FTimerDelegate::CreateLambda(
-			[&]() { CurrentWeapon->SetActorRelativeScale3D(FVector(2.5f, 2.5f, 2.5f)); }), 0.6f, false);
+			[&]() { if (CurrentWeapon->GetActorRelativeScale3D().Size() != FMath::Sqrt(3)) 
+			CurrentWeapon->SetActorRelativeScale3D(FVector(2.5f, 2.5f, 2.5f)); }), 0.6f, false);
+
+		Effect->PlayEffectAtLocation(TEXT("Lightning"), GetActorLocation(), 10.0f);
 		break;
 	}
 	}
@@ -204,10 +223,6 @@ void ATTPlayer::EndInit()
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 		StopGhostTrail(GetMesh());
-		break;
-	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		StopGhostTrail(GetMesh());
-		SetPlayRate(0.0f, 0.07f, 0.1f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
@@ -351,7 +366,7 @@ void ATTPlayer::AttackCheck()
 				{
 					FDamageEvent DamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -366,7 +381,7 @@ void ATTPlayer::AttackCheck()
 				{
 					FDamageEvent DamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, DamageEvent, GetController(), this);
-					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			Audio->PlaySoundWave2D(TEXT("HitSmashAttack"));
 		}
@@ -380,11 +395,12 @@ void ATTPlayer::AttackCheck()
 				{
 					FPointDamageEvent CriticalDamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
-					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 			Audio->PlaySoundWave2D(TEXT("HitSlidingSlash"));
 		}
+		Effect->PlayEffectAtLocation(TEXT("Dash"), GetActorLocation(), GetActorForwardVector().Rotation(), 2.0f);
 		Audio->PlaySoundCue2D(TEXT("SlidingSlash"));
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
@@ -395,7 +411,7 @@ void ATTPlayer::AttackCheck()
 				{
 					FPointDamageEvent CriticalDamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
-					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 			Audio->PlaySoundWave2D(TEXT("HitWindCutter"));
@@ -409,10 +425,13 @@ void ATTPlayer::AttackCheck()
 				{
 					FPointDamageEvent CriticalDamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
-					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
+					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
 				}
+			Effect->PlayEffectAtLocation(TEXT("GaiaImpact"), GetActorLocation() + HitStartLocation, 8.0f);
+			Audio->PlaySoundWave2D(TEXT("HitDrawSword"));
 		}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		Effect->PlayEffectAtLocation(TEXT("GaiaLightning"), GetActorLocation() + HitStartLocation, 5.0f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		if (bResult)
@@ -422,7 +441,7 @@ void ATTPlayer::AttackCheck()
 				{
 					FPointDamageEvent CriticalDamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 10.0f, CriticalDamageEvent, GetController(), this);
-					Effect->PlayEffect(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
+					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 			Audio->PlaySoundWave2D(TEXT("HitDrawSword"));
@@ -457,14 +476,21 @@ void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		AttackEndComboState();
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSmashAttackMontage")):
-	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
-	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
 		bIsSkillAttacking = false;
 		break;
+	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
+		bIsSkillAttacking = false;
+		Effect->DeleteManagedEffect(TEXT("SwordAttach2"));
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
+		bIsSkillAttacking = false;
+		Effect->DeleteManagedEffect(TEXT("SwordAttach1"));
+		Effect->DeleteManagedEffect(TEXT("SwordAttach2"));
+		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		bIsSkillAttacking = false;
-		if (CurrentWeapon->GetActorScale3D().Size() != FMath::Sqrt(3))
+		if (CurrentWeapon->GetActorRelativeScale3D().Size() != FMath::Sqrt(3))
 			CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):

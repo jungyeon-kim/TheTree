@@ -114,7 +114,7 @@ void ATTArcdevaLancer::AttackCheck()
 				FDamageEvent DamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 7.0f);
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 7.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
 			else
@@ -122,7 +122,7 @@ void ATTArcdevaLancer::AttackCheck()
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
 				Audio->PlaySoundWave2D(TEXT("HitChargeAttack"));
 			}
 		}

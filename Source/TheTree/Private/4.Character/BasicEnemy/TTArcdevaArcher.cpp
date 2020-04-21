@@ -78,7 +78,7 @@ float ATTArcdevaArcher::TakeDamage(float DamageAmount, const FDamageEvent& Damag
 void ATTArcdevaArcher::StartInit()
 {
 	AttackStartForwardVector = GetActorForwardVector();
-	Effect->PlayEffect(TEXT("Shot"), GetActorLocation(), GetActorForwardVector().Rotation(), FVector(9.0f, 2.0f, 2.0f));
+	Effect->PlayEffectAtLocation(TEXT("Shot"), GetActorLocation(), GetActorForwardVector().Rotation(), FVector(9.0f, 2.0f, 2.0f));
 	Audio->PlaySoundWaveAtLocation(TEXT("AttackStart"), GetActorLocation());
 }
 
@@ -107,7 +107,7 @@ void ATTArcdevaArcher::AttackCheck()
 		{
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-			Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 				GetActorForwardVector().Rotation(), 2.5f);
 			Audio->PlaySoundWave2D(TEXT("HitAttack"));
 		}

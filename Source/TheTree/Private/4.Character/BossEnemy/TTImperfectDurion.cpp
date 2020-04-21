@@ -123,11 +123,11 @@ void ATTImperfectDurion::AttackCheck()
 				FDamageEvent DamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		Effect->PlayEffect(TEXT("AttackImpact"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.15f, 5.0f);
+		Effect->PlayEffectAtLocation(TEXT("AttackImpact"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.15f, 5.0f);
 		Audio->PlaySoundWaveAtLocation(TEXT("Attack"), GetActorLocation());
 		break;
 	}
@@ -140,12 +140,12 @@ void ATTImperfectDurion::AttackCheck()
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				CharacterStat->SetHP(CharacterStat->GetHP() + CharacterStat->GetAtk() * 2.0f);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
-				Effect->PlayEffect(TEXT("Recovery"), GetActorLocation(), FVector(3.0f, 3.0f, 5.0f));
+				Effect->PlayEffectAtLocation(TEXT("Recovery"), GetActorLocation(), FVector(3.0f, 3.0f, 5.0f));
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		Effect->PlayEffect(TEXT("Drain"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.25f, 5.0f);
+		Effect->PlayEffectAtLocation(TEXT("Drain"), GetActorLocation() + GetActorForwardVector() * AttackLength / 1.25f, 5.0f);
 		Audio->PlaySoundWaveAtLocation(TEXT("Drain"), GetActorLocation());
 		break;
 	}
@@ -157,11 +157,11 @@ void ATTImperfectDurion::AttackCheck()
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		Effect->PlayEffect(TEXT("BigHand"), GetActorLocation() + GetActorForwardVector() * 400.0f, 
+		Effect->PlayEffectAtLocation(TEXT("BigHand"), GetActorLocation() + GetActorForwardVector() * 400.0f, 
 			GetActorForwardVector().Rotation(), FVector(3.5f, 5.0f, 3.5f));
 		Audio->PlaySoundWaveAtLocation(TEXT("BigHand"), GetActorLocation());
 		break;
@@ -173,7 +173,7 @@ void ATTImperfectDurion::AttackCheck()
 			{
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
-				Effect->PlayEffect(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
