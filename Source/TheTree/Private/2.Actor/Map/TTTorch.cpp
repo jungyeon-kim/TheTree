@@ -13,22 +13,25 @@ ATTTorch::ATTTorch()
 	
 	RootComponent = TorchMesh;
 	TorchMesh->SetRelativeScale3D(FVector(0.25f, 0.25f, 0.3f));
+	TorchMesh->LightingChannels.bChannel0 = false;
+	TorchMesh->LightingChannels.bChannel1 = true;
 
 	TorchLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("TORCHLIGHT"));
 	TorchLight->SetMobility(EComponentMobility::Movable);
 	TorchLight->Intensity = 300.0f;
 	TorchLight->LightColor = FColor{ 255,173,93 };
-	TorchLight->AttenuationRadius = 2000.0f;
-	TorchLight->SourceRadius = 5000.0f;
-	TorchLight->SourceLength = 50000.0f;
-	TorchLight->CastShadows = false;
+	TorchLight->AttenuationRadius = 1700.0f;
+	TorchLight->SourceRadius = 1000.0f;
+	TorchLight->SourceLength = 35000.0f;
+	TorchLight->CastShadows = true;
+	TorchLight->CastDynamicShadows = true;
+	TorchLight->CastStaticShadows = true;
 	TorchLight->VolumetricScatteringIntensity = 0.2f;
-	TorchLight->bUseInverseSquaredFalloff = false;
-	TorchLight->LightFalloffExponent = 4.0f;
 	TorchLight->ShadowBias = 0.27619f;
+	TorchLight->bUseInverseSquaredFalloff = false;
 	
 	TorchLight->SetupAttachment(RootComponent);
-	TorchLight->SetRelativeLocation(FVector{0.0f, 0.0f, -230.0f});
+	TorchLight->SetRelativeLocation(FVector{0.0f, 0.0f, 1350.0f});
 	
 	static ConstructorHelpers::FObjectFinder<UMaterial> M_LIGHTFUNCTION
 	{ TEXT("/Game/Assets/StaticMesh/Torch/M_Torch_Flicker_Light_Function.M_Torch_Flicker_Light_Function") };
@@ -45,17 +48,17 @@ ATTTorch::ATTTorch()
 	TorchParticle->SetupAttachment(RootComponent);
 	TorchParticle->SetRelativeLocation(FVector{ -5.0f, 0.0f, 1920.0f });
 	TorchParticle->SetWorldScale3D(FVector{ 4.0f,4.0f,2.0f });
+
+	TorchMesh->SetMobility(EComponentMobility::Static);
 }
 
 void ATTTorch::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ATTTorch::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

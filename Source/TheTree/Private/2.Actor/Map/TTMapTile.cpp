@@ -11,17 +11,16 @@ ATTMapTile::ATTMapTile()
 		MapMesh->SetStaticMesh(SM_MESH.Object);
 	RootComponent = MapMesh;
 	SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
+	MapMesh->SetMobility(EComponentMobility::Static);
 }
 
 void ATTMapTile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ATTMapTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
