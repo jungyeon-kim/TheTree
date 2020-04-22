@@ -7,7 +7,7 @@ UTTParticleSystemComponent::UTTParticleSystemComponent()
 void UTTParticleSystemComponent::AddEffect(FName EffectName, const TCHAR* EffectPath)
 {
 	const auto& EffectCheck{ LoadObject<UParticleSystem>(this, EffectPath) };
-	
+
 	if (EffectCheck->IsValidLowLevel()) Effect.Emplace(EffectName, EffectCheck);
 	else TTLOG(Error, TEXT("Can't find EffectPath (%s)"), EffectPath);
 }
@@ -21,7 +21,7 @@ void UTTParticleSystemComponent::DeleteManagedEffect(FName EffectName)
 {
 	if (ManagedEffect.Find(EffectName))
 	{
-		ManagedEffect[EffectName]->Deactivate();
+		if (ManagedEffect[EffectName]) ManagedEffect[EffectName]->Deactivate();
 		ManagedEffect.Remove(EffectName);
 	}
 	else TTLOG(Error, TEXT("Can't find EffectName (%s)"), *EffectName.ToString());
@@ -75,8 +75,7 @@ UParticleSystemComponent* UTTParticleSystemComponent::PlayEffectAtLocation(FName
 {
 	if (Effect.Find(EffectName))
 	{
-		const auto& Particle{ UGameplayStatics::SpawnEmitterAtLocation(
-			this, Effect[EffectName], Location, Rotation) };
+		const auto& Particle{ UGameplayStatics::SpawnEmitterAtLocation(this, Effect[EffectName], Location, Rotation) };
 		return Particle;
 	}
 	else
@@ -120,7 +119,7 @@ UParticleSystemComponent* UTTParticleSystemComponent::PlayEffectAttached(FName E
 {
 	if (Effect.Find(EffectName))
 	{
-		const auto& Particle{ UGameplayStatics::SpawnEmitterAttached(Effect[EffectName], AttachToComponent, 
+		const auto& Particle{ UGameplayStatics::SpawnEmitterAttached(Effect[EffectName], AttachToComponent,
 			NAME_None, Location) };
 		return Particle;
 	}
@@ -135,7 +134,7 @@ UParticleSystemComponent* UTTParticleSystemComponent::PlayEffectAttached(FName E
 {
 	if (Effect.Find(EffectName))
 	{
-		const auto& Particle{ UGameplayStatics::SpawnEmitterAttached(Effect[EffectName], AttachToComponent, 
+		const auto& Particle{ UGameplayStatics::SpawnEmitterAttached(Effect[EffectName], AttachToComponent,
 			NAME_None, Location, FRotator::ZeroRotator, FVector(Scale, Scale, Scale)) };
 		return Particle;
 	}

@@ -185,13 +185,13 @@ void ATTGhostTrailLoop::SetMaterial(UMaterialInterface* Material)
 }
 void ATTGhostTrailLoop::DoWork()
 {
-		ATTGhostTrail* Trail{ GetWorld()->SpawnActorDeferred<ATTGhostTrail>
-			(ATTGhostTrail::StaticClass(), SkeletalMesh->GetComponentTransform(),
-				this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn) };
-		UGameplayStatics::FinishSpawningActor(Trail, SkeletalMesh->GetComponentTransform());
-		Trail->SetMaterial(TrailMaterial);
-		Trail->SetSkeletalMesh(SkeletalMesh);
-		Trail->StartTrail();
+	ATTGhostTrail* Trail{ GetWorld()->SpawnActorDeferred<ATTGhostTrail>
+		(ATTGhostTrail::StaticClass(), SkeletalMesh->GetComponentTransform(),
+			this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn) };
+	UGameplayStatics::FinishSpawningActor(Trail, SkeletalMesh->GetComponentTransform());
+	Trail->SetMaterial(TrailMaterial);
+	Trail->SetSkeletalMesh(SkeletalMesh);
+	Trail->StartTrail();
 }
 
 void ATTGhostTrailLoop::StopTrail()
