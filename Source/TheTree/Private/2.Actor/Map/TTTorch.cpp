@@ -32,7 +32,8 @@ ATTTorch::ATTTorch()
 	
 	TorchLight->SetupAttachment(RootComponent);
 	TorchLight->SetRelativeLocation(FVector{0.0f, 0.0f, 1350.0f});
-	
+	TorchLight->SetMobility(EComponentMobility::Movable);
+
 	static ConstructorHelpers::FObjectFinder<UMaterial> M_LIGHTFUNCTION
 	{ TEXT("/Game/Assets/StaticMesh/Torch/M_Torch_Flicker_Light_Function.M_Torch_Flicker_Light_Function") };
 	if (M_LIGHTFUNCTION.Succeeded())

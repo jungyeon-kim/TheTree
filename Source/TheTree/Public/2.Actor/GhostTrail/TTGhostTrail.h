@@ -54,11 +54,12 @@ public:
 
 	ATTGhostTrailLoop();
 
-	void SetGhostTrail(USkeletalMeshComponent* Component, float Interval);
+	void SetGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length);
 	void SetMaterial(const TCHAR* Direction);
 	void SetMaterial(UMaterialInterface* Material);
 	void DoWork();
 	void StopTrail();
+
 
 private:
 	UPROPERTY()
@@ -69,12 +70,13 @@ private:
 
 	FTimerHandle TimerHandle;
 	float LoopInterval;
+	float CurrentLength;
 };
 
 void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath);
-void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath, float Interval);
-void PlayGhostTrail(USkeletalMeshComponent* Component, UMaterialInterface* Material, float Interval);
-void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval);
+void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath, float Interval, float Length);
+void PlayGhostTrail(USkeletalMeshComponent* Component, UMaterialInterface* Material, float Interval, float Length);
+void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length);
 void StopGhostTrail(USkeletalMeshComponent* Component);
 
 

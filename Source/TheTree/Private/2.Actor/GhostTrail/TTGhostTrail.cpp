@@ -3,7 +3,7 @@
 #include "Components/PoseableMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-static TArray<TPair<FName, ATTGhostTrailLoop*>> TrailCluster; // extern Singleton 
+TArray<TPair<FName, ATTGhostTrailLoop*>> TrailCluster; // extern Singleton 
 
 ATTGhostTrail::ATTGhostTrail()
 {
@@ -115,29 +115,29 @@ void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath
 	Trail->StartTrail();
 }
 
-void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath, float Interval)
+void PlayGhostTrail(USkeletalMeshComponent* Component, const TCHAR* MaterialPath, float Interval, float Length)
 {
 	ATTGhostTrailLoop* TrailLoop{ Component->GetWorld()->SpawnActor<ATTGhostTrailLoop>
 		(ATTGhostTrailLoop::StaticClass()) };
 	TrailLoop->SetMaterial(MaterialPath);
-	TrailLoop->SetGhostTrail(Component, Interval);
-	TrailCluster.Add(MakeTuple(Component->GetFName(), TrailLoop));
+	TrailLoop->SetGhostTrail(Component, Interval, Length);
+	TrailCluster.Emplace(Component->GetFName(), TrailLoop);
 }
 
-void PlayGhostTrail(USkeletalMeshComponent* Component, UMaterialInterface* Material, float Interval)
+void PlayGhostTrail(USkeletalMeshComponent* Component, UMaterialInterface* Material, float Interval, float Length)
 {
 	ATTGhostTrailLoop* TrailLoop{ Component->GetWorld()->SpawnActor<ATTGhostTrailLoop>
 		(ATTGhostTrailLoop::StaticClass()) };
 	TrailLoop->SetMaterial(Material);
-	TrailLoop->SetGhostTrail(Component, Interval);
-	TrailCluster.Add(MakeTuple(Component->GetFName(), TrailLoop));
+	TrailLoop->SetGhostTrail(Component, Interval, Length);
+	TrailCluster.Emplace(Component->GetFName(), TrailLoop);
 }
 
-void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval)
+void PlayGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length)
 {
 	ATTGhostTrailLoop* TrailLoop{ Component->GetWorld()->SpawnActor<ATTGhostTrailLoop>
 		(ATTGhostTrailLoop::StaticClass()) };
-	TrailLoop->SetGhostTrail(Component, Interval);
+	TrailLoop->SetGhostTrail(Component, Interval, Length);
 	TrailCluster.Emplace(Component->GetFName(), TrailLoop);
 }
 
@@ -145,6 +145,7 @@ void StopGhostTrail(USkeletalMeshComponent* Component)
 {
 	for (auto& Elem : TrailCluster)
 	{
+		TTLOG(Warning, TEXT("(%s), size : (%d), pos : (%d)"), *Elem.Key.ToString(), TrailCluster.Num(), Elem.Value);
 		if (Elem.Key == Component->GetFName() && IsValid(Elem.Value))
 		{
 			Elem.Value->StopTrail();
@@ -152,7 +153,7 @@ void StopGhostTrail(USkeletalMeshComponent* Component)
 		}
 	}
 	
-	TrailCluster.RemoveAllSwap([&](TPair<FName, ATTGhostTrailLoop*>& Elem) {
+	TrailCluster.RemoveAllSwap([&Component](const TPair<FName, ATTGhostTrailLoop*>& Elem) {
 		return (Elem.Key == Component->GetFName());
 		});
 }
@@ -162,10 +163,11 @@ ATTGhostTrailLoop::ATTGhostTrailLoop()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ATTGhostTrailLoop::SetGhostTrail(USkeletalMeshComponent* Component, float Interval)
+void ATTGhostTrailLoop::SetGhostTrail(USkeletalMeshComponent* Component, float Interval, float Length)
 {
 	SkeletalMesh = Component;
 	LoopInterval = Interval;
+	CurrentLength = Length;
 
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATTGhostTrailLoop::DoWork, Interval, true);
 }
@@ -185,13 +187,22 @@ void ATTGhostTrailLoop::SetMaterial(UMaterialInterface* Material)
 }
 void ATTGhostTrailLoop::DoWork()
 {
-	ATTGhostTrail* Trail{ GetWorld()->SpawnActorDeferred<ATTGhostTrail>
-		(ATTGhostTrail::StaticClass(), SkeletalMesh->GetComponentTransform(),
-			this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn) };
-	UGameplayStatics::FinishSpawningActor(Trail, SkeletalMesh->GetComponentTransform());
-	Trail->SetMaterial(TrailMaterial);
-	Trail->SetSkeletalMesh(SkeletalMesh);
-	Trail->StartTrail();
+	if (CurrentLength > 0.0f) 
+	{
+		FActorSpawnParameters Param;
+		Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		ATTGhostTrail* Trail{ GetWorld()->SpawnActor<ATTGhostTrail>(ATTGhostTrail::StaticClass(), SkeletalMesh->GetComponentTransform(), Param) };
+		Trail->SetMaterial(TrailMaterial);
+		Trail->SetSkeletalMesh(SkeletalMesh);
+		Trail->StartTrail();
+		CurrentLength -= LoopInterval;
+	}
+	else
+	{
+		StopTrail();
+		TrailCluster.RemoveSwap(MakeTuple(SkeletalMesh->GetFName(), this));
+		Destroy();
+	}
 }
 
 void ATTGhostTrailLoop::StopTrail()
