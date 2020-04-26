@@ -1,6 +1,7 @@
 #include "TTMapGenerator.h"
 #include "TTMapTile.h"
 #include "TTTorch.h"
+#include "TTChandelier.h"
 #include "GameFramework/PlayerStart.h"
 
 ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
@@ -34,40 +35,43 @@ void ATTMapGenerator::PostInitializeComponents()
 	
 	TArray<bool> Map{ MakeMapTexture() };
 
-	for (int i = 0; i < 15; ++i)
+	for (int i = 0; i < 20; ++i)
 		CelluarAutomata(Map);
 
 	FinalWork(Map);
 
 	bool bOnce{ false };
 	int32 TorchCount{};
-
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	for (int y = 0; y < MapYSize; ++y)
 	{
 		for (int x = 0; x < MapXSize; ++x)
 		{
 			if (Map[GetIndexFromXY(x, y)])
 			{
+				if(CountNeighboursWithoutThis(Map, x, y) < 8)
 				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
-					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{});
+					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{0.0f, 0.0f, 0.0f},Param);
 			}
 			else 
 			{
-				if (!bOnce && CountNeighbours(Map, x, y) < 1)
+				if (!bOnce && CountNeighboursWithoutThis(Map, x, y, -2, 3) < 1)
 				{
 					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 88.0f));
 					bOnce ^= true;
 				}
-				if (TorchCount > 5 && CountNeighbours(Map, x, y) > 3)
+				if (TorchCount > 5 && CountNeighboursWithoutThis(Map, x, y) > 3)
 				{
 					GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
-						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{});
+						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{0.0f, 0.0f, 0.0f});
 					TorchCount = 0;
 				}
 			}
 			++TorchCount;
 		}
 	}
+	SetChandelier(Map, MapXSize / 2, MapYSize / 2);
 }
 
 TArray<bool> ATTMapGenerator::MakeMapTexture()
@@ -86,6 +90,26 @@ TArray<bool> ATTMapGenerator::MakeMapTexture()
 		}
 	}	//Generate
 	return NewMap;
+}
+
+int32 ATTMapGenerator::CountNeighboursWithoutThis(const TArray<bool>& Texture, int x, int y, int Start, int End)
+{
+	int32 Count{};
+	for (int i = Start; i < End; ++i) {
+		for (int j = Start; j < End; ++j) {
+			int NeighbourX{ x + j };
+			int NeighbourY{ y + i };
+			if (i == 0 && j == 0)
+				continue;
+
+			else if ((NeighbourX < 0 || NeighbourY < 0 || NeighbourX >= MapXSize || NeighbourY >= MapYSize))
+				++Count;
+
+			else if (Texture[GetIndexFromXY(NeighbourX, NeighbourY)])
+				++Count;
+		}
+	}
+	return Count;
 }
 
 int32 ATTMapGenerator::CountNeighbours(const TArray<bool>& Texture, int x, int y)
@@ -147,6 +171,44 @@ void ATTMapGenerator::FinalWork(TArray<bool>& Texture)
 		{
 			if (x == 0 || y == 0 || x == MapXSize - 1 || y == MapYSize - 1)
 				Texture[GetIndexFromXY(x, y)] = true;
+		}
+	}
+}
+
+void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
+{
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	for (int i = y; i < MapXSize; ++i)
+	{
+		for (int j = x; j < MapYSize; ++j)
+		{
+			if (Texture[GetIndexFromXY(j, i)])
+				continue;
+
+			if (!CountNeighboursWithoutThis(Texture, j, i, -1, 2))
+			{
+				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
+					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+				return;
+			}
+			
+		}
+	}
+	for (int i = y-1; i < 0; --i)
+	{
+		for (int j = x - 1; j < 0; --j)
+		{
+			if (Texture[GetIndexFromXY(j, i)])
+				continue;
+
+			if (!CountNeighboursWithoutThis(Texture, j, i, -1, 2))
+			{
+				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
+					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+				return;
+			}
 		}
 	}
 }

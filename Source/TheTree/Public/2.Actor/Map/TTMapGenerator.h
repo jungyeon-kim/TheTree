@@ -47,6 +47,9 @@ private:
 	TArray<bool> MakeMapTexture();
 	void CelluarAutomata(TArray<bool>& Texture);
 	int32 CountNeighbours(const TArray<bool>& Texture, int x, int y);
+	int32 CountNeighboursWithoutThis(const TArray<bool>& Texture, int x, int y,
+		int Start = -1, int End = 2);
 	int32 GetIndexFromXY(int x, int y);
 	void FinalWork(TArray<bool>& Texture);
+	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15);
 };

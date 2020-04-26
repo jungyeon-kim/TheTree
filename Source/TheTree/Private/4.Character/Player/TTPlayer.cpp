@@ -174,13 +174,13 @@ void ATTPlayer::StartInit()
 	{
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
-		PlayGhostTrail(GetMesh(), 0.05f);
+		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 	{
 		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), RootComponent, FVector::ZeroVector, 4.0f) };
 		Effect->AddManagedEffect(TEXT("SlidingSlash_SwordAttach2"), SwordAttach2);
-		PlayGhostTrail(GetMesh(), 0.05f);
+		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
