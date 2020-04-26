@@ -14,7 +14,8 @@ void UTTParticleSystemComponent::AddEffect(FName EffectName, const TCHAR* Effect
 
 void UTTParticleSystemComponent::AddManagedEffect(FName EffectName, UParticleSystemComponent* Effect)
 {
-	ManagedEffect.Emplace(EffectName, Effect);
+	if (!ManagedEffect.Find(EffectName)) ManagedEffect.Emplace(EffectName, Effect);
+	else TTLOG(Error, TEXT("EffectName is duplicated. (%s)"), *EffectName.ToString());
 }
 
 void UTTParticleSystemComponent::DeleteManagedEffect(FName EffectName)

@@ -17,6 +17,7 @@ public:
 	UTTParticleSystemComponent();
 	
 	void AddEffect(FName EffectName, const TCHAR* EffectPath);
+	// Must have a unique EffectName.
 	void AddManagedEffect(FName EffectName, UParticleSystemComponent* Effect);
 	void DeleteManagedEffect(FName EffectName);
 

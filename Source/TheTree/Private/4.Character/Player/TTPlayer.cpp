@@ -58,6 +58,7 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 	GetCharacterMovement()->JumpZVelocity = 1100.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
+	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
 
 	SetCharacterState(ECharacterState::LOADING);
 }
@@ -132,8 +133,8 @@ void ATTPlayer::BeginPlay()
 void ATTPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (bIsAttacking || bIsSkillAttacking)
+	
+	if (bIsAttacking || bIsSkillAttacking.Find(true) > -1)
 	{
 		FVector CameraForwardVector{ Camera->GetForwardVector().GetSafeNormal2D() };
 		FRotator TargetRot{ FRotationMatrix::MakeFromX(CameraForwardVector).Rotator() };
@@ -178,7 +179,7 @@ void ATTPlayer::StartInit()
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 	{
 		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), RootComponent, FVector::ZeroVector, 4.0f) };
-		Effect->AddManagedEffect(TEXT("SwordAttach2"), SwordAttach2);
+		Effect->AddManagedEffect(TEXT("SlidingSlash_SwordAttach2"), SwordAttach2);
 		PlayGhostTrail(GetMesh(), 0.05f);
 		break;
 	}
@@ -188,8 +189,8 @@ void ATTPlayer::StartInit()
 			FVector::ZeroVector, FVector(4.0f, 4.0f, 1.0f)) };
 		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), CurrentWeapon->GetRootComponent(),
 			FVector(0.0f, 0.0f, 100.0f), 0.7f) };
-		Effect->AddManagedEffect(TEXT("SwordAttach1"), SwordAttach1);
-		Effect->AddManagedEffect(TEXT("SwordAttach2"), SwordAttach2);
+		Effect->AddManagedEffect(TEXT("WindCutter_SwordAttach1"), SwordAttach1);
+		Effect->AddManagedEffect(TEXT("WindCutter_SwordAttach2"), SwordAttach2);
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
@@ -211,7 +212,7 @@ void ATTPlayer::StartInit()
 		Effect->PlayEffectAtLocation(TEXT("Lightning"), GetActorLocation(), 10.0f);
 		const auto& SwordAttach1{ Effect->PlayEffectAttached(TEXT("SwordAttach1"), CurrentWeapon->GetRootComponent(),
 			FVector::ZeroVector, FVector(2.0f, 2.0f, 1.0f)) };
-		Effect->AddManagedEffect(TEXT("SwordAttach1"), SwordAttach1);
+		Effect->AddManagedEffect(TEXT("DrawSword_SwordAttach1"), SwordAttach1);
 		break;
 	}
 	}
@@ -253,30 +254,45 @@ void ATTPlayer::Attack()
 
 void ATTPlayer::SkillAttack(int32 SkillAttackType)
 {
-	if (!bIsSkillAttacking && !bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking
+	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking
 		&& GetCurrentStateNodeName() == TEXT("Ground") && CurrentState == ECharacterState::BATTLE)
 	{
-		bIsSkillAttacking = true;
-
 		switch (SkillAttackType)
 		{
 		case 0:
-			TTAnimInstance->PlayMontage(TEXT("SmashAttack"));
+			if (!bIsSkillAttacking[0])
+			{
+				TTAnimInstance->PlayMontage(TEXT("SmashAttack"));
+				bIsSkillAttacking[0] = true;
+			}
 			break;
 		case 1:
-			TTAnimInstance->PlayMontage(TEXT("SlidingSlashAttack"));
+			if (!bIsSkillAttacking[1])
+			{
+				TTAnimInstance->PlayMontage(TEXT("SlidingSlashAttack"));
+				bIsSkillAttacking[1] = true;
+			}
 			break;
 		case 2:
-			TTAnimInstance->PlayMontage(TEXT("WindCutterAttack"));
+			if (!bIsSkillAttacking[2])
+			{
+				TTAnimInstance->PlayMontage(TEXT("WindCutterAttack"));
+				bIsSkillAttacking[2] = true;
+			}
 			break;
 		case 3:
-			TTAnimInstance->PlayMontage(TEXT("GaiaCrushAttack"));
+			if (!bIsSkillAttacking[3])
+			{
+				TTAnimInstance->PlayMontage(TEXT("GaiaCrushAttack"));
+				bIsSkillAttacking[3] = true;
+			}
 			break;
 		case 4:
-			TTAnimInstance->PlayMontage(TEXT("DrawSwordAttack"));
-			break;
-		default:
-			bIsSkillAttacking = false;
+			if (!bIsSkillAttacking[4])
+			{
+				TTAnimInstance->PlayMontage(TEXT("DrawSwordAttack"));
+				bIsSkillAttacking[4] = true;
+			}
 			break;
 		}
 	}
@@ -478,21 +494,23 @@ void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		AttackEndComboState();
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSmashAttackMontage")):
-	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
-		bIsSkillAttacking = false;
+		bIsSkillAttacking[0] = false;
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
-		bIsSkillAttacking = false;
-		Effect->DeleteManagedEffect(TEXT("SwordAttach2"));
+		bIsSkillAttacking[1] = false;
+		Effect->DeleteManagedEffect(TEXT("SlidingSlash_SwordAttach2"));
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
-		bIsSkillAttacking = false;
-		Effect->DeleteManagedEffect(TEXT("SwordAttach1"));
-		Effect->DeleteManagedEffect(TEXT("SwordAttach2"));
+		bIsSkillAttacking[2] = false;
+		Effect->DeleteManagedEffect(TEXT("WindCutter_SwordAttach1"));
+		Effect->DeleteManagedEffect(TEXT("WindCutter_SwordAttach2"));
+		break;
+	case FTTWorld::HashCode(TEXT("PlayerGaiaCrushAttackMontage")):
+		bIsSkillAttacking[3] = false;
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
-		bIsSkillAttacking = false;
-		Effect->DeleteManagedEffect(TEXT("SwordAttach1"));
+		bIsSkillAttacking[4] = false;
+		Effect->DeleteManagedEffect(TEXT("DrawSword_SwordAttach1"));
 		if (CurrentWeapon->GetActorRelativeScale3D().Size() != FMath::Sqrt(3))
 			CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 		break;
