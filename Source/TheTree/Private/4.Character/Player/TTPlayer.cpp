@@ -485,8 +485,6 @@ void ATTPlayer::TurnToTarget(AActor* Target, float InterpSpeed)
 
 void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	StopGhostTrail(GetMesh());	// 임시코드
-
 	switch (FTTWorld::HashCode(*Montage->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerAttackMontage")):
