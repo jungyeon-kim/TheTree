@@ -20,10 +20,10 @@ EBTNodeResult::Type UBTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	
 	Target = Cast<ATTPlayer>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ATTAIController::TargetKey));
 	if (!Target) return EBTNodeResult::Failed;
-
+	
 	TTEnemy->PlayMontage(TeleportTypeName);
-	TTEnemy->SetActorLocation(Target->GetActorLocation() + Target->GetActorForwardVector() * 200.0f);
-	TTEnemy->SetActorRotation((-Target->GetActorForwardVector()).Rotation());
+	TTEnemy->TeleportTo(Target->GetActorLocation() + FVector(0.0f, 0.0f, (TTEnemy->GetActorLocation().Z - Target->GetActorLocation().Z))
+		+ Target->GetActorForwardVector(), (-Target->GetActorForwardVector()).Rotation());
 
 	bIsTeleporting = true;
 	TTEnemy->OnTeleportEnded.AddLambda([&]()

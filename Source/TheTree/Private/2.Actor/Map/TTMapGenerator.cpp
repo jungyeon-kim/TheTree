@@ -58,7 +58,7 @@ void ATTMapGenerator::PostInitializeComponents()
 			{
 				if (!bOnce && CountNeighboursWithoutThis(Map, x, y, -2, 3) < 1)
 				{
-					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 88.0f));
+					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
 					bOnce ^= true;
 				}
 				if (TorchCount > 5 && CountNeighboursWithoutThis(Map, x, y) > 3)

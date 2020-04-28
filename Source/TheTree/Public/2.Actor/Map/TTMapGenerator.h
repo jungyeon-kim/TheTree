@@ -33,10 +33,10 @@ private:
 	int32 MapYSize { 30 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	float MapOffsetX{ 0.0f };
+	float MapOffsetX{ -4500.0f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	float MapOffsetY{ 0.0f };
+	float MapOffsetY{ -4500.0f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
 	float MapOffsetZ{ 0.0f };
