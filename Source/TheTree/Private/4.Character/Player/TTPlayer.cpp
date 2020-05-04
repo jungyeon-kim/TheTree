@@ -92,6 +92,11 @@ void ATTPlayer::PostInitializeComponents()
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
 }
 
+void ATTPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+}
+
 void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -111,11 +116,6 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ATTPlayer::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATTPlayer::Turn);
-}
-
-void ATTPlayer::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
 }
 
 void ATTPlayer::BeginPlay()

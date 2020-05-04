@@ -12,7 +12,7 @@ void ATTPlayerController::PostInitializeComponents()
 void ATTPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
+	
 	InputComponent->BindAction(TEXT("SwapDebugMode"), EInputEvent::IE_Pressed, this, &ATTPlayerController::SwapDebugMode);
 }
 

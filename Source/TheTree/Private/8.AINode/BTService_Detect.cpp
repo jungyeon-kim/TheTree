@@ -44,7 +44,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			{
 				TTEnemy->SetCharacterState(ECharacterState::BATTLE);
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, TTPlayer);
-				if (FTTWorld::bIsDebugging) DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Blue, false, 0.2f);
+				if (FTTWorld::bIsDebugging) DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Blue, false, Interval / 2.0f);
 				return;
 			}
 		}
@@ -52,6 +52,6 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	{
 		TTEnemy->SetCharacterState(ECharacterState::NOBATTLE);
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(ATTAIController::TargetKey, nullptr);
-		if (FTTWorld::bIsDebugging) DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
+		if (FTTWorld::bIsDebugging) DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, Interval / 2.0f);
 	}
 }

@@ -11,7 +11,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"AIModule"
+				"AIModule",
+				"LevelSequence"
 			]
 		}
 	]

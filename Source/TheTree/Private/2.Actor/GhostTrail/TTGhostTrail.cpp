@@ -145,7 +145,6 @@ void StopGhostTrail(USkeletalMeshComponent* Component)
 {
 	for (auto& Elem : TrailCluster)
 	{
-		TTLOG(Warning, TEXT("(%s), size : (%d), pos : (%d)"), *Elem.Key.ToString(), TrailCluster.Num(), Elem.Value);
 		if (Elem.Key == Component->GetFName() && IsValid(Elem.Value))
 		{
 			Elem.Value->StopTrail();
