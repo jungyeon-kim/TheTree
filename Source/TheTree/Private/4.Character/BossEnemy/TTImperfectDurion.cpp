@@ -53,7 +53,7 @@ void ATTImperfectDurion::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_ImperfectDurion.BT_ImperfectDurion"));
+	//TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_ImperfectDurion.BT_ImperfectDurion"));
 }
 
 void ATTImperfectDurion::BeginPlay()
