@@ -6,7 +6,7 @@
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
-#include "TTGhostTrail.h"
+#include "TTGhostTrailComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
@@ -19,12 +19,15 @@ ATTPlayer::ATTPlayer()
 	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
 	CharacterStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
+	TTGhostTrail = CreateDefaultSubobject<UTTGhostTrailComponent>(TEXT("GHOSTTRAIL"));
 
 	RootComponent = GetCapsuleComponent();
 	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
 	Effect->SetupAttachment(RootComponent);
 	Audio->SetupAttachment(RootComponent);
+	TTGhostTrail->SetupAttachment(RootComponent);
+	
 	GetMesh()->SetCollisionProfileName(TEXT("Player"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
@@ -60,6 +63,7 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->GravityScale = 3.0f;
 	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
 
+	TTGhostTrail->SetGhostTrail(TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), GetMesh());
 	SetCharacterState(ECharacterState::LOADING);
 }
 
@@ -174,13 +178,13 @@ void ATTPlayer::StartInit()
 	{
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
-		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);
+		TTGhostTrail->PlayGhostTrail(0.05f, 1.5f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 	{
 		const auto& SwordAttach2{ Effect->PlayEffectAttached(TEXT("SwordAttach2"), RootComponent, FVector::ZeroVector, 4.0f) };
 		Effect->AddManagedEffect(TEXT("SlidingSlash_SwordAttach2"), SwordAttach2);
-		PlayGhostTrail(GetMesh(), 0.05f, 1.0f);
+		TTGhostTrail->PlayGhostTrail(0.05f, 1.0f);
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("PlayerWindCutterAttackMontage")):
@@ -225,7 +229,7 @@ void ATTPlayer::EndInit()
 	case FTTWorld::HashCode(TEXT("PlayerDodgeMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerBackMoveMontage")):
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
-		StopGhostTrail(GetMesh());
+		TTGhostTrail->StopGhostTrail();
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));

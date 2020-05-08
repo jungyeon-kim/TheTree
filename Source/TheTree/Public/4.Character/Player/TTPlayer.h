@@ -48,6 +48,8 @@ private:
 	class ATTPlayerController* TTPlayerController;
 	UPROPERTY()
 	class UTTPlayerAnimInstance* TTAnimInstance;
+	UPROPERTY()
+	class UTTGhostTrailComponent* TTGhostTrail;
 private:
 	void StartInit();
 	void EndInit();
