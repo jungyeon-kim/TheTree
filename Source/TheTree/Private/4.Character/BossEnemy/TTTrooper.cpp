@@ -47,6 +47,8 @@ void ATTTrooper::PostInitializeComponents()
 	TTAnimInstance->SetMontage(TEXT("LaserAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperLaserAttackMontage.TrooperLaserAttackMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTTrooper::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTTrooper::AttackCheck);
+
+	CharacterStat->OnHPIsZero.AddLambda([&]() { SetPlayRate(0.0f, 0.15f, 0.1f); });
 }
 
 void ATTTrooper::PossessedBy(AController* NewController)
