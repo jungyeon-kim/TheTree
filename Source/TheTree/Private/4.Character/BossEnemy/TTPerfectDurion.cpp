@@ -57,7 +57,7 @@ void ATTPerfectDurion::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	//TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_PerfectDurion.BT_PerfectDurion"));
+	TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_PerfectDurion.BT_PerfectDurion"));
 }
 
 void ATTPerfectDurion::BeginPlay()
