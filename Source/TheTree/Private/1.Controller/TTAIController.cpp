@@ -28,8 +28,9 @@ void ATTAIController::RunAI()
 void ATTAIController::StopAI()
 {
 	const auto& BehaviorTreeComponent{ Cast<UBehaviorTreeComponent>(BrainComponent) };
-
-	if (BehaviorTreeComponent) BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
+	
+	if (BehaviorTreeComponent)
+		BehaviorTreeComponent->StopTree();
 }
 
 void ATTAIController::SetBehaviorTree(const TCHAR* BehaviroTreePath)
