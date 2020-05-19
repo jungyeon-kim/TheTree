@@ -55,7 +55,7 @@ void ATTTrooper::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	//TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_Trooper.BT_Trooper"));
+	TTAIController->SetBehaviorTree(TEXT("/Game/Blueprints/AI/BT_Trooper.BT_Trooper"));
 }
 
 void ATTTrooper::BeginPlay()

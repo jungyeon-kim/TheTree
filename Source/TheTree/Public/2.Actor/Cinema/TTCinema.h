@@ -19,8 +19,13 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	void SetCinema(const TCHAR* Path);
+	void SetCinema(class ULevelSequence* Sequence);
 	void PlayCinema();
 	void SetAndPlayCinema(const TCHAR* Path);
+	void SetAndPlayCinema(class ULevelSequence* Sequence);
+
+	class ULevelSequencePlayer* GetSequencePlayer();
+
 
 	UFUNCTION()
 	void StartCinemaFunction();
