@@ -47,6 +47,7 @@ void ATTPerfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(TEXT("JumpAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionJumpAttackMontage.PerfectDurionJumpAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("SummonAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionSummonAttackMontage.PerfectDurionSummonAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("BackMove"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionBackMoveMontage.PerfectDurionBackMoveMontage"));
+	TTAnimInstance->SetMontage(TEXT("Teleport"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionTeleportMontage.PerfectDurionTeleportMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPerfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPerfectDurion::AttackCheck);
 
@@ -228,6 +229,9 @@ void ATTPerfectDurion::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 		break;
 	case FTTWorld::HashCode(TEXT("PerfectDurionBackMoveMontage")):
 		OnDodgeEnded.Broadcast();
+		break;
+	case FTTWorld::HashCode(TEXT("PerfectDurionTeleportMontage")):
+		OnTeleportEnded.Broadcast();
 		break;
 	}
 }
