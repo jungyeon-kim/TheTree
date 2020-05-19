@@ -72,10 +72,7 @@ void ATTPlayer::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	CharacterStat->SetObjectStat(TEXT("Player"));
-	CharacterStat->OnHPIsZero.AddLambda([&]()
-		{
-			SetCharacterState(ECharacterState::DEAD);
-		});
+	CharacterStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
 
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);

@@ -49,6 +49,8 @@ void ATTPerfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(TEXT("BackMove"), TEXT("/Game/Blueprints/Animation/BossEnemy/PerfectDurion/PerfectDurionBackMoveMontage.PerfectDurionBackMoveMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPerfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPerfectDurion::AttackCheck);
+
+	CharacterStat->OnHPIsZero.AddLambda([&]() { SetPlayRate(0.0f, 0.15f, 0.1f); });
 }
 
 void ATTPerfectDurion::PossessedBy(AController* NewController)

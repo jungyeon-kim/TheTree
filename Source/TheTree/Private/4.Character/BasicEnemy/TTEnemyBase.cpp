@@ -39,10 +39,7 @@ void ATTEnemyBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->OnHPIsZero.AddLambda([&]()
-	{
-		SetCharacterState(ECharacterState::DEAD);
-	});
+	CharacterStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
 
 	TTAnimInstance = Cast<UTTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
@@ -103,7 +100,8 @@ void ATTEnemyBase::SetPlayRate(float StartTime, float EndTime, float TimeDilatio
 
 	if (UGameplayStatics::GetGlobalTimeDilation(this) == 1.0f)
 	{
-		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
+		if (!StartTime) UGameplayStatics::SetGlobalTimeDilation(this, FTTWorld::TimeDilation);
+		else GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[0], FTimerDelegate::CreateLambda(
 			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, FTTWorld::TimeDilation); }), StartTime, false);
 		GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle[1], FTimerDelegate::CreateLambda(
 			[&]() { UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); }), EndTime, false);

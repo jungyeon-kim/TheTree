@@ -47,6 +47,8 @@ void ATTImperfectDurion::PostInitializeComponents()
 	TTAnimInstance->SetMontage(TEXT("Teleport"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionTeleportMontage.ImperfectDurionTeleportMontage"));
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTImperfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTImperfectDurion::AttackCheck);
+
+	CharacterStat->OnHPIsZero.AddLambda([&]() { SetPlayRate(0.0f, 0.15f, 0.1f); });
 }
 
 void ATTImperfectDurion::PossessedBy(AController* NewController)
