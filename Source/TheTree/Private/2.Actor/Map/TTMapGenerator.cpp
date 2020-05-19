@@ -3,6 +3,8 @@
 #include "TTTorch.h"
 #include "TTChandelier.h"
 #include "GameFramework/PlayerStart.h"
+#include "TTArcdevaArcher.h"
+#include "TTArcdevaLancer.h"
 
 ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -12,7 +14,6 @@ ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 void ATTMapGenerator::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ATTMapGenerator::Tick(float DeltaTime)
@@ -72,6 +73,9 @@ void ATTMapGenerator::PostInitializeComponents()
 		}
 	}
 	SetChandelier(Map, MapXSize / 2, MapYSize / 2);
+
+	MapTexture = std::move(Map);
+	SetMonsters<ATTArcdevaArcher, ATTArcdevaArcher, ATTArcdevaLancer>();
 }
 
 TArray<bool> ATTMapGenerator::MakeMapTexture()
@@ -180,9 +184,9 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	for (int i = y; i < MapXSize; ++i)
+	for (int i = y; i < MapYSize; ++i)
 	{
-		for (int j = x; j < MapYSize; ++j)
+		for (int j = x; j < MapXSize; ++j)
 		{
 			if (Texture[GetIndexFromXY(j, i)])
 				continue;
@@ -193,9 +197,9 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
 				return;
 			}
-			
 		}
 	}
+
 	for (int i = y-1; i < 0; --i)
 	{
 		for (int j = x - 1; j < 0; --j)
@@ -211,4 +215,20 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			}
 		}
 	}
+
+}
+
+void ATTMapGenerator::SetMonstersImpl()
+{
+	// End
+}
+
+void ATTMapGenerator::InPlaceActor(UClass* Class, float XPos, float YPos)
+{
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	TTLOG(Warning, TEXT("%s"), *Class->GetName());
+	GetWorld()->SpawnActor<ACharacter>(Class, FVector{ XPos, YPos, 200.0f },
+		FRotator{ 0.0f, 0.0f, 0.0f }, Param);
 }
