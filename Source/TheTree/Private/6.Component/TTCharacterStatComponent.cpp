@@ -87,7 +87,7 @@ void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName)
 		SetMaxHP(TTCharacterData->MaxHP);
 		SetMaxSta(TTCharacterData->MaxSta);
 		SetHP(TTCharacterData->MaxHP);
-		SetSta(TTCharacterData->MaxSta);
+		SetSta(0.0f);
 		SetAtk(TTCharacterData->Atk);
 		SetDef(TTCharacterData->Def);
 	}
@@ -102,6 +102,7 @@ void UTTCharacterStatComponent::SetMaxHP(float NewMaxHP)
 void UTTCharacterStatComponent::SetHP(float NewHP)
 {
 	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, CurrentMaxHP);
+	OnHPChanged.Broadcast();
 	if (!CurrentHP) OnHPIsZero.Broadcast();
 }
 
@@ -113,6 +114,7 @@ void UTTCharacterStatComponent::SetMaxSta(float NewMaxSta)
 void UTTCharacterStatComponent::SetSta(float NewSta)
 {
 	CurrentSta = FMath::Clamp<float>(NewSta, 0.0f, CurrentMaxSta);
+	OnStaChanged.Broadcast();
 }
 
 void UTTCharacterStatComponent::SetAtk(float NewAtk)

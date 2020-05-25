@@ -6,6 +6,7 @@
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
+#include "TTUIPlayerInGame.h"
 #include "TTGhostTrailComponent.h"
 #include "DrawDebugHelpers.h"
 
@@ -55,6 +56,7 @@ ATTPlayer::ATTPlayer()
 	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
 	SpringArm->TargetArmLength = 800.0f;
 	MaxCombo = 4;
+	StaToGetPerHit = 5.0f;
 	DeadTimer = 5.0f;
 	GeneralMoveSpeed = 1000.0f;
 	AdvancedMoveSpeed = GeneralMoveSpeed * 1.2f;
@@ -261,38 +263,43 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 		switch (SkillAttackType)
 		{
 		case 0:
-			if (!bIsSkillAttacking[0])
+			if (!bIsSkillAttacking[0] && CharacterStat->GetSta() >= 7.5f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("SmashAttack"));
 				bIsSkillAttacking[0] = true;
+				CharacterStat->SetSta(CharacterStat->GetSta() - 7.5f);
 			}
 			break;
 		case 1:
-			if (!bIsSkillAttacking[1])
+			if (!bIsSkillAttacking[1] && CharacterStat->GetSta() >= 15.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("SlidingSlashAttack"));
 				bIsSkillAttacking[1] = true;
+				CharacterStat->SetSta(CharacterStat->GetSta() - 15.0f);
 			}
 			break;
 		case 2:
-			if (!bIsSkillAttacking[2])
+			if (!bIsSkillAttacking[2] && CharacterStat->GetSta() >= 20.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("WindCutterAttack"));
 				bIsSkillAttacking[2] = true;
+				CharacterStat->SetSta(CharacterStat->GetSta() - 20.0f);
 			}
 			break;
 		case 3:
-			if (!bIsSkillAttacking[3])
+			if (!bIsSkillAttacking[3] && CharacterStat->GetSta() >= 25.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("GaiaCrushAttack"));
 				bIsSkillAttacking[3] = true;
+				CharacterStat->SetSta(CharacterStat->GetSta() - 25.0f);
 			}
 			break;
 		case 4:
-			if (!bIsSkillAttacking[4])
+			if (!bIsSkillAttacking[4] && CharacterStat->GetSta() >= 40.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("DrawSwordAttack"));
 				bIsSkillAttacking[4] = true;
+				CharacterStat->SetSta(CharacterStat->GetSta() - 40.0f);
 			}
 			break;
 		}
@@ -385,6 +392,7 @@ void ATTPlayer::AttackCheck()
 					FDamageEvent DamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
+					CharacterStat->SetSta(CharacterStat->GetSta() + StaToGetPerHit);
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -581,6 +589,8 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
 
+		TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat);
+
 		SetControlMode(EControlMode::THIRD_PERSON);
 		EnableInput(TTPlayerController);
 		SetCharacterState(ECharacterState::NOBATTLE);
@@ -636,8 +646,10 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 
 void ATTPlayer::Dodge(int32 DodgeType)
 {
-	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking && GetCurrentStateNodeName() == TEXT("Ground"))
+	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking && GetCurrentStateNodeName() == TEXT("Ground")
+		&& CharacterStat->GetSta() >= 5.0f)
 	{
+		CharacterStat->SetSta(CharacterStat->GetSta() - 5.0f);
 		bIsDodging = true;
 
 		switch (DodgeType)

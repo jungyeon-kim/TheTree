@@ -5,6 +5,8 @@
 #include "TTCharacterStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHPChangedDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnStaChangedDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class THETREE_API UTTCharacterStatComponent : public UActorComponent
@@ -32,6 +34,8 @@ protected:
 	virtual void BeginPlay() override;
 public:
 	FOnHPIsZeroDelegate OnHPIsZero{};
+	FOnHPChangedDelegate OnHPChanged{};
+	FOnStaChangedDelegate OnStaChanged{};
 public:
 	UTTCharacterStatComponent();
 
