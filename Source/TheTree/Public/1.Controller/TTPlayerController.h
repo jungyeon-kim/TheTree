@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "TTPlayerController.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnSyncDelegate);
+
 UCLASS()
 class THETREE_API ATTPlayerController : public APlayerController
 {
@@ -15,6 +17,8 @@ protected:
 	TSubclassOf<class UTTUIPlayerInGame> TTUIPlayerInGameClass;
 protected:
 	virtual void BeginPlay() override;
+public:
+	FOnSyncDelegate OnSyncDelegate;
 public:
 	ATTPlayerController();
 

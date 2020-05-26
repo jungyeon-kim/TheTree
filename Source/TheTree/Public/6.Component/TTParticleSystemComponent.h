@@ -18,7 +18,7 @@ public:
 	
 	void AddEffect(FName EffectName, const TCHAR* EffectPath);
 	// Must have a unique EffectName.
-	void AddManagedEffect(FName EffectName, UParticleSystemComponent* Effect);
+	void AddManagedEffect(FName EffectName, UParticleSystemComponent* TargetEffect);
 	void DeleteManagedEffect(FName EffectName);
 
 	UParticleSystemComponent* PlayEffectAtLocation(FName EffectName, FVector Location);

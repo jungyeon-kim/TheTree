@@ -9,8 +9,8 @@ class THETREE_API UTTUIPlayerInGame : public UUserWidget
 {
 	GENERATED_BODY()
 private:
-	TWeakObjectPtr<class UTTCharacterStatComponent> CurrentCharacterStat{};
-
+	UPROPERTY()
+	class UTTCharacterStatComponent* CurrentCharacterStat{};
 	UPROPERTY()
 	class UProgressBar* HPBar;
 	UPROPERTY()

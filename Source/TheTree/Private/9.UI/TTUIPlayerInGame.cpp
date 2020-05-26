@@ -18,7 +18,7 @@ void UTTUIPlayerInGame::NativeConstruct()
 
 void UTTUIPlayerInGame::UpdateCharacterStat()
 {
-	TTCHECK(CurrentCharacterStat.IsValid());
+	TTCHECK(CurrentCharacterStat);
 	HPBar->SetPercent(CurrentCharacterStat->GetHPRatio());
 	StaBar->SetPercent(CurrentCharacterStat->GetStaRatio());
 }

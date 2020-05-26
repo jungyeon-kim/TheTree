@@ -12,9 +12,9 @@ void UTTParticleSystemComponent::AddEffect(FName EffectName, const TCHAR* Effect
 	else TTLOG(Error, TEXT("Can't find EffectPath (%s)"), EffectPath);
 }
 
-void UTTParticleSystemComponent::AddManagedEffect(FName EffectName, UParticleSystemComponent* Effect)
+void UTTParticleSystemComponent::AddManagedEffect(FName EffectName, UParticleSystemComponent* TargetEffect)
 {
-	if (!ManagedEffect.Find(EffectName)) ManagedEffect.Emplace(EffectName, Effect);
+	if (!ManagedEffect.Find(EffectName)) ManagedEffect.Emplace(EffectName, TargetEffect);
 	else TTLOG(Error, TEXT("EffectName is duplicated. (%s)"), *EffectName.ToString());
 }
 

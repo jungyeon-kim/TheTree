@@ -41,7 +41,7 @@ void ATTEnemyBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	CharacterStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
-
+	
 	TTAnimInstance = Cast<UTTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 }
@@ -49,9 +49,11 @@ void ATTEnemyBase::PostInitializeComponents()
 void ATTEnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
+	
 	TTAIController = Cast<ATTAIController>(GetController());
 	TTCHECK(TTAIController);
+
+	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTEnemyBase::BeginPlay()
