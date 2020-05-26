@@ -589,7 +589,9 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
 
-		TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat);
+		if (!GetWorld()->IsPlayInEditor()) TTPlayerController->OnSyncDelegate.AddLambda([&]() {
+			TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat); });
+		else TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat);
 
 		SetControlMode(EControlMode::THIRD_PERSON);
 		EnableInput(TTPlayerController);
