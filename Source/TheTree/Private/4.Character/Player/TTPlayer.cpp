@@ -96,6 +96,7 @@ void ATTPlayer::PostInitializeComponents()
 void ATTPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -127,8 +128,6 @@ void ATTPlayer::BeginPlay()
 	CurrentWeapon = GetWorld()->SpawnActor<ATTPlayerWeapon>();
 	if (CurrentWeapon) CurrentWeapon->AttachToComponent(GetMesh(),
 		FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Back_Socket"));
-
-	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTPlayer::Tick(float DeltaTime)

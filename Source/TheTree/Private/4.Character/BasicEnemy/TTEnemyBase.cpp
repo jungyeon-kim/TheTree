@@ -43,8 +43,6 @@ void ATTEnemyBase::PostInitializeComponents()
 
 	TTAnimInstance = Cast<UTTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
-
-	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTEnemyBase::PossessedBy(AController* NewController)
@@ -58,6 +56,7 @@ void ATTEnemyBase::PossessedBy(AController* NewController)
 void ATTEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTEnemyBase::Tick(float DeltaTime)
