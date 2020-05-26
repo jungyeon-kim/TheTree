@@ -5,6 +5,8 @@
 #include "GameFramework/PlayerStart.h"
 #include "TTArcdevaArcher.h"
 #include "TTArcdevaLancer.h"
+#include "TTArcdevaWarrior.h"
+#include "TTTrooper.h"
 
 ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -14,6 +16,7 @@ ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 void ATTMapGenerator::BeginPlay()
 {
 	Super::BeginPlay();
+	SetMonsters<ATTArcdevaArcher, ATTArcdevaWarrior, ATTArcdevaLancer>();
 }
 
 void ATTMapGenerator::Tick(float DeltaTime)
@@ -75,7 +78,6 @@ void ATTMapGenerator::PostInitializeComponents()
 	SetChandelier(Map, MapXSize / 2, MapYSize / 2);
 
 	MapTexture = std::move(Map);
-	SetMonsters<ATTArcdevaArcher, ATTArcdevaArcher, ATTArcdevaLancer>();
 }
 
 TArray<bool> ATTMapGenerator::MakeMapTexture()

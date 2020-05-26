@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TheTree.h"
-#include "LevelSequenceActor.h"
 #include "GameFramework/Actor.h"
 #include "TTCinema.generated.h"
 

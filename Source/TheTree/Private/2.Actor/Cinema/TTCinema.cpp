@@ -1,6 +1,7 @@
 #include "TTCinema.h"
 #include "TTEnemyBase.h"
 #include "TTAIController.h"
+#include "LevelSequencePlayer.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
 ATTCinema::ATTCinema()
@@ -81,8 +82,12 @@ ULevelSequencePlayer* ATTCinema::GetSequencePlayer()
 
 void ATTCinema::StartCinemaFunction()
 {
-	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->
-		DisableInput(GetWorld()->GetFirstPlayerController());
+	APlayerController* Controller{ GetWorld()->GetFirstPlayerController() };
+	if (Controller)
+	{
+		UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(Controller);
+		TTLOG_S(Warning);
+	}
 
 	TArray<AActor*> Arr{};
 
