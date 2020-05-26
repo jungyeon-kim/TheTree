@@ -1,7 +1,10 @@
 #include "TTPlayerController.h"
+#include "TTUIPlayerInGame.h"
 
 ATTPlayerController::ATTPlayerController()
 {
+	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME(TEXT("/Game/UI/UI_Player_InGame.UI_Player_InGame_C"));
+	if (UI_PLAYER_INGAME.Succeeded()) TTUIPlayerInGameClass = UI_PLAYER_INGAME.Class;
 }
 
 void ATTPlayerController::PostInitializeComponents()
@@ -22,11 +25,19 @@ void ATTPlayerController::BeginPlay()
 
 	FInputModeGameOnly InputModeGameOnly{};
 	SetInputMode(InputModeGameOnly);
+
+	TTUIPlayerInGame = CreateWidget<UTTUIPlayerInGame>(this, TTUIPlayerInGameClass);
+	TTUIPlayerInGame->AddToViewport();
 }
 
 void ATTPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+}
+
+UTTUIPlayerInGame* ATTPlayerController::GetUIPlayerInGame() const
+{
+	return TTUIPlayerInGame;
 }
 
 void ATTPlayerController::SwapDebugMode()
