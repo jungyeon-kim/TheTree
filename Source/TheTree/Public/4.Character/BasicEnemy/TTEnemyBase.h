@@ -33,6 +33,7 @@ protected:
 	UPROPERTY()
 	AActor* LastDamageInstigator;
 protected:
+
 	virtual void BeginPlay() override;
 
 	void TurnToTarget(AActor* Target, float InterpSpeed);
@@ -65,4 +66,6 @@ public:
 
 	void SetPlayRate(float StartTime, float EndTime, float TimeDilation);
 	void SetCharacterState(ECharacterState NewState);
+
+	
 };

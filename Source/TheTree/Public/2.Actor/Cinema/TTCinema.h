@@ -15,6 +15,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginDestroy() override;
 public:	
 	virtual void Tick(float DeltaTime) override;
 	void SetCinema(const TCHAR* Path);

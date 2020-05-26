@@ -63,6 +63,11 @@ void ATTCinema::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+void ATTCinema::BeginDestroy()
+{
+	Super::BeginDestroy();
+}
+
 void ATTCinema::SetAndPlayCinema(const TCHAR* Path)
 {
 	SetCinema(Path);
@@ -112,6 +117,7 @@ void ATTCinema::EndCinemaFunction()
 	for (AActor*& Enemy : Arr)
 		Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
 
+	
 	Destroy();
 }
 

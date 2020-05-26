@@ -1,5 +1,9 @@
 #include "TTPortal.h"
 #include "TTPlayer.h"
+#include "TTGameInstance.h"
+#include "TTCinema.h"
+#include "LevelSequencePlayer.h"
+
 ATTPortal::ATTPortal()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -17,6 +21,7 @@ ATTPortal::ATTPortal()
 	OverlapBox->OnComponentBeginOverlap.AddDynamic(this, &ATTPortal::OnOverlapBegin);
 	OverlapBox->SetSimulatePhysics(false);
 	OverlapBox->BodyInstance.SetCollisionProfileName("Trigger");
+	OverlapBox->SetRelativeScale3D(FVector{ 0.5f, 0.5f, 0.5f });
 	OverlapBox->SetupAttachment(RootComponent);
 
 	SetActorScale3D(FVector{ 4.0f, 4.0f, 4.0f });
@@ -35,9 +40,26 @@ void ATTPortal::Tick(float DeltaTime)
 void ATTPortal::OnOverlapBegin(UPrimitiveComponent* OverlapComp , AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ATTPlayer* Player{ Cast<ATTPlayer>(OtherActor) };
-	if (Player) 
+	if (Player)
 	{
-		TTLOG_S(Warning);
+		ATTCinema* FadeCinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
+		FadeCinema->SetCinema(TEXT("/Game/Level/Cinema/CI_FadeIn.CI_FadeIn"));
+		FScriptDelegate Script{};
+		Script.BindUFunction(this, "EndCinema");
+		FadeCinema->GetSequencePlayer()->OnFinished.Add(Script);
+		FadeCinema->PlayCinema();
+	}
+}
+
+void ATTPortal::EndCinema()
+{
+	UTTGameInstance* Inst{ GetGameInstance<UTTGameInstance>() };
+	if (Inst)
+	{
+		if (Inst->GetClearCount() < Inst->GetPlanOfClearCount())
+			UGameplayStatics::OpenLevel(GetWorld(), FName{ "Common_Battle" });
+		else
+			UGameplayStatics::OpenLevel(GetWorld(), FName{ "ImperfectDurion_Battle" });
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
+#include "TTBaseLevel.h"
 #include "DrawDebugHelpers.h"
 
 ATTEnemyBase::ATTEnemyBase()
@@ -147,7 +148,17 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 
 		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-			[&]() { Destroy(); }), DeadTimer, false);
+			[&]()
+			{ 
+				ATTBaseLevel* CurrentLevel{ Cast<ATTBaseLevel>(GetWorld()->GetLevelScriptActor()) };
+				if (CurrentLevel)
+					CurrentLevel->AddMonsterCount(-1);
+				Destroy(); 
+			
+			}), DeadTimer, false);
+		
+
+		
 		break;
 	}
 	}

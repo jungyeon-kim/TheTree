@@ -7,6 +7,7 @@
 #include "TTArcdevaLancer.h"
 #include "TTArcdevaWarrior.h"
 #include "TTTrooper.h"
+#include "TTPortal.h"
 
 ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -197,6 +198,11 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			{
 				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
 					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+				ATTPortal* Portal{ GetWorld()->SpawnActor<ATTPortal>(ATTPortal::StaticClass(),
+					FVector{ MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
+				Portal->SetActorHiddenInGame(true);
+				Portal->SetActorEnableCollision(false);
+				
 				return;
 			}
 		}
@@ -217,7 +223,6 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			}
 		}
 	}
-
 }
 
 void ATTMapGenerator::SetMonstersImpl()
