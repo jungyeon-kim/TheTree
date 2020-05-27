@@ -96,8 +96,6 @@ public:
 	class UTTAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	class ATTPlayerWeapon* CurrentWeapon;
-	//UPROPERTY(VisibleAnywhere, Category = "UI")
-	//class UWidgetComponent* HPBarWidget;
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	class UTTCharacterStatComponent* CharacterStat;
 public:	

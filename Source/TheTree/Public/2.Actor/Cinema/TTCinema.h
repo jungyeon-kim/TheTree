@@ -25,7 +25,6 @@ public:
 
 	class ULevelSequencePlayer* GetSequencePlayer();
 
-
 	UFUNCTION()
 	void StartCinemaFunction();
 	UFUNCTION()
@@ -33,7 +32,6 @@ public:
 private:
 	UPROPERTY()
 	class ULevelSequence* LevelSequence;
-
 	UPROPERTY()
 	class ULevelSequencePlayer* SequencePlayer;
 };

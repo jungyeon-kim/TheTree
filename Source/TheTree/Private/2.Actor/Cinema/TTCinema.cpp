@@ -1,6 +1,8 @@
 #include "TTCinema.h"
 #include "TTEnemyBase.h"
 #include "TTAIController.h"
+#include "TTPlayerController.h"
+#include "TTUIPlayerInGame.h"
 #include "LevelSequencePlayer.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
@@ -16,9 +18,9 @@ void ATTCinema::SetCinema(class ULevelSequence* Sequence)
 	Settings.bDisableMovementInput = true;
 	Settings.bDisableLookAtInput = true;
 
-	ALevelSequenceActor* outActor{ nullptr };
+	ALevelSequenceActor* OutActor{ nullptr };
 
-	SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequence, Settings, outActor);
+	SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequence, Settings, OutActor);
 	if (SequencePlayer)
 	{
 		FScriptDelegate EndFuncDelegate{};
@@ -38,9 +40,9 @@ void ATTCinema::SetCinema(const TCHAR* Path)
 	Settings.bDisableMovementInput = true;
 	Settings.bDisableLookAtInput = true;
 
-	ALevelSequenceActor* outActor{ nullptr };
+	ALevelSequenceActor* OutActor{ nullptr };
 
-	SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequence, Settings, outActor);
+	SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequence, Settings, OutActor);
 	if (SequencePlayer)
 	{
 		FScriptDelegate EndFuncDelegate{};
@@ -82,12 +84,14 @@ ULevelSequencePlayer* ATTCinema::GetSequencePlayer()
 
 void ATTCinema::StartCinemaFunction()
 {
-	APlayerController* Controller{ GetWorld()->GetFirstPlayerController() };
-	if (Controller)
-	{
-		UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(Controller);
-		TTLOG_S(Warning);
-	}
+	static ATTPlayerController* PlayerController{};
+	PlayerController = Cast<ATTPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	TTCHECK(PlayerController);
+	UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(PlayerController);
+	if (!PlayerController->GetUIPlayerInGame()) PlayerController->OnSyncDelegate.AddLambda([&]() {
+		PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden); });
+	else PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden);
 
 	TArray<AActor*> Arr{};
 
@@ -101,6 +105,11 @@ void ATTCinema::StartCinemaFunction()
 
 void ATTCinema::EndCinemaFunction()
 {
+	ATTPlayerController* PlayerController{ Cast<ATTPlayerController>(GetWorld()->GetFirstPlayerController()) };
+
+	TTCHECK(PlayerController);
+	PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Visible);
+	
 	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->
 		EnableInput(GetWorld()->GetFirstPlayerController());
 
@@ -124,6 +133,3 @@ void ATTCinema::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-
-

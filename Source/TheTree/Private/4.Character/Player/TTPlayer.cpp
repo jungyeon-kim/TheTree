@@ -98,7 +98,6 @@ void ATTPlayer::PostInitializeComponents()
 void ATTPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -130,6 +129,8 @@ void ATTPlayer::BeginPlay()
 	CurrentWeapon = GetWorld()->SpawnActor<ATTPlayerWeapon>();
 	if (CurrentWeapon) CurrentWeapon->AttachToComponent(GetMesh(),
 		FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Back_Socket"));
+
+	SetCharacterState(ECharacterState::READY);
 }
 
 void ATTPlayer::Tick(float DeltaTime)
@@ -588,7 +589,12 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
 
-		if (!GetWorld()->IsPlayInEditor()) TTPlayerController->OnSyncDelegate.AddLambda([&]() {
+		/*
+			The order of BeginPlay() calls between player and player controller 
+			in the editor and packaging files is different.
+			So, for both cases, split the branch and execute the code below.
+		*/
+		if (!TTPlayerController->GetUIPlayerInGame()) TTPlayerController->OnSyncDelegate.AddLambda([&]() {
 			TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat); });
 		else TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat);
 
@@ -647,10 +653,8 @@ void ATTPlayer::SetControlMode(EControlMode NewControlMode)
 
 void ATTPlayer::Dodge(int32 DodgeType)
 {
-	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking && GetCurrentStateNodeName() == TEXT("Ground")
-		&& CharacterStat->GetSta() >= 5.0f)
+	if (!bIsDodging && !bIsSwappingWeapon && !bIsKnockBacking && GetCurrentStateNodeName() == TEXT("Ground"))
 	{
-		CharacterStat->SetSta(CharacterStat->GetSta() - 5.0f);
 		bIsDodging = true;
 
 		switch (DodgeType)

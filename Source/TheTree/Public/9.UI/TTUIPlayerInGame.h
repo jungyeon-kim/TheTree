@@ -17,7 +17,7 @@ private:
 	class UProgressBar* StaBar;
 protected:
 	virtual void NativeConstruct() override;
-	void UpdateCharacterStat();
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
 };

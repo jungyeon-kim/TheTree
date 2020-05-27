@@ -3,7 +3,7 @@
 
 ATTPlayerController::ATTPlayerController()
 {
-	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME(TEXT("/Game/Blueprints/UI/UI_Player_InGame.UI_Player_InGame_C"));
+	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME(TEXT("/Game/Blueprints/UI/UI_Player_InGame/UI_Player_InGame.UI_Player_InGame_C"));
 	if (UI_PLAYER_INGAME.Succeeded()) TTUIPlayerInGameClass = UI_PLAYER_INGAME.Class;
 }
 
@@ -25,7 +25,7 @@ void ATTPlayerController::BeginPlay()
 
 	FInputModeGameOnly InputModeGameOnly{};
 	SetInputMode(InputModeGameOnly);
-
+	
 	TTUIPlayerInGame = CreateWidget<UTTUIPlayerInGame>(this, TTUIPlayerInGameClass);
 	TTUIPlayerInGame->AddToViewport();
 

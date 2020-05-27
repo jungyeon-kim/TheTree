@@ -16,17 +16,16 @@ void UTTUIPlayerInGame::NativeConstruct()
 	StaBar->SetPercent(0.0f);
 }
 
-void UTTUIPlayerInGame::UpdateCharacterStat()
+void UTTUIPlayerInGame::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	TTCHECK(CurrentCharacterStat);
-	HPBar->SetPercent(CurrentCharacterStat->GetHPRatio());
-	StaBar->SetPercent(CurrentCharacterStat->GetStaRatio());
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	HPBar->SetPercent(FMath::FInterpTo(HPBar->Percent, CurrentCharacterStat->GetHPRatio(), InDeltaTime, 5.0f));
+	StaBar->SetPercent(FMath::FInterpTo(StaBar->Percent, CurrentCharacterStat->GetStaRatio(), InDeltaTime, 5.0f));
 }
 
 void UTTUIPlayerInGame::BindCharacterStat(UTTCharacterStatComponent* CharacterStat)
 {
 	TTCHECK(CharacterStat);
 	CurrentCharacterStat = CharacterStat;
-	CurrentCharacterStat->OnHPChanged.AddUObject(this, &UTTUIPlayerInGame::UpdateCharacterStat);
-	CurrentCharacterStat->OnStaChanged.AddUObject(this, &UTTUIPlayerInGame::UpdateCharacterStat);
 }
