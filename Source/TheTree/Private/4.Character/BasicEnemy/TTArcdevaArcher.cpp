@@ -22,7 +22,7 @@ ATTArcdevaArcher::ATTArcdevaArcher()
 
 	GeneralMoveSpeed = 800.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
-	DeadTimer = 20.0f;
+	DeadTimer = 10.0f;
 }
 
 void ATTArcdevaArcher::PostInitializeComponents()

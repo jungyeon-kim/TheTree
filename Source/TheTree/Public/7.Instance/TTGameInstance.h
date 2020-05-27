@@ -29,10 +29,19 @@ class THETREE_API UTTGameInstance : public UGameInstance
 private:
 	UPROPERTY()
 	class UDataTable* TTCharacterTable;
+
+	int ClearCount{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelManage", Meta = (AllowPrivateAccess = true))
+	int PlanOfClearCount{ 3 };
 public:
 	UTTGameInstance();
 
 	virtual void Init() override;
 
 	FTTCharacterData* GetTTCharacterData(FName ObjectName);
+
+	int GetClearCount();
+	void AddClearCount();
+	const int GetPlanOfClearCount();
 };

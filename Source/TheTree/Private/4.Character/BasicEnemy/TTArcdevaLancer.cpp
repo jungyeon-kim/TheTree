@@ -26,7 +26,7 @@ ATTArcdevaLancer::ATTArcdevaLancer()
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -150.0f));
 	GeneralMoveSpeed = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
-	DeadTimer = 20.0f;
+	DeadTimer = 10.0f;
 }
 
 void ATTArcdevaLancer::PostInitializeComponents()
