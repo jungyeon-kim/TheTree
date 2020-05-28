@@ -16,7 +16,7 @@ FTTCharacterData* UTTGameInstance::GetTTCharacterData(FName ObjectName)
 	return TTCharacterTable->FindRow<FTTCharacterData>(ObjectName, TEXT(""));
 }
 
-int UTTGameInstance::GetClearCount()
+int32 UTTGameInstance::GetClearCount()
 {
 	return ClearCount;
 }
@@ -26,7 +26,7 @@ void UTTGameInstance::AddClearCount()
 	++ClearCount;
 }
 
-const int UTTGameInstance::GetPlanOfClearCount()
+const int32 UTTGameInstance::GetPlanOfClearCount()
 {
 	return PlanOfClearCount;
 }

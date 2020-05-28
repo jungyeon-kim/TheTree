@@ -30,10 +30,10 @@ private:
 	UPROPERTY()
 	class UDataTable* TTCharacterTable;
 
-	int ClearCount{};
+	int32 ClearCount{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelManage", Meta = (AllowPrivateAccess = true))
-	int PlanOfClearCount{ 3 };
+	int32 PlanOfClearCount{ 3 };
 public:
 	UTTGameInstance();
 
@@ -41,7 +41,7 @@ public:
 
 	FTTCharacterData* GetTTCharacterData(FName ObjectName);
 
-	int GetClearCount();
+	int32 GetClearCount();
 	void AddClearCount();
-	const int GetPlanOfClearCount();
+	const int32 GetPlanOfClearCount();
 };
