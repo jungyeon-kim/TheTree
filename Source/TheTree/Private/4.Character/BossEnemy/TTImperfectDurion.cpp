@@ -38,7 +38,7 @@ void ATTImperfectDurion::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("ImperfectDurion"));
+	CharacterStat->SetObjectStat(TEXT("ImperfectDurion"), GetGameInstance());
 	
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionAttackMontage.ImperfectDurionAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("DrainAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionDrainAttackMontage.ImperfectDurionDrainAttackMontage"));

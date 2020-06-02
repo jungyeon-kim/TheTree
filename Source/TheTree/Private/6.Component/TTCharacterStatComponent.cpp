@@ -76,11 +76,12 @@ float UTTCharacterStatComponent::GetDef() const
 	return CurrentDef;
 }
 
-void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName)
+void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName, UGameInstance* GameInst)
 {
-	const auto& TTGameInstance{ Cast<UTTGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())) };
-	
+	TTCHECK(GameInst);
+	const auto TTGameInstance{ Cast<UTTGameInstance>(GameInst) };
 	if (TTGameInstance) TTCharacterData = TTGameInstance->GetTTCharacterData(NewObjectName);
+
 	if (TTCharacterData)
 	{
 		ObjectName = NewObjectName;

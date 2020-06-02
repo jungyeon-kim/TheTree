@@ -11,9 +11,6 @@ void UTTUIPlayerInGame::NativeConstruct()
 	TTCHECK(HPBar);
 	StaBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbSta")));
 	TTCHECK(StaBar);
-
-	HPBar->SetPercent(100.0f);
-	StaBar->SetPercent(0.0f);
 }
 
 void UTTUIPlayerInGame::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -28,4 +25,7 @@ void UTTUIPlayerInGame::BindCharacterStat(UTTCharacterStatComponent* CharacterSt
 {
 	TTCHECK(CharacterStat);
 	CurrentCharacterStat = CharacterStat;
+
+	HPBar->SetPercent(CurrentCharacterStat->GetHPRatio());
+	StaBar->SetPercent(CurrentCharacterStat->GetStaRatio());
 }

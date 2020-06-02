@@ -46,7 +46,7 @@ public:
 	float GetSta() const;
 	float GetAtk() const;
 	float GetDef() const;
-	void SetObjectStat(FName NewObjectName);
+	void SetObjectStat(FName NewObjectName, class UGameInstance* GameInst);
 	void SetMaxHP(float NewMaxHP);
 	void SetHP(float NewHP);
 	void SetMaxSta(float NewMaxSta);

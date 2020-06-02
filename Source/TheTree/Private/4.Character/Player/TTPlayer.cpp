@@ -1,5 +1,6 @@
 #include "TTPlayer.h"
 #include "TTPlayerController.h"
+#include "TTGameInstance.h"
 #include "TTPlayerWeapon.h"
 #include "TTPlayerAnimInstance.h"
 #include "TTCameraShake.h"
@@ -19,7 +20,6 @@ ATTPlayer::ATTPlayer()
 	CameraShake = UTTCameraShake::StaticClass();
 	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
-	CharacterStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 	TTGhostTrail = CreateDefaultSubobject<UTTGhostTrailComponent>(TEXT("GHOSTTRAIL"));
 
 	RootComponent = GetCapsuleComponent();
@@ -73,9 +73,6 @@ void ATTPlayer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("Player"));
-	CharacterStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
-
 	TTAnimInstance = Cast<UTTPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTPlayer::OnMontageEnded);
@@ -124,6 +121,12 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ATTPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	const auto TTGameInstance{ GetGameInstance<UTTGameInstance>() };
+	TTCHECK(TTGameInstance);
+	CharacterStat = TTGameInstance->GetTTPlayerStat();
+	CharacterStat->OnHPIsZero.Clear();
+	CharacterStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
 
 	TTPlayerController = Cast<ATTPlayerController>(GetController());
 	CurrentWeapon = GetWorld()->SpawnActor<ATTPlayerWeapon>();
@@ -625,7 +628,11 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 
 		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-			[&]() { TTPlayerController->RestartLevel(); }), DeadTimer, false);
+			[&]() 
+			{ 
+				CharacterStat->SetObjectStat(TEXT("Player"), GetGameInstance());
+				TTPlayerController->RestartLevel(); 
+			}), DeadTimer, false);
 		break;
 	}
 	}

@@ -35,7 +35,7 @@ void ATTTrooper::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("Trooper"));
+	CharacterStat->SetObjectStat(TEXT("Trooper"), GetGameInstance());
 
 	TTAnimInstance->SetMontage(TEXT("BasicAttack1"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperAttackMontage_00.TrooperAttackMontage_00"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack2"), TEXT("/Game/Blueprints/Animation/BossEnemy/Trooper/TrooperAttackMontage_01.TrooperAttackMontage_01"));

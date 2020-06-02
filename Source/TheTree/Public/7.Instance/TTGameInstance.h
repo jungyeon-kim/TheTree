@@ -29,6 +29,8 @@ class THETREE_API UTTGameInstance : public UGameInstance
 private:
 	UPROPERTY()
 	class UDataTable* TTCharacterTable;
+	UPROPERTY()
+	class UTTCharacterStatComponent* TTPlayerStat;
 
 	int32 ClearCount{};
 
@@ -39,7 +41,8 @@ public:
 
 	virtual void Init() override;
 
-	FTTCharacterData* GetTTCharacterData(FName ObjectName);
+	FTTCharacterData* GetTTCharacterData(FName ObjectName) const;
+	class UTTCharacterStatComponent* GetTTPlayerStat() const;
 
 	int32 GetClearCount();
 	void AddClearCount();
