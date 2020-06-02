@@ -8,6 +8,7 @@
 #include "TTArcdevaWarrior.h"
 #include "TTTrooper.h"
 #include "TTPortal.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -17,7 +18,6 @@ ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 void ATTMapGenerator::BeginPlay()
 {
 	Super::BeginPlay();
-	SetMonsters<ATTArcdevaArcher, ATTArcdevaWarrior, ATTArcdevaLancer>();
 }
 
 void ATTMapGenerator::Tick(float DeltaTime)
@@ -61,7 +61,7 @@ void ATTMapGenerator::PostInitializeComponents()
 			}
 			else 
 			{
-				if (!bOnce && CountNeighboursWithoutThis(Map, x, y, -2, 3) < 1)
+				if (!bOnce && CountNeighboursWithoutThis(Map, x, y, -4, 5) < 1)
 				{
 					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
 					bOnce ^= true;
@@ -79,6 +79,18 @@ void ATTMapGenerator::PostInitializeComponents()
 	SetChandelier(Map, MapXSize / 2, MapYSize / 2);
 
 	MapTexture = std::move(Map);
+	SetMonsters<ATTArcdevaArcher, ATTArcdevaWarrior, ATTArcdevaLancer>();
+	TArray<AActor*> monsters{};
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTArcdevaArcher::StaticClass(), monsters);
+	
+	if (monsters.Num())
+	{
+		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(StartActor->GetActorLocation(), monsters[0]->GetActorLocation()) };
+		StartActor->SetActorRotation(Rot);
+	}
+	
+
 }
 
 TArray<bool> ATTMapGenerator::MakeMapTexture()
@@ -194,7 +206,7 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			if (Texture[GetIndexFromXY(j, i)])
 				continue;
 
-			if (!CountNeighboursWithoutThis(Texture, j, i, -1, 2))
+			if (!CountNeighboursWithoutThis(Texture, j, i, -2, 3))
 			{
 				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
 					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);

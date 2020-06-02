@@ -9,9 +9,14 @@
 ATTCinema::ATTCinema()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	static ConstructorHelpers::FObjectFinder<ULevelSequence> SLS_FADE
+	{ TEXT("/Game/Level/Cinema/CI_FadeOut.CI_FadeOut") };
+	if (SLS_FADE.Succeeded())
+		LevelSequence = SLS_FADE.Object;
 }
 void ATTCinema::SetCinema(class ULevelSequence* Sequence)
 {
+	if(Sequence)
 	LevelSequence = Sequence;
 	FMovieSceneSequencePlaybackSettings Settings{};
 

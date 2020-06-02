@@ -126,7 +126,7 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 	{
 		SetActorHiddenInGame(false);
 		bCanBeDamaged = true;
-		TTAIController->RunAI();
+		//TTAIController->RunAI();
 		
 		SetCharacterState(ECharacterState::NOBATTLE);
 		break;

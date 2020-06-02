@@ -602,7 +602,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		else TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat);
 
 		SetControlMode(EControlMode::THIRD_PERSON);
-		EnableInput(TTPlayerController);
+		//EnableInput(TTPlayerController);
 		SetCharacterState(ECharacterState::NOBATTLE);
 		break;
 	}
