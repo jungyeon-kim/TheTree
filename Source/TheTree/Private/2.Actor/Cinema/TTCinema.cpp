@@ -18,12 +18,9 @@ void ATTCinema::SetCinema(class ULevelSequence* Sequence)
 {
 	if(Sequence)
 	LevelSequence = Sequence;
+
 	FMovieSceneSequencePlaybackSettings Settings{};
-
-	Settings.bDisableMovementInput = true;
-	Settings.bDisableLookAtInput = true;
-
-	ALevelSequenceActor* OutActor{ nullptr };
+	ALevelSequenceActor* OutActor{};
 
 	SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), LevelSequence, Settings, OutActor);
 	if (SequencePlayer)
@@ -129,9 +126,9 @@ void ATTCinema::EndCinemaFunction()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),
 		ATTEnemyBase::StaticClass(), Arr);
 
-	if(bRunAIFlags)
-	for (AActor*& Enemy : Arr)
-		Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
+	if (bRunAIFlags)
+		for (AActor*& Enemy : Arr)
+			Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
 
 	
 	Destroy();
