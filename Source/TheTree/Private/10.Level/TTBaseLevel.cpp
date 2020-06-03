@@ -1,10 +1,10 @@
 #include "TTBaseLevel.h"
 #include "TTCinema.h"
 #include "Kismet/GameplayStatics.h"
-ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence)
+ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlags)
 {
 	ATTCinema* Cinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
-	Cinema->SetAndPlayCinema(Sequence);
+	Cinema->SetAndPlayCinema(Sequence, bRunAIFlags);
 	return Cinema->GetSequencePlayer();
 }
 

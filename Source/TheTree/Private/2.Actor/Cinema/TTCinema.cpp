@@ -81,8 +81,9 @@ void ATTCinema::SetAndPlayCinema(const TCHAR* Path)
 	PlayCinema();
 }
 
-void ATTCinema::SetAndPlayCinema(ULevelSequence* Sequence)
+void ATTCinema::SetAndPlayCinema(ULevelSequence* Sequence, bool bRunAI)
 {
+	bRunAIFlags = bRunAI;
 	SetCinema(Sequence);
 	PlayCinema();
 }
@@ -128,6 +129,7 @@ void ATTCinema::EndCinemaFunction()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),
 		ATTEnemyBase::StaticClass(), Arr);
 
+	if(bRunAIFlags)
 	for (AActor*& Enemy : Arr)
 		Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
 

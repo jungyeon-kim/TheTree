@@ -12,7 +12,7 @@ class THETREE_API ATTBaseLevel : public ALevelScriptActor
 	
 protected:
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
-	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence);
+	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlags = true);
 
 	int32 CurrentMonsterCount{};
 
