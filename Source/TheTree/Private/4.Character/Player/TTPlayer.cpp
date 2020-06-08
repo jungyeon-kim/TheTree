@@ -29,7 +29,7 @@ ATTPlayer::ATTPlayer()
 	Audio->SetupAttachment(RootComponent);
 	TTGhostTrail->SetupAttachment(RootComponent);
 	
-	GetMesh()->SetCollisionProfileName(TEXT("Player"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -51,6 +51,7 @@ ATTPlayer::ATTPlayer()
 	Audio->AddSoundWave(TEXT("HitSlidingSlash"), TEXT("/Game/Assets/Sound/Player/Player_SlidingSlash_Hit.Player_SlidingSlash_Hit"));
 	Audio->AddSoundWave(TEXT("HitWindCutter"), TEXT("/Game/Assets/Sound/Player/Player_WindCutter_Shot.Player_WindCutter_Shot"));
 	Audio->AddSoundWave(TEXT("HitDrawSword"), TEXT("/Game/Assets/Sound/Player/Player_DrawSword_Hit.Player_DrawSword_Hit"));
+	TTGhostTrail->SetGhostTrail(TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), GetMesh());
 
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
@@ -65,7 +66,6 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->GravityScale = 3.0f;
 	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
 
-	TTGhostTrail->SetGhostTrail(TEXT("/Game/Assets/Effect/Material/M_Player_Ghost_Trail.M_Player_Ghost_Trail"), GetMesh());
 	SetCharacterState(ECharacterState::LOADING);
 }
 

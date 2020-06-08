@@ -5,6 +5,7 @@
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
+#include "TTHPBead.h"
 #include "TTBaseLevel.h"
 #include "DrawDebugHelpers.h"
 
@@ -22,7 +23,7 @@ ATTEnemyBase::ATTEnemyBase()
 	RootComponent = GetCapsuleComponent();
 	Effect->SetupAttachment(RootComponent);
 	Audio->SetupAttachment(RootComponent);
-	GetMesh()->SetCollisionProfileName(TEXT("Enemy"));
+	GetMesh()->SetCollisionProfileName(TEXT("NoCollision"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -148,6 +149,8 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 		TTAnimInstance->StopAllMontages(0.25f);
 		TTAnimInstance->SetDead();
 
+		if (FMath::RandRange(0, 1)) GetWorld()->SpawnActor<ATTHPBead>(GetActorLocation(), FRotator::ZeroRotator);
+
 		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]()
@@ -158,9 +161,6 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 				Destroy(); 
 			
 			}), DeadTimer, false);
-		
-
-		
 		break;
 	}
 	}
