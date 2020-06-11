@@ -206,7 +206,7 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			if (Texture[GetIndexFromXY(j, i)])
 				continue;
 
-			if (!CountNeighboursWithoutThis(Texture, j, i, -2, 3))
+			if (!CountNeighboursWithoutThis(Texture, j, i, -4, 5))
 			{
 				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
 					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);

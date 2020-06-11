@@ -66,7 +66,7 @@ private:
 		{
 			for (int x = MapXSize / 2; x < MapXSize && size != 0; ++x)
 			{
-				if (MapTexture[GetIndexFromXY(x, y)] || CountNeighboursWithoutThis(MapTexture, x, y) > 3)
+				if (MapTexture[GetIndexFromXY(x, y)] || CountNeighboursWithoutThis(MapTexture, x, y) > 2)
 					continue;
 				InPlaceActor(ClassCluster.Last(), MapOffsetX +  (x * 300.0f), MapOffsetY + (y * 300.0f));
 				ClassCluster.Pop();
