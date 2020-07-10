@@ -27,10 +27,10 @@ private:
 	int32 DeathLimits;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	int32 MapXSize { 30 };
+	int32 MapXSize{ 30 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	int32 MapYSize { 30 };
+	int32 MapYSize{ 30 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
 	float MapOffsetX{ -4500.0f };
@@ -42,7 +42,7 @@ private:
 	float MapOffsetZ{ 0.0f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	int32 GenerateChance { 45 };
+	int32 GenerateChance{ 45 };
 
 	TArray<bool> MapTexture{};
 	TArray<UClass*> ClassCluster{};

@@ -26,7 +26,7 @@ ATTHPBead::ATTHPBead()
 	Audio->AddSoundWave(TEXT("Heal"), TEXT("/Game/Assets/Sound/Common/Common_Heal.Common_Heal"));
 
 	RootComponent->SetWorldScale3D(FVector{ FMath::FRandRange(0.1f, 0.5f) });
-	Light->Intensity = 500000.0f;
+	Light->Intensity = 100000.0f;
 	Light->LightColor = FColor{ 255, 0, 0 };
 	Light->AttenuationRadius = RootComponent->GetComponentScale().X * 200.0f;
 	Light->SourceRadius = RootComponent->GetComponentScale().X * 200.0f;

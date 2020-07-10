@@ -16,7 +16,7 @@ ATTChandelier::ATTChandelier()
 	RootComponent = ChandelierMesh;
 	
 	ChandelierLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("CHANDELIERLIGHT"));
-	ChandelierLight->Intensity = 150.0f;
+	ChandelierLight->Intensity = 75.0f;
 	ChandelierLight->LightColor = FColor{ 255,173,93 };
 	ChandelierLight->AttenuationRadius = 7500.0f;
 	ChandelierLight->SourceRadius = 35000.0f;

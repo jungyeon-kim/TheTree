@@ -120,13 +120,13 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 	case ECharacterState::LOADING:
 	{
 		SetActorHiddenInGame(true);
-		bCanBeDamaged = false;
+		SetCanBeDamaged(false);
 		break;
 	}
 	case ECharacterState::READY:
 	{
 		SetActorHiddenInGame(false);
-		bCanBeDamaged = true;
+		SetCanBeDamaged(true);
 		//TTAIController->RunAI();
 		
 		SetCharacterState(ECharacterState::NOBATTLE);

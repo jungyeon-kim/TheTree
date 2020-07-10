@@ -18,7 +18,7 @@ ATTTorch::ATTTorch()
 
 	TorchLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("TORCHLIGHT"));
 	TorchLight->SetMobility(EComponentMobility::Movable);
-	TorchLight->Intensity = 300.0f;
+	TorchLight->Intensity = 150.0f;
 	TorchLight->LightColor = FColor{ 255,173,93 };
 	TorchLight->AttenuationRadius = 1700.0f;
 	TorchLight->SourceRadius = 1000.0f;

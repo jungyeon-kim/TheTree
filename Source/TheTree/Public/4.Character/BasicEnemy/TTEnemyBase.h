@@ -66,6 +66,4 @@ public:
 
 	void SetPlayRate(float StartTime, float EndTime, float TimeDilation);
 	void SetCharacterState(ECharacterState NewState);
-
-	
 };

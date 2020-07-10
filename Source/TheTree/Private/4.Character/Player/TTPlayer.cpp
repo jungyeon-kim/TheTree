@@ -582,7 +582,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 	case ECharacterState::LOADING:
 	{
 		SetActorHiddenInGame(true);
-		bCanBeDamaged = false;
+		SetCanBeDamaged(false);
 
 		DisableInput(TTPlayerController);
 		break;
@@ -590,7 +590,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 	case ECharacterState::READY:
 	{
 		SetActorHiddenInGame(false);
-		bCanBeDamaged = true;
+		SetCanBeDamaged(true);
 
 		/*
 			The order of BeginPlay() calls between player and player controller 
