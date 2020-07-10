@@ -2,11 +2,17 @@
 #include "TTCinema.h"
 #include "Kismet/GameplayStatics.h"
 
-ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlags)
+ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag)
 {
 	ATTCinema* Cinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
-	Cinema->SetAndPlayCinema(Sequence, bRunAIFlags);
+	Cinema->SetAndPlayCinema(Sequence, bRunAIFlag);
 	return Cinema->GetSequencePlayer();
+}
+
+void ATTBaseLevel::DestroyActors(UPARAM(ref) TArray<AActor*>& Actors)
+{
+	for (auto& Actor : Actors)
+		Actor->Destroy();
 }
 
 void ATTBaseLevel::SetMonsterCount(int32 Count)
