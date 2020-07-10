@@ -41,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TSubclassOf<UCameraShake> CameraShake;
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
-		class UTTParticleSystemComponent* Effect;
+	class UTTParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Stat")

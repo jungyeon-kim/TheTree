@@ -1,6 +1,7 @@
 #include "TTCommonBattleLevel.h"
 #include "TTGameInstance.h"
 #include "TTPortal.h"
+
 ATTCommonBattleLevel::ATTCommonBattleLevel()
 {
 	SetMonsterCount(3);
