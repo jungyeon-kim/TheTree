@@ -9,6 +9,11 @@ ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool
 	return Cinema->GetSequencePlayer();
 }
 
+void ATTBaseLevel::PlaySound2D(USoundBase* Sound)
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), Sound);
+}
+
 void ATTBaseLevel::SetMonsterCount(int32 Count)
 {
 	CurrentMonsterCount = Count;

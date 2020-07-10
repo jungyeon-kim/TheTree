@@ -14,10 +14,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
 	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlags = true);
 
+	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
+	void PlaySound2D(USoundBase* Sound);
+
 	int32 CurrentMonsterCount{};
 
 public:
 	void SetMonsterCount(int32 Count);
+	
 	virtual void AddMonsterCount(int32 Count);
 	int32 GetMonsterCount();
 };
