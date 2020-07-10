@@ -274,7 +274,7 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 			}
 			break;
 		case 1:
-			//if (!bIsSkillAttacking[1] && CharacterStat->GetSta() >= 15.0f)
+			if (!bIsSkillAttacking[1] && CharacterStat->GetSta() >= 15.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("SlidingSlashAttack"));
 				bIsSkillAttacking[1] = true;
@@ -282,7 +282,7 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 			}
 			break;
 		case 2:
-			//if (!bIsSkillAttacking[2] && CharacterStat->GetSta() >= 20.0f)
+			if (!bIsSkillAttacking[2] && CharacterStat->GetSta() >= 20.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("WindCutterAttack"));
 				bIsSkillAttacking[2] = true;
@@ -290,7 +290,7 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 			}
 			break;
 		case 3:
-			//if (!bIsSkillAttacking[3] && CharacterStat->GetSta() >= 25.0f)
+			if (!bIsSkillAttacking[3] && CharacterStat->GetSta() >= 25.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("GaiaCrushAttack"));
 				bIsSkillAttacking[3] = true;
@@ -298,7 +298,7 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 			}
 			break;
 		case 4:
-			//if (!bIsSkillAttacking[4] && CharacterStat->GetSta() >= 40.0f)
+			if (!bIsSkillAttacking[4] && CharacterStat->GetSta() >= 40.0f)
 			{
 				TTAnimInstance->PlayMontage(TEXT("DrawSwordAttack"));
 				bIsSkillAttacking[4] = true;

@@ -9,13 +9,9 @@ UCLASS()
 class THETREE_API ATTBaseLevel : public ALevelScriptActor
 {
 	GENERATED_BODY()
-	
 protected:
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
 	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlags = true);
-
-	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
-	void PlaySound2D(USoundBase* Sound);
 
 	int32 CurrentMonsterCount{};
 
