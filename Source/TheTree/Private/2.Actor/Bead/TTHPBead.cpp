@@ -33,7 +33,7 @@ ATTHPBead::ATTHPBead()
 	Light->SourceLength = 3500.0f;
 	BoundBox->OnComponentBeginOverlap.AddDynamic(this, &ATTHPBead::OnOverlapBegin);
 	BoundBox->SetSimulatePhysics(false);
-	MoveSpeed = 7500.0f;
+	MoveSpeed = 5000.0f;
 }
 
 void ATTHPBead::BeginPlay()
@@ -64,6 +64,8 @@ void ATTHPBead::Tick(float DeltaTime)
 
 void ATTHPBead::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (GetWorld()->GetTimeSeconds() - SpawnedTime < 3.0f) return;
+
 	const auto Player{ Cast<ATTPlayer>(OtherActor) };
 
 	if (Player)

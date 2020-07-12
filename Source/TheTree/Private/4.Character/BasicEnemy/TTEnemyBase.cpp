@@ -149,7 +149,7 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 		TTAnimInstance->StopAllMontages(0.25f);
 		TTAnimInstance->SetDead();
 
-		if (FMath::RandRange(0, 1)) GetWorld()->SpawnActor<ATTHPBead>(GetActorLocation(), FRotator::ZeroRotator);
+		if (!FMath::RandRange(0, 1)) GetWorld()->SpawnActor<ATTHPBead>(GetActorLocation(), FRotator::ZeroRotator);
 
 		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
