@@ -87,7 +87,7 @@ void ATTArgoniteGiant::AttackCheck()
 	switch (FTTWorld::HashCode(*GetCurrentMontage()->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantAttackMontage")):
-		AttackLength = 200.0f;
+		AttackLength = 100.0f;
 		AttackRadius = 100.0f;
 		HitStartLocation = GetActorForwardVector() * AttackRadius;
 		break;

@@ -13,7 +13,7 @@ protected:
 	void AttackCheck();
 
 	UFUNCTION()
-		void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 public:
 	ATTArgoniteGiant();
 

@@ -2,10 +2,10 @@
 
 #include "TheTree.h"
 #include "TTEnemyBase.h"
-#include "TTArgoniteTrooper.generated.h"
+#include "TTArgoniteGuardian.generated.h"
 
 UCLASS()
-class THETREE_API ATTArgoniteTrooper : public ATTEnemyBase
+class THETREE_API ATTArgoniteGuardian : public ATTEnemyBase
 {
 	GENERATED_BODY()
 protected:
@@ -15,7 +15,7 @@ protected:
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 public:
-	ATTArgoniteTrooper();
+	ATTArgoniteGuardian();
 
 	virtual void PostInitializeComponents() override;
 	virtual void PossessedBy(AController* NewController) override;
