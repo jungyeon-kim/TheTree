@@ -23,7 +23,7 @@ EBTNodeResult::Type UBTTask_Defense::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	TTEnemy->PlayMontage(DefenseTypeName);
 
 	bIsDefensing = true;
-	TTEnemy->OnDefenseEnded.AddLambda([&]()
+	TTEnemy->OnDefenseEnded.AddLambda([=]()
 	{
 		TTEnemy->CharacterStat->SetDef(PrevDef);
 		bIsDefensing = false;
@@ -36,5 +36,9 @@ void UBTTask_Defense::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if (!bIsDefensing && !TTEnemy->GetCurrentMontage()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if (!bIsDefensing && !TTEnemy->GetCurrentMontage())
+	{
+		TTEnemy->OnDefenseEnded.Clear();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

@@ -31,5 +31,9 @@ void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if (!bIsAttacking && !TTEnemy->GetCurrentMontage()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if (!bIsAttacking && !TTEnemy->GetCurrentMontage())
+	{
+		TTEnemy->OnAttackEnded.Clear();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

@@ -38,5 +38,9 @@ void UBTTask_Teleport::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if (!bIsTeleporting && !TTEnemy->GetCurrentMontage()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if (!bIsTeleporting && !TTEnemy->GetCurrentMontage())
+	{
+		TTEnemy->OnTeleportEnded.Clear();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

@@ -31,5 +31,9 @@ void UBTTask_Dodge::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if (!bIsDodging && !TTEnemy->GetCurrentMontage()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if (!bIsDodging && !TTEnemy->GetCurrentMontage())
+	{
+		TTEnemy->OnDodgeEnded.Clear();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }

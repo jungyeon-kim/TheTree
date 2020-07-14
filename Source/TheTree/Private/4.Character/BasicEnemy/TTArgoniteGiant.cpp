@@ -19,9 +19,9 @@ ATTArgoniteGiant::ATTArgoniteGiant()
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaArcher_HitImpact.P_ArcdevaArcher_HitImpact"));
 	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_Attack_SoundCue.ArcdevaLancer_Attack_SoundCue"));
-	Audio->AddSoundWave(TEXT("ChargeAttack"), TEXT("/Game/Assets/Sound/Common/Common_AttackVoice_03.Common_AttackVoice_03"));
-	Audio->AddSoundCue(TEXT("QuakeAttack"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
-	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitAttack_SoundCue.ArcdevaLancer_HitAttack_SoundCue"));
+	Audio->AddSoundWave(TEXT("Yell"), TEXT("/Game/Assets/Sound/Common/Common_AttackVoice_03.Common_AttackVoice_03"));
+	Audio->AddSoundCue(TEXT("Explosion"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
+	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArgoniteGiant/ArgoniteGiant_HitAttack_SoundCue.ArgoniteGiant_HitAttack_SoundCue"));
 	Audio->AddSoundWave(TEXT("HitChargeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
 
 	GetCapsuleComponent()->SetCapsuleSize(80.0f, 140.0f);
@@ -144,7 +144,7 @@ void ATTArgoniteGiant::AttackCheck()
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundWave2D(TEXT("HitChargeAttack"));
 			}
-		Audio->PlaySoundWaveAtLocation(TEXT("ChargeAttack"), GetActorLocation());
+		Audio->PlaySoundWaveAtLocation(TEXT("Yell"), GetActorLocation());
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantQuakeAttackMontage")):
@@ -159,7 +159,7 @@ void ATTArgoniteGiant::AttackCheck()
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 2.0f);
-		Audio->PlaySoundCue2D(TEXT("QuakeAttack"));
+		Audio->PlaySoundCue2D(TEXT("Explosion"));
 		break;
 	}
 	}
