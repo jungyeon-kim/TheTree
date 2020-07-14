@@ -16,11 +16,13 @@ ATTArgoniteGiant::ATTArgoniteGiant()
 	if (SK_ENEMY.Succeeded()) GetMesh()->SetSkeletalMesh(SK_ENEMY.Object);
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
-	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaWarrior_HitImpact.P_ArcdevaWarrior_HitImpact"));
+	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaArcher_HitImpact.P_ArcdevaArcher_HitImpact"));
+	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_Attack_SoundCue.ArcdevaLancer_Attack_SoundCue"));
+	Audio->AddSoundWave(TEXT("ChargeAttack"), TEXT("/Game/Assets/Sound/Common/Common_AttackVoice_03.Common_AttackVoice_03"));
+	Audio->AddSoundCue(TEXT("QuakeAttack"), TEXT("/Game/Assets/Sound/Common/Common_Explosion_SoundCue.Common_Explosion_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitAttack_SoundCue.ArcdevaLancer_HitAttack_SoundCue"));
 	Audio->AddSoundWave(TEXT("HitChargeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
-	Audio->AddSoundWave(TEXT("HitQuakeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
 
 	GetCapsuleComponent()->SetCapsuleSize(80.0f, 140.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -140.0f));
@@ -65,7 +67,7 @@ float ATTArgoniteGiant::TakeDamage(float DamageAmount, const FDamageEvent& Damag
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
 
-	if (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1)
+	if (GetVelocity().IsNearlyZero() && (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1))
 	{
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };
@@ -97,7 +99,7 @@ void ATTArgoniteGiant::AttackCheck()
 		break;
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantQuakeAttackMontage")):
 		AttackLength = 1.0f;
-		AttackRadius = 200.0f;
+		AttackRadius = 300.0f;
 		HitStartLocation = GetActorForwardVector() * AttackRadius;
 		break;
 	}
@@ -123,7 +125,8 @@ void ATTArgoniteGiant::AttackCheck()
 				FDamageEvent DamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
-				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 5.0f);
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 2.5f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
 		Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
@@ -137,9 +140,11 @@ void ATTArgoniteGiant::AttackCheck()
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
-				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundWave2D(TEXT("HitChargeAttack"));
 			}
+		Audio->PlaySoundWaveAtLocation(TEXT("ChargeAttack"), GetActorLocation());
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantQuakeAttackMontage")):
@@ -149,10 +154,12 @@ void ATTArgoniteGiant::AttackCheck()
 			{
 				FPointDamageEvent CriticalDamageEvent{};
 				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.5f, CriticalDamageEvent, GetController(), this);
-				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
-				Audio->PlaySoundWave2D(TEXT("HitQuakeAttack"));
+				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
+					GetActorForwardVector().Rotation(), 5.0f);
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 2.0f);
+		Audio->PlaySoundCue2D(TEXT("QuakeAttack"));
 		break;
 	}
 	}

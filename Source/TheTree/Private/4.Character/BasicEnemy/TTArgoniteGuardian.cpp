@@ -71,7 +71,7 @@ float ATTArgoniteGuardian::TakeDamage(float DamageAmount, const FDamageEvent& Da
 			Audio->PlaySoundWaveAtLocation(TEXT("ShieldDefense"), GetActorLocation());
 	}
 
-	if (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1)
+	if (GetVelocity().IsNearlyZero() && (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1))
 	{
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };

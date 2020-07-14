@@ -10,11 +10,13 @@ class THETREE_API UBTTask_CustomMoveTo : public UBTTaskNode
 	GENERATED_BODY()
 private:
 	UPROPERTY()
-	APawn* ControllingPawn;
+	class ATTEnemyBase* TTEnemy;
 	UPROPERTY()
 	class ATTPlayer* Target;
 	UPROPERTY(EditAnywhere, Category = "Option")
 	float AcceptableDistance;
+
+	bool bIsMoving{};
 protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 public:

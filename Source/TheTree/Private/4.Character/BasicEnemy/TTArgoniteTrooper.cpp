@@ -16,8 +16,8 @@ ATTArgoniteTrooper::ATTArgoniteTrooper()
 	if (ENEMY_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(ENEMY_ANIM.Class);
 
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_ArcdevaWarrior_HitImpact.P_ArcdevaWarrior_HitImpact"));
-	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_Attack_SoundCue.ArcdevaWarrior_Attack_SoundCue"));
-	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_HitAttack_SoundCue.ArcdevaWarrior_HitAttack_SoundCue"));
+	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArgoniteTrooper/ArgoniteTrooper_Attack_SoundCue.ArgoniteTrooper_Attack_SoundCue"));
+	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArgoniteTrooper/ArgoniteTrooper_HitAttack_SoundCue.ArgoniteTrooper_HitAttack_SoundCue"));
 
 	GeneralMoveSpeed = 500.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
@@ -58,7 +58,7 @@ float ATTArgoniteTrooper::TakeDamage(float DamageAmount, const FDamageEvent& Dam
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
 
-	if (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1)
+	if (GetVelocity().IsNearlyZero() && (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1))
 	{
 		FVector LaunchVector{ GetActorLocation() - DamageCauser->GetActorLocation() };
 		float ForceAmount{ 1300.0f };
@@ -97,7 +97,7 @@ void ATTArgoniteTrooper::AttackCheck()
 		{
 			FDamageEvent DamageEvent{};
 			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 2.5f);
+			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
 		}
 	Audio->PlaySoundCueAtLocation(TEXT("Attack"), GetActorLocation());
