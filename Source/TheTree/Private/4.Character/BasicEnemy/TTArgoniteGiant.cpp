@@ -159,7 +159,7 @@ void ATTArgoniteGiant::AttackCheck()
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 2.0f);
-		Audio->PlaySoundCue2D(TEXT("Explosion"));
+		Audio->PlaySoundCueAtLocation(TEXT("Explosion"), GetActorLocation());
 		break;
 	}
 	}
