@@ -4,7 +4,7 @@
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTArcdevaLancer::ATTArcdevaLancer()
@@ -33,7 +33,7 @@ void ATTArcdevaLancer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("ArcdevaLancer"), GetGameInstance());
+	AIStat->SetObjectStat(TEXT("ArcdevaLancer"), GetGameInstance());
 
 	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerHitReactMontage.ArcdevaLancerHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaLancer/ArcdevaLancerAttackMontage.ArcdevaLancerAttackMontage"));
@@ -63,7 +63,7 @@ void ATTArcdevaLancer::Tick(float DeltaTime)
 float ATTArcdevaLancer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
-	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
+	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - AIStat->GetDef() / 100.0f));
 
 	if (GetCurrentMontage())
 	{
@@ -112,7 +112,7 @@ void ATTArcdevaLancer::AttackCheck()
 			if (GetCurrentMontage()->GetName() == TEXT("ArcdevaLancerAttackMontage"))
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 7.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -120,7 +120,7 @@ void ATTArcdevaLancer::AttackCheck()
 			else
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 10.0f);
 				Audio->PlaySoundWave2D(TEXT("HitChargeAttack"));

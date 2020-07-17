@@ -3,7 +3,7 @@
 #include "TTAIController.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTArcdevaArcher::ATTArcdevaArcher()
@@ -29,7 +29,7 @@ void ATTArcdevaArcher::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("ArcdevaArcher"), GetGameInstance());
+	AIStat->SetObjectStat(TEXT("ArcdevaArcher"), GetGameInstance());
 
 	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherHitReactMontage.ArcdevaArcherHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArcdevaArcher/ArcdevaArcherAttackMontage.ArcdevaArcherAttackMontage"));
@@ -59,7 +59,7 @@ void ATTArcdevaArcher::Tick(float DeltaTime)
 float ATTArcdevaArcher::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
-	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
+	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - AIStat->GetDef() / 100.0f));
 
 	if (GetVelocity().IsNearlyZero() && (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1))
 	{
@@ -106,7 +106,7 @@ void ATTArcdevaArcher::AttackCheck()
 		if (HitResult.Actor.IsValid())
 		{
 			FDamageEvent DamageEvent{};
-			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 				GetActorForwardVector().Rotation(), 2.5f);
 			Audio->PlaySoundWave2D(TEXT("HitAttack"));

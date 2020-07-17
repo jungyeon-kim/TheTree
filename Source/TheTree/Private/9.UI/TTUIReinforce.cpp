@@ -6,10 +6,10 @@ void UTTUIReinforce::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	StkUpButton = Cast<UButton>(GetWidgetFromName(TEXT("btnAtkUp")));
-	TTCHECK(StkUpButton);
+	AtkUpButton = Cast<UButton>(GetWidgetFromName(TEXT("btnAtkUp")));
+	TTCHECK(AtkUpButton);
 
-	StkUpButton->OnClicked.AddDynamic(this, &UTTUIReinforce::OnStkUp);
+	AtkUpButton->OnClicked.AddDynamic(this, &UTTUIReinforce::OnStkUp);
 }
 
 void UTTUIReinforce::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

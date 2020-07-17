@@ -1,7 +1,7 @@
 #include "BTTask_Defense.h"
 #include "TTAIController.h"
 #include "TTEnemyBase.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 
 UBTTask_Defense::UBTTask_Defense()
 {
@@ -17,15 +17,15 @@ EBTNodeResult::Type UBTTask_Defense::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	TTEnemy = Cast<ATTEnemyBase>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!TTEnemy) return EBTNodeResult::Failed;
 
-	float PrevDef{ TTEnemy->CharacterStat->GetDef() };
+	float PrevDef{ TTEnemy->AIStat->GetDef() };
 
-	TTEnemy->CharacterStat->SetDef(Def);
+	TTEnemy->AIStat->SetDef(Def);
 	TTEnemy->PlayMontage(DefenseTypeName);
 
 	bIsDefensing = true;
 	TTEnemy->OnDefenseEnded.AddLambda([=]()
 	{
-		TTEnemy->CharacterStat->SetDef(PrevDef);
+		TTEnemy->AIStat->SetDef(PrevDef);
 		bIsDefensing = false;
 	});
 

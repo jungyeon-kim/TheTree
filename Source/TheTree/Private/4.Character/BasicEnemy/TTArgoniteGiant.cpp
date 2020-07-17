@@ -4,7 +4,7 @@
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTArgoniteGiant::ATTArgoniteGiant()
@@ -35,7 +35,7 @@ void ATTArgoniteGiant::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("ArgoniteGiant"), GetGameInstance());
+	AIStat->SetObjectStat(TEXT("ArgoniteGiant"), GetGameInstance());
 
 	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArgoniteGiant/ArgoniteGiantHitReactMontage.ArgoniteGiantHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArgoniteGiant/ArgoniteGiantAttackMontage.ArgoniteGiantAttackMontage"));
@@ -65,7 +65,7 @@ void ATTArgoniteGiant::Tick(float DeltaTime)
 float ATTArgoniteGiant::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
-	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
+	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - AIStat->GetDef() / 100.0f));
 
 	if (GetVelocity().IsNearlyZero() && (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1))
 	{
@@ -123,7 +123,7 @@ void ATTArgoniteGiant::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 2.5f);
@@ -138,7 +138,7 @@ void ATTArgoniteGiant::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
@@ -153,7 +153,7 @@ void ATTArgoniteGiant::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 2.5f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 2.5f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 			}

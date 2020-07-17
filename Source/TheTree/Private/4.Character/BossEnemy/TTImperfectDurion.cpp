@@ -4,7 +4,7 @@
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTImperfectDurion::ATTImperfectDurion()
@@ -38,7 +38,7 @@ void ATTImperfectDurion::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("ImperfectDurion"), GetGameInstance());
+	AIStat->SetObjectStat(TEXT("ImperfectDurion"), GetGameInstance());
 	
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionAttackMontage.ImperfectDurionAttackMontage"));
 	TTAnimInstance->SetMontage(TEXT("DrainAttack"), TEXT("/Game/Blueprints/Animation/BossEnemy/ImperfectDurion/ImperfectDurionDrainAttackMontage.ImperfectDurionDrainAttackMontage"));
@@ -48,7 +48,7 @@ void ATTImperfectDurion::PostInitializeComponents()
 	TTAnimInstance->OnMontageEnded.AddDynamic(this, &ATTImperfectDurion::OnMontageEnded);
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTImperfectDurion::AttackCheck);
 
-	CharacterStat->OnHPIsZero.AddLambda([&]() { SetPlayRate(0.0f, 0.15f, 0.1f); });
+	AIStat->OnHPIsZero.AddLambda([&]() { SetPlayRate(0.0f, 0.15f, 0.1f); });
 }
 
 void ATTImperfectDurion::PossessedBy(AController* NewController)
@@ -71,7 +71,7 @@ void ATTImperfectDurion::Tick(float DeltaTime)
 float ATTImperfectDurion::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
-	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
+	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - AIStat->GetDef() / 100.0f));
 
 	return FinalDamage;
 }
@@ -123,7 +123,7 @@ void ATTImperfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
@@ -139,8 +139,8 @@ void ATTImperfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
-				CharacterStat->SetHP(CharacterStat->GetHP() + CharacterStat->GetAtk() * 2.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				AIStat->SetHP(AIStat->GetHP() + AIStat->GetAtk() * 2.0f);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
@@ -157,7 +157,7 @@ void ATTImperfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
 				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
@@ -174,7 +174,7 @@ void ATTImperfectDurion::AttackCheck()
 			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(CharacterStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));

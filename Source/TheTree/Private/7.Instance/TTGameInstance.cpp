@@ -5,6 +5,8 @@ UTTGameInstance::UTTGameInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_TTCHARACTER{ TEXT("/Game/GameData/TTCharacterData.TTCharacterData") };
 	if (DT_TTCHARACTER.Succeeded()) TTCharacterTable = DT_TTCHARACTER.Object;
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_TTAI{ TEXT("/Game/GameData/TTAIData.TTAIData") };
+	if (DT_TTAI.Succeeded()) TTAITable = DT_TTAI.Object;
 
 	TTPlayerStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 }
@@ -19,6 +21,11 @@ void UTTGameInstance::Init()
 FTTCharacterData* UTTGameInstance::GetTTCharacterData(FName ObjectName) const
 {
 	return TTCharacterTable->FindRow<FTTCharacterData>(ObjectName, TEXT(""));
+}
+
+FTTAIData* UTTGameInstance::GetTTAIData(FName ObjectName) const
+{
+	return TTAITable->FindRow<FTTAIData>(ObjectName, TEXT(""));
 }
 
 UTTCharacterStatComponent* UTTGameInstance::GetTTPlayerStat() const

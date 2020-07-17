@@ -45,7 +45,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	class UTTCharacterStatComponent* CharacterStat;
+	class UTTAIStatComponent* AIStat;
 
 	FOnAttackEndDelegate OnAttackEnded{};
 	FOnDefenseEndDelegate OnDefenseEnded{};

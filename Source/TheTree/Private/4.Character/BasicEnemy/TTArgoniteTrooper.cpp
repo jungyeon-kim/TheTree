@@ -3,7 +3,7 @@
 #include "TTAIController.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 ATTArgoniteTrooper::ATTArgoniteTrooper()
@@ -28,7 +28,7 @@ void ATTArgoniteTrooper::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->SetObjectStat(TEXT("ArgoniteTrooper"), GetGameInstance());
+	AIStat->SetObjectStat(TEXT("ArgoniteTrooper"), GetGameInstance());
 
 	TTAnimInstance->SetMontage(TEXT("HitReact"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArgoniteTrooper/ArgoniteTrooperHitReactMontage.ArgoniteTrooperHitReactMontage"));
 	TTAnimInstance->SetMontage(TEXT("BasicAttack"), TEXT("/Game/Blueprints/Animation/BasicEnemy/ArgoniteTrooper/ArgoniteTrooperAttackMontage.ArgoniteTrooperAttackMontage"));
@@ -56,7 +56,7 @@ void ATTArgoniteTrooper::Tick(float DeltaTime)
 float ATTArgoniteTrooper::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
-	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - CharacterStat->GetDef() / 100.0f));
+	TTLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage * (1.0f - AIStat->GetDef() / 100.0f));
 
 	if (GetVelocity().IsNearlyZero() && (!TTAnimInstance->GetCurrentActiveMontage() || DamageEvent.GetTypeID() == 1))
 	{
@@ -96,7 +96,7 @@ void ATTArgoniteTrooper::AttackCheck()
 		if (HitResult.Actor.IsValid())
 		{
 			FDamageEvent DamageEvent{};
-			HitResult.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
 		}

@@ -4,7 +4,7 @@
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
-#include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "TTHPBead.h"
 #include "TTBaseLevel.h"
 #include "DrawDebugHelpers.h"
@@ -18,7 +18,7 @@ ATTEnemyBase::ATTEnemyBase()
 	CameraShake = UTTCameraShake::StaticClass();
 	Effect = CreateDefaultSubobject<UTTParticleSystemComponent>(TEXT("EFFECT"));
 	Audio = CreateDefaultSubobject<UTTAudioComponent>(TEXT("AUDIO"));
-	CharacterStat = CreateDefaultSubobject<UTTCharacterStatComponent>(TEXT("CHARACTERSTAT"));
+	AIStat = CreateDefaultSubobject<UTTAIStatComponent>(TEXT("AISTAT"));
 
 	RootComponent = GetCapsuleComponent();
 	Effect->SetupAttachment(RootComponent);
@@ -41,7 +41,7 @@ void ATTEnemyBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	CharacterStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
+	AIStat->OnHPIsZero.AddLambda([&]() { SetCharacterState(ECharacterState::DEAD); });
 	
 	TTAnimInstance = Cast<UTTEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	TTCHECK(TTAnimInstance);
@@ -73,7 +73,7 @@ float ATTEnemyBase::TakeDamage(float DamageAmount, const FDamageEvent& DamageEve
 	float FinalDamage{ Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) };
 
 	LastDamageInstigator = DamageCauser;
-	CharacterStat->SetDamage(FinalDamage);
+	AIStat->SetDamage(FinalDamage);
 
 	return FinalDamage;
 }

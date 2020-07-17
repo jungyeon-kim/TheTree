@@ -45,6 +45,8 @@ private:
 	UPROPERTY()
 	class UDataTable* TTCharacterTable;
 	UPROPERTY()
+	class UDataTable* TTAITable;
+	UPROPERTY()
 	class UTTCharacterStatComponent* TTPlayerStat;
 
 	int32 ClearCount{};
@@ -57,6 +59,7 @@ public:
 	virtual void Init() override;
 
 	FTTCharacterData* GetTTCharacterData(FName ObjectName) const;
+	FTTAIData* GetTTAIData(FName ObjectName) const;
 	class UTTCharacterStatComponent* GetTTPlayerStat() const;
 
 	int32 GetClearCount();
