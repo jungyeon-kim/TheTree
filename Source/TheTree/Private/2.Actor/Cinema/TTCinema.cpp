@@ -97,9 +97,8 @@ void ATTCinema::StartCinemaFunction()
 
 	TTCHECK(PlayerController);
 	UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(PlayerController);
-	if (!PlayerController->GetUIPlayerInGame()) PlayerController->OnSyncDelegate.AddLambda([&]() {
-		PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden); });
-	else PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden);
+	if (PlayerController->GetUIPlayerInGame()) 
+		PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden);
 
 	TArray<AActor*> Arr{};
 

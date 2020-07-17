@@ -1,5 +1,7 @@
 #include "TTReinforceNPC.h"
 #include "TTAudioComponent.h"
+#include "TTPlayerController.h"
+#include "TTUIReinforce.h"
 
 ATTReinforceNPC::ATTReinforceNPC()
 {
@@ -25,7 +27,7 @@ ATTReinforceNPC::ATTReinforceNPC()
 	Audio->AddSoundCue(TEXT("Greet"), TEXT("/Game/Assets/Sound/NPC/Highelf_NPC_GreetCue.Highelf_NPC_GreetCue"));
 	Audio->AddSoundCue(TEXT("Bye"), TEXT("/Game/Assets/Sound/NPC/Highelf_NPC_ByeCue.Highelf_NPC_ByeCue"));
 
-	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
+	GetMesh()->SetRelativeLocation(FVector{ 0.0f, 0.0f, -88.0f });
 	BoundBox->AddRelativeLocation(FVector{ 0.0f, 0.0f, 100.0f });
 	BoundBox->SetWorldScale3D(FVector{ 5.0f, 5.0f, 5.0f });
 	BoundBox->SetSimulatePhysics(false);
@@ -34,6 +36,8 @@ ATTReinforceNPC::ATTReinforceNPC()
 void ATTReinforceNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TTPlayerController = Cast<ATTPlayerController>(GetWorld()->GetFirstPlayerController());
 
 	BoundBox->OnComponentBeginOverlap.AddDynamic(this, &ATTReinforceNPC::OnOverlapBegin);
 	BoundBox->OnComponentEndOverlap.AddDynamic(this, &ATTReinforceNPC::OnOverlapEnd);
@@ -47,9 +51,21 @@ void ATTReinforceNPC::Tick(float DeltaTime)
 void ATTReinforceNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Audio->PlaySoundCue2D(TEXT("Greet"));
+
+	FInputModeGameAndUI InputModeGameAndUI{};
+	TTPlayerController->bShowMouseCursor = true;
+	TTPlayerController->SetIgnoreLookInput(true);
+	TTPlayerController->SetInputMode(InputModeGameAndUI);
+	TTPlayerController->GetUIReinforce()->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ATTReinforceNPC::OnOverlapEnd(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex)
 {
 	Audio->PlaySoundCue2D(TEXT("Bye"));
+
+	FInputModeGameOnly InputModeGameOnly{};
+	TTPlayerController->bShowMouseCursor = false;
+	TTPlayerController->SetIgnoreLookInput(false);
+	TTPlayerController->SetInputMode(InputModeGameOnly);
+	TTPlayerController->GetUIReinforce()->SetVisibility(ESlateVisibility::Hidden);
 }

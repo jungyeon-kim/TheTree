@@ -22,6 +22,21 @@ public:
 	FTTCharacterData() = default;
 };
 
+USTRUCT(BlueprintType)
+struct FTTAIData : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float MaxHP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float Atk;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float Def;
+public:
+	FTTAIData() = default;
+};
+
 UCLASS()
 class THETREE_API UTTGameInstance : public UGameInstance
 {

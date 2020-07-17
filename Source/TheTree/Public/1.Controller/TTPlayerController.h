@@ -4,8 +4,6 @@
 #include "GameFramework/PlayerController.h"
 #include "TTPlayerController.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnSyncDelegate);
-
 UCLASS()
 class THETREE_API ATTPlayerController : public APlayerController
 {
@@ -15,10 +13,12 @@ protected:
 	class UTTUIPlayerInGame* TTUIPlayerInGame;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UTTUIPlayerInGame> TTUIPlayerInGameClass;
+	UPROPERTY()
+	class UTTUIReinforce* TTUIReinforce;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UTTUIReinforce> TTUIReinforceClass;
 protected:
 	virtual void BeginPlay() override;
-public:
-	FOnSyncDelegate OnSyncDelegate;
 public:
 	ATTPlayerController();
 
@@ -27,6 +27,9 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	class UTTUIPlayerInGame* GetUIPlayerInGame() const;
+	class UTTUIReinforce* GetUIReinforce() const;
+	void SetUIPlayerInGame(class UTTCharacterStatComponent* NewCharacterStat);
+	void SetUIReinforce(class UTTCharacterStatComponent* NewCharacterStat);
 
 	void SwapDebugMode();
 };

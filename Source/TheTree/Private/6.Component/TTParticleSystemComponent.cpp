@@ -2,6 +2,8 @@
 
 UTTParticleSystemComponent::UTTParticleSystemComponent()
 {
+	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = false;
 }
 
 void UTTParticleSystemComponent::AddEffect(FName EffectName, const TCHAR* EffectPath)

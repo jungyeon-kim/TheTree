@@ -9,6 +9,8 @@ class THETREE_API ATTReinforceNPC : public ACharacter
 {
 	GENERATED_BODY()
 private:
+	UPROPERTY()
+	class ATTPlayerController* TTPlayerController;
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* BoundBox;
 protected:

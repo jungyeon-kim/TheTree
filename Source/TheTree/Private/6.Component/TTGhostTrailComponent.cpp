@@ -24,7 +24,6 @@ void UTTGhostTrailComponent::PlayGhostTrail(float Interval, float Length)
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTTGhostTrailComponent::DoWork, Interval, true);
 }
 
-
 void UTTGhostTrailComponent::StopGhostTrail()
 {
 	FTimerManager& Manager{ GetWorld()->GetTimerManager() };

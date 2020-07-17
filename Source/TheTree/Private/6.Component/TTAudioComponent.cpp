@@ -3,6 +3,8 @@
 
 UTTAudioComponent::UTTAudioComponent()
 {
+	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = false;
 }
 
 void UTTAudioComponent::AddSoundWave(FName SoundName, const TCHAR* SoundPath)

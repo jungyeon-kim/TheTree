@@ -1,10 +1,14 @@
 #include "TTPlayerController.h"
+#include "TTCharacterStatComponent.h"
 #include "TTUIPlayerInGame.h"
+#include "TTUIReinforce.h"
 
 ATTPlayerController::ATTPlayerController()
 {
-	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME(TEXT("/Game/Blueprints/UI/UI_Player_InGame/UI_Player_InGame.UI_Player_InGame_C"));
+	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME{ TEXT("/Game/Blueprints/UI/UI_Player_InGame/UI_Player_InGame.UI_Player_InGame_C") };
+	static ConstructorHelpers::FClassFinder<UTTUIReinforce> UI_REINFORCE{ TEXT("/Game/Blueprints/UI/UI_Reinforce/UI_Reinforce.UI_Reinforce_C") };
 	if (UI_PLAYER_INGAME.Succeeded()) TTUIPlayerInGameClass = UI_PLAYER_INGAME.Class;
+	if (UI_REINFORCE.Succeeded()) TTUIReinforceClass = UI_REINFORCE.Class;
 }
 
 void ATTPlayerController::PostInitializeComponents()
@@ -25,11 +29,6 @@ void ATTPlayerController::BeginPlay()
 
 	FInputModeGameOnly InputModeGameOnly{};
 	SetInputMode(InputModeGameOnly);
-	
-	TTUIPlayerInGame = CreateWidget<UTTUIPlayerInGame>(this, TTUIPlayerInGameClass);
-	TTUIPlayerInGame->AddToViewport();
-
-	OnSyncDelegate.Broadcast();
 }
 
 void ATTPlayerController::PlayerTick(float DeltaTime)
@@ -40,6 +39,29 @@ void ATTPlayerController::PlayerTick(float DeltaTime)
 UTTUIPlayerInGame* ATTPlayerController::GetUIPlayerInGame() const
 {
 	return TTUIPlayerInGame;
+}
+
+UTTUIReinforce* ATTPlayerController::GetUIReinforce() const
+{
+	return TTUIReinforce;
+}
+
+void ATTPlayerController::SetUIPlayerInGame(UTTCharacterStatComponent* NewCharacterStat)
+{
+	TTUIPlayerInGame = CreateWidget<UTTUIPlayerInGame>(this, TTUIPlayerInGameClass);
+	TTUIPlayerInGame->AddToViewport();
+	TTUIPlayerInGame->SetVisibility(ESlateVisibility::Hidden);
+
+	TTUIPlayerInGame->BindCharacterStat(NewCharacterStat);
+}
+
+void ATTPlayerController::SetUIReinforce(UTTCharacterStatComponent* NewCharacterStat)
+{
+	TTUIReinforce = CreateWidget<UTTUIReinforce>(this, TTUIReinforceClass);
+	TTUIReinforce->AddToViewport();
+	TTUIReinforce->SetVisibility(ESlateVisibility::Hidden);
+
+	TTUIReinforce->BindCharacterStat(NewCharacterStat);
 }
 
 void ATTPlayerController::SwapDebugMode()

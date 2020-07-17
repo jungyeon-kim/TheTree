@@ -11,7 +11,6 @@ class THETREE_API ATTPlayer : public ACharacter
 {
 	GENERATED_BODY()
 private:
-
 	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = "State", Meta = (AllowPrivateAccess = true))
 	ECharacterState CurrentState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", Meta = (AllowPrivateAccess = true))

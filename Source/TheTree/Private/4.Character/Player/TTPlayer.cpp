@@ -1,13 +1,12 @@
 #include "TTPlayer.h"
-#include "TTPlayerController.h"
 #include "TTGameInstance.h"
+#include "TTPlayerController.h"
 #include "TTPlayerWeapon.h"
 #include "TTPlayerAnimInstance.h"
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
-#include "TTUIPlayerInGame.h"
 #include "TTGhostTrailComponent.h"
 #include "DrawDebugHelpers.h"
 
@@ -592,14 +591,8 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		SetCanBeDamaged(true);
 
-		/*
-			The order of BeginPlay() calls between player and player controller 
-			in the editor and packaging files is different.
-			So, for both cases, split the branch and execute the code below.
-		*/
-		if (!TTPlayerController->GetUIPlayerInGame()) TTPlayerController->OnSyncDelegate.AddLambda([&]() {
-			TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat); });
-		else TTPlayerController->GetUIPlayerInGame()->BindCharacterStat(CharacterStat);
+		TTPlayerController->SetUIPlayerInGame(CharacterStat);
+		TTPlayerController->SetUIReinforce(CharacterStat);
 
 		SetControlMode(EControlMode::THIRD_PERSON);
 		//EnableInput(TTPlayerController);
