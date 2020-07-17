@@ -19,16 +19,28 @@ private:
 	class UButton* MaxStaUpButton;
 	UPROPERTY()
 	class UButton* GetStaUpButton;
+
 	UPROPERTY()
 	class UTTCharacterStatComponent* CurrentCharacterStat;
+	UPROPERTY()
+	USoundWave* ReinforceSound;
 
 	bool bIsClicking{};
 protected:
 	virtual void NativeConstruct() override;
+	virtual bool Initialize() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
 
 	UFUNCTION()
-	void OnStkUp();
+	void OnAtkUp();
+	UFUNCTION()
+	void OnDefUp();
+	UFUNCTION()
+	void OnMaxHPUp();
+	UFUNCTION()
+	void OnMaxStaUp();
+	UFUNCTION()
+	void OnGetStaUp();
 };

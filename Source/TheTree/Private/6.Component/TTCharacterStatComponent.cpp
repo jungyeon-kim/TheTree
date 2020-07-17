@@ -64,6 +64,12 @@ float UTTCharacterStatComponent::GetSta() const
 	return CurrentSta;
 }
 
+float UTTCharacterStatComponent::GetStaToGetPerHit() const
+{
+	TTCHECK(TTCharacterData, 0.0f);
+	return StaToGetPerHit;
+}
+
 float UTTCharacterStatComponent::GetAtk() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
@@ -89,6 +95,7 @@ void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName, UGameInstance
 		SetMaxSta(TTCharacterData->MaxSta);
 		SetHP(TTCharacterData->MaxHP);
 		SetSta(0.0f);
+		SetStaToGetPerHit(TTCharacterData->StaToGetPerHit);
 		SetAtk(TTCharacterData->Atk);
 		SetDef(TTCharacterData->Def);
 	}
@@ -114,6 +121,11 @@ void UTTCharacterStatComponent::SetMaxSta(float NewMaxSta)
 void UTTCharacterStatComponent::SetSta(float NewSta)
 {
 	CurrentSta = FMath::Clamp<float>(NewSta, 0.0f, CurrentMaxSta);
+}
+
+void UTTCharacterStatComponent::SetStaToGetPerHit(float NewStaToGetPerHit)
+{
+	StaToGetPerHit = NewStaToGetPerHit;
 }
 
 void UTTCharacterStatComponent::SetAtk(float NewAtk)

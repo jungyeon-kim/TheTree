@@ -24,6 +24,8 @@ private:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentSta;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
+	float StaToGetPerHit;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentAtk;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentDef;
@@ -44,6 +46,7 @@ public:
 	float GetHP() const;
 	float GetMaxSta() const;
 	float GetSta() const;
+	float GetStaToGetPerHit() const;
 	float GetAtk() const;
 	float GetDef() const;
 	void SetObjectStat(FName NewObjectName, class UGameInstance* GameInst);
@@ -51,6 +54,7 @@ public:
 	void SetHP(float NewHP);
 	void SetMaxSta(float NewMaxSta);
 	void SetSta(float NewSta);
+	void SetStaToGetPerHit(float NewStaToGetPerHit);
 	void SetAtk(float NewAtk);
 	void SetDef(float NewDef);
 	void SetDamage(float NewDamage);

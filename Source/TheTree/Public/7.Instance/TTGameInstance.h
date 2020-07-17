@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float MaxSta;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float StaToGetPerHit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float Atk;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float Def;

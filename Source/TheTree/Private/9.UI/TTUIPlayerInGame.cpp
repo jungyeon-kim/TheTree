@@ -8,9 +8,7 @@ void UTTUIPlayerInGame::NativeConstruct()
 	Super::NativeConstruct();
 
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbHP")));
-	TTCHECK(HPBar);
 	StaBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbSta")));
-	TTCHECK(StaBar);
 }
 
 void UTTUIPlayerInGame::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

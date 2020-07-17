@@ -56,7 +56,6 @@ ATTPlayer::ATTPlayer()
 	Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 75.0f));
 	SpringArm->TargetArmLength = 800.0f;
 	MaxCombo = 4;
-	StaToGetPerHit = 5.0f;
 	DeadTimer = 5.0f;
 	GeneralMoveSpeed = 1000.0f;
 	AdvancedMoveSpeed = GeneralMoveSpeed * 1.2f;
@@ -394,7 +393,7 @@ void ATTPlayer::AttackCheck()
 					FDamageEvent DamageEvent{};
 					Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
-					CharacterStat->SetSta(CharacterStat->GetSta() + StaToGetPerHit);
+					CharacterStat->SetSta(CharacterStat->GetSta() + CharacterStat->GetStaToGetPerHit());
 				}
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
