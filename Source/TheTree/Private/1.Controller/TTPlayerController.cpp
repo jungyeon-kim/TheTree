@@ -2,13 +2,16 @@
 #include "TTCharacterStatComponent.h"
 #include "TTUIPlayerInGame.h"
 #include "TTUIReinforce.h"
+#include "TTUIMap.h"
 
 ATTPlayerController::ATTPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME{ TEXT("/Game/Blueprints/UI/UI_Player_InGame/UI_Player_InGame.UI_Player_InGame_C") };
 	static ConstructorHelpers::FClassFinder<UTTUIReinforce> UI_REINFORCE{ TEXT("/Game/Blueprints/UI/UI_Reinforce/UI_Reinforce.UI_Reinforce_C") };
+	static ConstructorHelpers::FClassFinder<UTTUIMap> UI_MAP{ TEXT("/Game/Blueprints/UI/UI_Map/UI_Map.UI_Map_C") };
 	if (UI_PLAYER_INGAME.Succeeded()) TTUIPlayerInGameClass = UI_PLAYER_INGAME.Class;
 	if (UI_REINFORCE.Succeeded()) TTUIReinforceClass = UI_REINFORCE.Class;
+	if (UI_MAP.Succeeded()) TTUIMapClass = UI_MAP.Class;
 }
 
 void ATTPlayerController::PostInitializeComponents()
@@ -27,8 +30,7 @@ void ATTPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly InputModeGameOnly{};
-	SetInputMode(InputModeGameOnly);
+	SetInputMode(FInputModeGameOnly{});
 }
 
 void ATTPlayerController::PlayerTick(float DeltaTime)
@@ -46,11 +48,20 @@ UTTUIReinforce* ATTPlayerController::GetUIReinforce() const
 	return TTUIReinforce;
 }
 
+UTTUIMap* ATTPlayerController::GetUIMap() const
+{
+	return TTUIMap;
+}
+
 void ATTPlayerController::SetUIPlayerInGame(UTTCharacterStatComponent* NewCharacterStat)
 {
 	TTUIPlayerInGame = CreateWidget<UTTUIPlayerInGame>(this, TTUIPlayerInGameClass);
 	TTUIPlayerInGame->AddToViewport();
 	TTUIPlayerInGame->SetVisibility(ESlateVisibility::Hidden);
+
+	TTUIMap = CreateWidget<UTTUIMap>(this, TTUIMapClass);
+	TTUIMap->AddToViewport();
+	TTUIMap->SetVisibility(ESlateVisibility::Hidden);
 
 	TTUIPlayerInGame->BindCharacterStat(NewCharacterStat);
 }

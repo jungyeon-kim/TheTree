@@ -4,6 +4,7 @@
 #include "TTPlayerController.h"
 #include "TTUIPlayerInGame.h"
 #include "LevelSequencePlayer.h"
+#include "TTUIMap.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
 ATTCinema::ATTCinema()
@@ -116,7 +117,6 @@ void ATTCinema::EndCinemaFunction()
 
 	TTCHECK(PlayerController);
 	PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Visible);
-	
 	UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->
 		EnableInput(GetWorld()->GetFirstPlayerController());
 

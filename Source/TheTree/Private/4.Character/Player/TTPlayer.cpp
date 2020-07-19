@@ -8,6 +8,7 @@
 #include "TTAudioComponent.h"
 #include "TTCharacterStatComponent.h"
 #include "TTGhostTrailComponent.h"
+#include "TTUIMap.h"
 #include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
@@ -109,7 +110,7 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("BackMove"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge, 2);
 	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
-
+	PlayerInputComponent->BindAction(TEXT("OpenMap"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenMap);
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ATTPlayer::LookUp);
@@ -721,4 +722,25 @@ void ATTPlayer::LookUp(float NewAxisValue)
 void ATTPlayer::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
+}
+
+void ATTPlayer::OpenMap()
+{
+	UTTUIMap* Map{ TTPlayerController->GetUIMap() };
+	if (bIsOpenMap)
+	{
+		TTPlayerController->bShowMouseCursor = false;
+		TTPlayerController->SetIgnoreLookInput(false);
+		TTPlayerController->SetInputMode(FInputModeGameOnly{});
+		Map->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		TTPlayerController->bShowMouseCursor = true;
+		TTPlayerController->SetIgnoreLookInput(true);
+		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
+		Map->SetVisibility(ESlateVisibility::Visible);
+	}
+	bIsOpenMap = !bIsOpenMap;
+	
 }

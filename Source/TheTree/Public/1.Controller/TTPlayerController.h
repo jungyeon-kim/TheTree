@@ -17,6 +17,11 @@ protected:
 	class UTTUIReinforce* TTUIReinforce;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UTTUIReinforce> TTUIReinforceClass;
+	UPROPERTY()
+	class UTTUIMap* TTUIMap;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UTTUIMap> TTUIMapClass;
+
 protected:
 	virtual void BeginPlay() override;
 public:
@@ -28,6 +33,7 @@ public:
 
 	class UTTUIPlayerInGame* GetUIPlayerInGame() const;
 	class UTTUIReinforce* GetUIReinforce() const;
+	class UTTUIMap* GetUIMap() const;
 	void SetUIPlayerInGame(class UTTCharacterStatComponent* NewCharacterStat);
 	void SetUIReinforce(class UTTCharacterStatComponent* NewCharacterStat);
 

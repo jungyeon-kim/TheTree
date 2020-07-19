@@ -12,7 +12,7 @@ void UTTUIReinforce::NativeConstruct()
 	MaxHPUpButton = Cast<UButton>(GetWidgetFromName(TEXT("btnMaxHPUp")));
 	MaxStaUpButton = Cast<UButton>(GetWidgetFromName(TEXT("btnMaxStaUp")));
 	GetStaUpButton = Cast<UButton>(GetWidgetFromName(TEXT("btnGetStaUp")));
-
+	
 	AtkUpButton->OnClicked.AddDynamic(this, &UTTUIReinforce::OnAtkUp);
 	DefUpButton->OnClicked.AddDynamic(this, &UTTUIReinforce::OnDefUp);
 	MaxHPUpButton->OnClicked.AddDynamic(this, &UTTUIReinforce::OnMaxHPUp);

@@ -13,7 +13,8 @@
 				"Engine",
 				"AIModule",
 				"LevelSequence",
-				"UMG"
+				"UMG",
+				"Slate"
 			]
 		}
 	]
