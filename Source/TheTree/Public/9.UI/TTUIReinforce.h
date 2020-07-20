@@ -44,9 +44,10 @@ private:
 	bool bIsClicking{};
 protected:
 	virtual void NativeConstruct() override;
-	virtual bool Initialize() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
+	void Init();
+
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
 	void UpdatePlayerGold();
 

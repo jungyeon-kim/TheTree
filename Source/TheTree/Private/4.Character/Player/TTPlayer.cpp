@@ -1,13 +1,14 @@
 #include "TTPlayer.h"
 #include "TTGameInstance.h"
 #include "TTPlayerController.h"
-#include "TTPlayerWeapon.h"
 #include "TTPlayerAnimInstance.h"
-#include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
+#include "TTCameraShake.h"
 #include "TTCharacterStatComponent.h"
 #include "TTGhostTrailComponent.h"
+#include "TTPlayerWeapon.h"
+#include "TTUIPlayerStatus.h"
 #include "TTUIMap.h"
 #include "DrawDebugHelpers.h"
 
@@ -110,11 +111,12 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("BackMove"), EInputEvent::IE_Pressed, this, &ATTPlayer::Dodge, 2);
 	PlayerInputComponent->BindAction(TEXT("SwapBattleMode"), EInputEvent::IE_Pressed, this, &ATTPlayer::SwapBattleMode);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ATTPlayer::Jump);
-	PlayerInputComponent->BindAction(TEXT("OpenMap"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenMap);
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ATTPlayer::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ATTPlayer::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ATTPlayer::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATTPlayer::Turn);
+	PlayerInputComponent->BindAction(TEXT("OpenUIPlayerStatus"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenUIPlayerStatus);
+	PlayerInputComponent->BindAction(TEXT("OpenUIMap"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenUIMap);
 }
 
 void ATTPlayer::BeginPlay()
@@ -592,7 +594,9 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		SetCanBeDamaged(true);
 
 		TTPlayerController->SetUIPlayerInGame(CharacterStat);
+		TTPlayerController->SetUIPlayerStatus(CharacterStat);
 		TTPlayerController->SetUIReinforce(CharacterStat);
+		TTPlayerController->SetUIMap();
 
 		SetControlMode(EControlMode::THIRD_PERSON);
 		//EnableInput(TTPlayerController);
@@ -724,23 +728,34 @@ void ATTPlayer::Turn(float NewAxisValue)
 	AddControllerYawInput(NewAxisValue);
 }
 
-void ATTPlayer::OpenMap()
+void ATTPlayer::OpenUIPlayerStatus()
 {
-	UTTUIMap* Map{ TTPlayerController->GetUIMap() };
-	if (bIsOpenMap)
-	{
-		TTPlayerController->bShowMouseCursor = false;
-		TTPlayerController->SetIgnoreLookInput(false);
-		TTPlayerController->SetInputMode(FInputModeGameOnly{});
-		Map->SetVisibility(ESlateVisibility::Hidden);
-	}
-	else
+	static bool bIsOpened{};
+	UTTUIPlayerStatus* UIPlayerStatus{ TTPlayerController->GetUIPlayerStatus() };
+
+	bIsOpened = !bIsOpened;
+	if (bIsOpened) UIPlayerStatus->SetVisibility(ESlateVisibility::Visible);
+	else UIPlayerStatus->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ATTPlayer::OpenUIMap()
+{
+	static bool bIsOpened{};
+	UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
+
+	bIsOpened = !bIsOpened;
+	if (bIsOpened)
 	{
 		TTPlayerController->bShowMouseCursor = true;
 		TTPlayerController->SetIgnoreLookInput(true);
 		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
-		Map->SetVisibility(ESlateVisibility::Visible);
+		UIMap->SetVisibility(ESlateVisibility::Visible);
 	}
-	bIsOpenMap = !bIsOpenMap;
-	
+	else
+	{
+		TTPlayerController->bShowMouseCursor = false;
+		TTPlayerController->SetIgnoreLookInput(false);
+		TTPlayerController->SetInputMode(FInputModeGameOnly{});
+		UIMap->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

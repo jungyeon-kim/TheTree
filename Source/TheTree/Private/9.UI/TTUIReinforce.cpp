@@ -35,22 +35,18 @@ void UTTUIReinforce::NativeConstruct()
 	GetStaGoldText->SetText(FText::FromString(FString::FromInt(Price[4])));
 }
 
-bool UTTUIReinforce::Initialize()
+void UTTUIReinforce::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	Super::Initialize();
+	Super::NativeTick(MyGeometry, InDeltaTime);
+}
 
+void UTTUIReinforce::Init()
+{
 	Audio = NewObject<UTTAudioComponent>(GetOwningPlayer());
 	Audio->RegisterComponent();
 
 	Audio->AddSoundWave(TEXT("Success"), TEXT("/Game/Assets/Sound/Common/Common_Success.Common_Success"));
 	Audio->AddSoundWave(TEXT("Fail"), TEXT("/Game/Assets/Sound/Common/Common_Fail.Common_Fail"));
-
-	return true;
-}
-
-void UTTUIReinforce::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
 void UTTUIReinforce::BindCharacterStat(UTTCharacterStatComponent* CharacterStat)

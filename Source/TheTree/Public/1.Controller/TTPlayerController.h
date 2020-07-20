@@ -11,14 +11,18 @@ class THETREE_API ATTPlayerController : public APlayerController
 protected:
 	UPROPERTY()
 	class UTTUIPlayerInGame* TTUIPlayerInGame;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UTTUIPlayerInGame> TTUIPlayerInGameClass;
+	UPROPERTY()
+	class UTTUIPlayerStatus* TTUIPlayerStatus;
 	UPROPERTY()
 	class UTTUIReinforce* TTUIReinforce;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UTTUIReinforce> TTUIReinforceClass;
 	UPROPERTY()
 	class UTTUIMap* TTUIMap;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UTTUIPlayerInGame> TTUIPlayerInGameClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UTTUIPlayerStatus> TTUIPlayerStatusClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UTTUIReinforce> TTUIReinforceClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UTTUIMap> TTUIMapClass;
 
@@ -32,10 +36,13 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	class UTTUIPlayerInGame* GetUIPlayerInGame() const;
+	class UTTUIPlayerStatus* GetUIPlayerStatus() const;
 	class UTTUIReinforce* GetUIReinforce() const;
 	class UTTUIMap* GetUIMap() const;
 	void SetUIPlayerInGame(class UTTCharacterStatComponent* NewCharacterStat);
+	void SetUIPlayerStatus(class UTTCharacterStatComponent* NewCharacterStat);
 	void SetUIReinforce(class UTTCharacterStatComponent* NewCharacterStat);
+	void SetUIMap();
 
 	void SwapDebugMode();
 };

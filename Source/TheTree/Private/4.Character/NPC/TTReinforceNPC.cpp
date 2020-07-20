@@ -54,10 +54,9 @@ void ATTReinforceNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* O
 
 	TTPlayerController->GetUIReinforce()->UpdatePlayerGold();
 
-	FInputModeGameAndUI InputModeGameAndUI{};
 	TTPlayerController->bShowMouseCursor = true;
 	TTPlayerController->SetIgnoreLookInput(true);
-	TTPlayerController->SetInputMode(InputModeGameAndUI);
+	TTPlayerController->SetInputMode(FInputModeGameAndUI{});
 	TTPlayerController->GetUIReinforce()->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -65,9 +64,8 @@ void ATTReinforceNPC::OnOverlapEnd(UPrimitiveComponent* OverlapComp, AActor* Oth
 {
 	Audio->PlaySoundCue2D(TEXT("Bye"));
 
-	FInputModeGameOnly InputModeGameOnly{};
 	TTPlayerController->bShowMouseCursor = false;
 	TTPlayerController->SetIgnoreLookInput(false);
-	TTPlayerController->SetInputMode(InputModeGameOnly);
+	TTPlayerController->SetInputMode(FInputModeGameOnly{});
 	TTPlayerController->GetUIReinforce()->SetVisibility(ESlateVisibility::Hidden);
 }
