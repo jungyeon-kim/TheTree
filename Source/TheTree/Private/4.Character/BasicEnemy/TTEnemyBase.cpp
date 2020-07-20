@@ -5,6 +5,8 @@
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
+#include "TTPlayer.h"
+#include "TTCharacterStatComponent.h"
 #include "TTHPBead.h"
 #include "TTBaseLevel.h"
 #include "DrawDebugHelpers.h"
@@ -149,6 +151,8 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 		TTAnimInstance->StopAllMontages(0.25f);
 		TTAnimInstance->SetDead();
 
+		const auto TTCharacterStat{ Cast<ATTPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0))->CharacterStat };
+		TTCharacterStat->SetGold(TTCharacterStat->GetGold() + FMath::RandRange(50, 200));
 		if (!FMath::RandRange(0, 1)) GetWorld()->SpawnActor<ATTHPBead>(GetActorLocation(), FRotator::ZeroRotator);
 
 		FTimerHandle DeadTimerHandle{};
@@ -156,8 +160,7 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 			[&]()
 			{ 
 				ATTBaseLevel* CurrentLevel{ Cast<ATTBaseLevel>(GetWorld()->GetLevelScriptActor()) };
-				if (CurrentLevel)
-					CurrentLevel->AddMonsterCount(-1);
+				if (CurrentLevel) CurrentLevel->AddMonsterCount(-1);
 				Destroy(); 
 			
 			}), DeadTimer, false);

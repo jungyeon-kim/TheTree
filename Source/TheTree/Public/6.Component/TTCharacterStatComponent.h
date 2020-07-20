@@ -16,9 +16,11 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	FName ObjectName;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentMaxHP;
+	int32 Gold;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentMaxSta;
+	float MaxHP;
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
+	float MaxSta;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
@@ -26,9 +28,9 @@ private:
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float StaToGetPerHit;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentAtk;
+	float Atk;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentDef;
+	float Def;
 protected:
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
@@ -40,6 +42,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FName GetObjectName() const;
+	int32 GetGold() const;
 	float GetHPRatio() const;
 	float GetStaRatio() const;
 	float GetMaxHP() const;
@@ -50,6 +53,7 @@ public:
 	float GetAtk() const;
 	float GetDef() const;
 	void SetObjectStat(FName NewObjectName, class UGameInstance* GameInst);
+	void SetGold(int32 NewGold);
 	void SetMaxHP(float NewMaxHP);
 	void SetHP(float NewHP);
 	void SetMaxSta(float NewMaxSta);

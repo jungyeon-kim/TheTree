@@ -28,22 +28,27 @@ FName UTTCharacterStatComponent::GetObjectName() const
 	return ObjectName;
 }
 
+int32 UTTCharacterStatComponent::GetGold() const
+{
+	return Gold;
+}
+
 float UTTCharacterStatComponent::GetHPRatio() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
-	return CurrentMaxHP <= 0.0f ? 0.0f : CurrentHP / CurrentMaxHP;
+	return MaxHP <= 0.0f ? 0.0f : CurrentHP / MaxHP;
 }
 
 float UTTCharacterStatComponent::GetStaRatio() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
-	return CurrentMaxSta <= 0.0f ? 0.0f : CurrentSta / CurrentMaxSta;
+	return MaxSta <= 0.0f ? 0.0f : CurrentSta / MaxSta;
 }
 
 float UTTCharacterStatComponent::GetMaxHP() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
-	return CurrentMaxHP;
+	return MaxHP;
 }
 
 float UTTCharacterStatComponent::GetHP() const
@@ -55,7 +60,7 @@ float UTTCharacterStatComponent::GetHP() const
 float UTTCharacterStatComponent::GetMaxSta() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
-	return CurrentMaxSta;
+	return MaxSta;
 }
 
 float UTTCharacterStatComponent::GetSta() const
@@ -73,13 +78,13 @@ float UTTCharacterStatComponent::GetStaToGetPerHit() const
 float UTTCharacterStatComponent::GetAtk() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
-	return CurrentAtk;
+	return Atk;
 }
 
 float UTTCharacterStatComponent::GetDef() const
 {
 	TTCHECK(TTCharacterData, 0.0f);
-	return CurrentDef;
+	return Def;
 }
 
 void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName, UGameInstance* GameInst)
@@ -91,6 +96,7 @@ void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName, UGameInstance
 	if (TTCharacterData)
 	{
 		ObjectName = NewObjectName;
+		SetGold(TTCharacterData->Gold);
 		SetMaxHP(TTCharacterData->MaxHP);
 		SetMaxSta(TTCharacterData->MaxSta);
 		SetHP(TTCharacterData->MaxHP);
@@ -102,25 +108,30 @@ void UTTCharacterStatComponent::SetObjectStat(FName NewObjectName, UGameInstance
 	else TTLOG(Error, TEXT("ObjectName (%s) data doesn't exist"), *NewObjectName.ToString());
 }
 
+void UTTCharacterStatComponent::SetGold(int32 NewGold)
+{
+	Gold = NewGold;
+}
+
 void UTTCharacterStatComponent::SetMaxHP(float NewMaxHP)
 {
-	CurrentMaxHP = NewMaxHP;
+	MaxHP = NewMaxHP;
 }
 
 void UTTCharacterStatComponent::SetHP(float NewHP)
 {
-	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, CurrentMaxHP);
+	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, MaxHP);
 	if (!CurrentHP) OnHPIsZero.Broadcast();
 }
 
 void UTTCharacterStatComponent::SetMaxSta(float NewMaxSta)
 {
-	CurrentMaxSta = NewMaxSta;
+	MaxSta = NewMaxSta;
 }
 
 void UTTCharacterStatComponent::SetSta(float NewSta)
 {
-	CurrentSta = FMath::Clamp<float>(NewSta, 0.0f, CurrentMaxSta);
+	CurrentSta = FMath::Clamp<float>(NewSta, 0.0f, MaxSta);
 }
 
 void UTTCharacterStatComponent::SetStaToGetPerHit(float NewStaToGetPerHit)
@@ -130,18 +141,18 @@ void UTTCharacterStatComponent::SetStaToGetPerHit(float NewStaToGetPerHit)
 
 void UTTCharacterStatComponent::SetAtk(float NewAtk)
 {
-	CurrentAtk = NewAtk;
-	if (CurrentAtk <= 0.0f) CurrentAtk = 0.0f;
+	Atk = NewAtk;
+	if (Atk <= 0.0f) Atk = 0.0f;
 }
 
 void UTTCharacterStatComponent::SetDef(float NewDef)
 {
-	CurrentDef = FMath::Clamp<float>(NewDef, 0.0f, 70.0f);
+	Def = FMath::Clamp<float>(NewDef, 0.0f, 70.0f);
 }
 
 void UTTCharacterStatComponent::SetDamage(float NewDamage)
 {
 	TTCHECK(TTCharacterData);
-	NewDamage *= 1.0f - CurrentDef / 100.0f;
-	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, CurrentMaxHP));
+	NewDamage *= 1.0f - Def / 100.0f;
+	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, MaxHP));
 }

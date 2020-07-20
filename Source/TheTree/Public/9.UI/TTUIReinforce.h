@@ -21,9 +21,25 @@ private:
 	class UButton* GetStaUpButton;
 
 	UPROPERTY()
-	class UTTCharacterStatComponent* CurrentCharacterStat;
+	class UTextBlock* AtkGoldText;
 	UPROPERTY()
-	USoundWave* ReinforceSound;
+	class UTextBlock* DefGoldText;
+	UPROPERTY()
+	class UTextBlock* MaxHPGoldText;
+	UPROPERTY()
+	class UTextBlock* MaxStaGoldText;
+	UPROPERTY()
+	class UTextBlock* GetStaGoldText;
+	UPROPERTY()
+	class UTextBlock* MyGoldText;
+
+	UPROPERTY()
+	TArray<int32> Price;
+
+	UPROPERTY()
+	class UTTCharacterStatComponent* CurrentCharacterStat;
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+	class UTTAudioComponent* Audio;
 
 	bool bIsClicking{};
 protected:
@@ -32,6 +48,7 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
+	void UpdatePlayerGold();
 
 	UFUNCTION()
 	void OnAtkUp();

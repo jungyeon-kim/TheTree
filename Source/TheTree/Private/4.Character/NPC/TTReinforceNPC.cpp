@@ -52,6 +52,8 @@ void ATTReinforceNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* O
 {
 	Audio->PlaySoundCue2D(TEXT("Greet"));
 
+	TTPlayerController->GetUIReinforce()->UpdatePlayerGold();
+
 	FInputModeGameAndUI InputModeGameAndUI{};
 	TTPlayerController->bShowMouseCursor = true;
 	TTPlayerController->SetIgnoreLookInput(true);

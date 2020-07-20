@@ -11,6 +11,8 @@ struct FTTCharacterData : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	int32 Gold;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float MaxHP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float MaxSta;

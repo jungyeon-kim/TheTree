@@ -31,13 +31,13 @@ FName UTTAIStatComponent::GetObjectName() const
 float UTTAIStatComponent::GetHPRatio() const
 {
 	TTCHECK(TTAIData, 0.0f);
-	return CurrentMaxHP <= 0.0f ? 0.0f : CurrentHP / CurrentMaxHP;
+	return MaxHP <= 0.0f ? 0.0f : CurrentHP / MaxHP;
 }
 
 float UTTAIStatComponent::GetMaxHP() const
 {
 	TTCHECK(TTAIData, 0.0f);
-	return CurrentMaxHP;
+	return MaxHP;
 }
 
 float UTTAIStatComponent::GetHP() const
@@ -49,13 +49,13 @@ float UTTAIStatComponent::GetHP() const
 float UTTAIStatComponent::GetAtk() const
 {
 	TTCHECK(TTAIData, 0.0f);
-	return CurrentAtk;
+	return Atk;
 }
 
 float UTTAIStatComponent::GetDef() const
 {
 	TTCHECK(TTAIData, 0.0f);
-	return CurrentDef;
+	return Def;
 }
 
 void UTTAIStatComponent::SetObjectStat(FName NewObjectName, UGameInstance* GameInst)
@@ -77,29 +77,29 @@ void UTTAIStatComponent::SetObjectStat(FName NewObjectName, UGameInstance* GameI
 
 void UTTAIStatComponent::SetMaxHP(float NewMaxHP)
 {
-	CurrentMaxHP = NewMaxHP;
+	MaxHP = NewMaxHP;
 }
 
 void UTTAIStatComponent::SetHP(float NewHP)
 {
-	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, CurrentMaxHP);
+	CurrentHP = FMath::Clamp<float>(NewHP, 0.0f, MaxHP);
 	if (!CurrentHP) OnHPIsZero.Broadcast();
 }
 
 void UTTAIStatComponent::SetAtk(float NewAtk)
 {
-	CurrentAtk = NewAtk;
-	if (CurrentAtk <= 0.0f) CurrentAtk = 0.0f;
+	Atk = NewAtk;
+	if (Atk <= 0.0f) Atk = 0.0f;
 }
 
 void UTTAIStatComponent::SetDef(float NewDef)
 {
-	CurrentDef = FMath::Clamp<float>(NewDef, 0.0f, 70.0f);
+	Def = FMath::Clamp<float>(NewDef, 0.0f, 70.0f);
 }
 
 void UTTAIStatComponent::SetDamage(float NewDamage)
 {
 	TTCHECK(TTAIData);
-	NewDamage *= 1.0f - CurrentDef / 100.0f;
-	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, CurrentMaxHP));
+	NewDamage *= 1.0f - Def / 100.0f;
+	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, MaxHP));
 }

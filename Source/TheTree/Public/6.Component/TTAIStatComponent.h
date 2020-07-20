@@ -16,13 +16,13 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	FName ObjectName;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentMaxHP;
+	float MaxHP;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentAtk;
+	float Atk;
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = true))
-	float CurrentDef;
+	float Def;
 protected:
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
