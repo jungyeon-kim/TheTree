@@ -50,6 +50,8 @@ void ATTReinforceNPC::Tick(float DeltaTime)
 
 void ATTReinforceNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor != UGameplayStatics::GetPlayerCharacter(this, 0)) return;
+
 	Audio->PlaySoundCue2D(TEXT("Greet"));
 
 	TTPlayerController->GetUIReinforce()->UpdatePlayerGold();
@@ -62,6 +64,8 @@ void ATTReinforceNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* O
 
 void ATTReinforceNPC::OnOverlapEnd(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex)
 {
+	if (OtherActor != UGameplayStatics::GetPlayerCharacter(this, 0)) return;
+
 	Audio->PlaySoundCue2D(TEXT("Bye"));
 
 	TTPlayerController->bShowMouseCursor = false;
