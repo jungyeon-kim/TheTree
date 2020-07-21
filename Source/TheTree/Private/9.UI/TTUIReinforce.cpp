@@ -33,6 +33,8 @@ void UTTUIReinforce::NativeConstruct()
 	MaxHPGoldText->SetText(FText::FromString(FString::FromInt(Price[2])));
 	MaxStaGoldText->SetText(FText::FromString(FString::FromInt(Price[3])));
 	GetStaGoldText->SetText(FText::FromString(FString::FromInt(Price[4])));
+
+	PriceIncrease = 100;
 }
 
 void UTTUIReinforce::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -68,7 +70,7 @@ void UTTUIReinforce::OnAtkUp()
 	{
 		CurrentCharacterStat->SetAtk(CurrentCharacterStat->GetAtk() + 5.0f);
 		CurrentCharacterStat->SetGold(CurrentCharacterStat->GetGold() - Price[0]);
-		AtkGoldText->SetText(FText::FromString(FString::FromInt(Price[0] += 100)));
+		AtkGoldText->SetText(FText::FromString(FString::FromInt(Price[0] += PriceIncrease)));
 		MyGoldText->SetText(FText::FromString(FString::FromInt(CurrentCharacterStat->GetGold())));
 		Audio->PlaySoundWave2D(TEXT("Success"));
 	}
@@ -83,7 +85,7 @@ void UTTUIReinforce::OnDefUp()
 	{
 		CurrentCharacterStat->SetDef(CurrentCharacterStat->GetDef() + 5.0f);
 		CurrentCharacterStat->SetGold(CurrentCharacterStat->GetGold() - Price[1]);
-		DefGoldText->SetText(FText::FromString(FString::FromInt(Price[1] += 100)));
+		DefGoldText->SetText(FText::FromString(FString::FromInt(Price[1] += PriceIncrease)));
 		MyGoldText->SetText(FText::FromString(FString::FromInt(CurrentCharacterStat->GetGold())));
 		Audio->PlaySoundWave2D(TEXT("Success"));
 	}
@@ -98,7 +100,7 @@ void UTTUIReinforce::OnMaxHPUp()
 	{
 		CurrentCharacterStat->SetMaxHP(CurrentCharacterStat->GetMaxHP() + 100.0f);
 		CurrentCharacterStat->SetGold(CurrentCharacterStat->GetGold() - Price[2]);
-		MaxHPGoldText->SetText(FText::FromString(FString::FromInt(Price[2] += 100)));
+		MaxHPGoldText->SetText(FText::FromString(FString::FromInt(Price[2] += PriceIncrease)));
 		MyGoldText->SetText(FText::FromString(FString::FromInt(CurrentCharacterStat->GetGold())));
 		Audio->PlaySoundWave2D(TEXT("Success"));
 	}
@@ -113,7 +115,7 @@ void UTTUIReinforce::OnMaxStaUp()
 	{
 		CurrentCharacterStat->SetMaxSta(CurrentCharacterStat->GetMaxSta() + 10.0f);
 		CurrentCharacterStat->SetGold(CurrentCharacterStat->GetGold() - Price[3]);
-		MaxStaGoldText->SetText(FText::FromString(FString::FromInt(Price[3] += 100)));
+		MaxStaGoldText->SetText(FText::FromString(FString::FromInt(Price[3] += PriceIncrease)));
 		MyGoldText->SetText(FText::FromString(FString::FromInt(CurrentCharacterStat->GetGold())));
 		Audio->PlaySoundWave2D(TEXT("Success"));
 	}
@@ -128,7 +130,7 @@ void UTTUIReinforce::OnGetStaUp()
 	{
 		CurrentCharacterStat->SetStaToGetPerHit(CurrentCharacterStat->GetStaToGetPerHit() + 1.0f);
 		CurrentCharacterStat->SetGold(CurrentCharacterStat->GetGold() - Price[4]);
-		GetStaGoldText->SetText(FText::FromString(FString::FromInt(Price[4] += 100)));
+		GetStaGoldText->SetText(FText::FromString(FString::FromInt(Price[4] += PriceIncrease)));
 		MyGoldText->SetText(FText::FromString(FString::FromInt(CurrentCharacterStat->GetGold())));
 		Audio->PlaySoundWave2D(TEXT("Success"));
 	}

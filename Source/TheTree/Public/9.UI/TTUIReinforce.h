@@ -35,6 +35,7 @@ private:
 
 	UPROPERTY()
 	TArray<int32> Price;
+	int32 PriceIncrease{};
 
 	UPROPERTY()
 	class UTTCharacterStatComponent* CurrentCharacterStat;
