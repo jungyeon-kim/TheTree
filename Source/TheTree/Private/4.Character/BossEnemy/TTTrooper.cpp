@@ -163,7 +163,7 @@ void ATTTrooper::AttackCheck()
 			}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 3.0f);
-		Audio->PlaySoundCueAtLocation(TEXT("Explosion"), GetActorLocation());
+		Audio->PlaySoundCue2D(TEXT("Explosion"));
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("TrooperRoundAttackMontage")):

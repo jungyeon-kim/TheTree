@@ -65,7 +65,7 @@ void ATTReinforceNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* O
 void ATTReinforceNPC::OnOverlapEnd(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex)
 {
 	if (OtherActor != UGameplayStatics::GetPlayerCharacter(this, 0)) return;
-
+	
 	Audio->PlaySoundCue2D(TEXT("Bye"));
 
 	TTPlayerController->bShowMouseCursor = false;
