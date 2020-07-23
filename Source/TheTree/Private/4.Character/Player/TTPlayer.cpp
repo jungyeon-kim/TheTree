@@ -628,7 +628,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 			[&]() 
 			{ 
 				CharacterStat->SetObjectStat(TEXT("Player"), GetGameInstance());
-				TTPlayerController->RestartLevel(); 
+				UGameplayStatics::OpenLevel(this, TEXT("Lobby"));
 			}), DeadTimer, false);
 		break;
 	}
