@@ -1,7 +1,7 @@
 #include "TTGhostTrailComponent.h"
 #include "TTGhostTrail.h"
 
-void UTTGhostTrailComponent::SetGhostTrail(const TCHAR * MaterialPath, USkeletalMeshComponent * TargetPose)
+void UTTGhostTrailComponent::SetGhostTrail(const TCHAR* MaterialPath, USkeletalMeshComponent* TargetPose)
 {
 	if (!MaterialPath || !TargetPose)
 		return;
