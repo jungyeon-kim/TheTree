@@ -14,7 +14,8 @@ void UTTUIMap::NativeConstruct()
 	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapDurionButton.UI_MapDurionButton"))));
 
-	GenerateMapRecursive(4, 960, 100, 960, 920);
+	// Bottom-Up
+	GenerateMapRecursive(10, 960, 100, 960, 1000);
 }
 
 bool UTTUIMap::Initialize()
@@ -30,23 +31,50 @@ void UTTUIMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UTTUIMap::GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY)
 {
-	// Order : Current ( The first tile is must be cleared.
+	// Order : Current ( The first tile must be cleared. )
 	CreateButton(EButtonType::MONSTER, StartX, StartY);
-	// Layer2 ~ Before the trooper
-	GenerateMapRecursiveImpl(Layer - 1, StartX - 30, StartY + 100);
-	GenerateMapRecursiveImpl(Layer - 1, StartX + 30, StartY + 100);
+	int DivideLayer{ Layer / 2 };
+	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY);
 	// Trooper
-
+	CreateButton(EButtonType::TROOPER, StartX, StartY + (DivideLayer * 100) + 100);
 	// Trooper ~ Before the durion
-	CreateButton(EButtonType::DURION, EndX, EndY);
+	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY + (DivideLayer * 100) + 100);
+	// Durion
+	//CreateButton(EButtonType::DURION, EndX, EndY);
 }
 
-void UTTUIMap::GenerateMapRecursiveImpl(int Layer, int CurX, int CurY)
+void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int StartY)
 {
-	if (Layer <= 0) return;
-	CreateButton(EButtonType::MONSTER, CurX, CurY);
-	GenerateMapRecursiveImpl(Layer - 1, CurX - 30*Layer, CurY + 100);
-	GenerateMapRecursiveImpl(Layer - 1, CurX + 30*Layer, CurY + 100);
+	TArray<int> PrevElement{};
+	const int StartLayer{ GenerateLayer };
+	while (GenerateLayer > 1)
+	{
+		if (StartLayer == GenerateLayer)
+		{
+			int ElementCount{ static_cast<int>((pow(2, GenerateLayer - 1) + 0.5)) };
+			int StrideX{ (1920 / ElementCount)  };
+			int OffsetX{ (StartX / ElementCount) };
+			for (int i = 0; i < ElementCount; ++i)
+			{
+				int PosX{ StrideX * i };
+				CreateButton(EButtonType::MONSTER, PosX + OffsetX, StartY + ((GenerateLayer-1) * 100));
+				PrevElement.Add(PosX + OffsetX);
+			}
+		}
+		else
+		{
+			int PrevElementCount{ PrevElement.Num() };	//Caching
+			TArray<int> LastElement{};
+			for (int i = 0; i < PrevElementCount; i += 2)	
+			{
+				int PosX{ (PrevElement[i] + PrevElement[i + 1]) / 2 };
+				CreateButton(EButtonType::MONSTER, PosX, StartY + ((GenerateLayer-1) * 100));
+				LastElement.Add(PosX);
+			}
+			PrevElement = std::move(LastElement);
+		}
+		--GenerateLayer;
+	}
 }
 
 void UTTUIMap::CreateButton(const EButtonType& ButtonType, int PosX, int PosY)

@@ -41,6 +41,6 @@ private:
 	 * @param StartY : Y Coordinate On 2nd Dimension => On the Viewport
 	 */
 	void GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY);
-	void GenerateMapRecursiveImpl(int Layer, int CurX, int CurY);
+	void GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int StartY);
 	void CreateButton(const EButtonType& ButtonType, int PosX, int PosY);
 };
