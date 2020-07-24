@@ -11,3 +11,8 @@ void UTTUIMapButton::SetButtonType(USlateWidgetStyleAsset* MapWidgetStyle)
 	Default.ButtonStyle(MapWidgetStyle);
 	WidgetStyle = *Default._ButtonStyle;
 }
+
+void UTTUIMapButton::SetOriginPosition(const FVector2D& Coordinate)
+{
+	OriginPosition = Coordinate;
+}

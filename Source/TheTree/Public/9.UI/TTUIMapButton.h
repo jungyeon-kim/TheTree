@@ -10,7 +10,15 @@ class THETREE_API UTTUIMapButton : public UButton
 	GENERATED_BODY()
 
 	UTTUIMapButton();
+
+private:
+	FVector2D OriginPosition;
+
 public:
 	void SetButtonType(USlateWidgetStyleAsset* MapWidgetStyle);
-
+	void SetOriginPosition(const FVector2D& Coordinate);
+	inline FVector2D GetOriginPosition()
+	{
+		return OriginPosition;
+	}
 };

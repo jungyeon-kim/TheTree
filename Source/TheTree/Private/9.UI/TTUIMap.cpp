@@ -3,7 +3,8 @@
 void UTTUIMap::NativeConstruct()
 {
 	Super::NativeConstruct();
-	Panel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("CanvasPanel_0")));
+	Panel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("TTUIMapPanel")));
+	Slider = Cast<USlider>(GetWidgetFromName(TEXT("TTUIMapSlider")));
 
 	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapMonsterButton.UI_MapMonsterButton"))));
@@ -15,7 +16,8 @@ void UTTUIMap::NativeConstruct()
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapDurionButton.UI_MapDurionButton"))));
 
 	// Bottom-Up
-	GenerateMapRecursive(10, 960, 100, 960, 1000);
+	GenerateMapRecursive(10, 900, 100, 900, 1000);
+	Slider->OnValueChanged.AddDynamic(this, &UTTUIMap::ChangeSliderValue);
 }
 
 bool UTTUIMap::Initialize()
@@ -29,8 +31,17 @@ void UTTUIMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
+FReply UTTUIMap::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseWheel(InGeometry, InMouseEvent);
+	Slider->SetValue(FMath::Clamp(Slider->GetValue() + (InMouseEvent.GetWheelDelta() * 0.05f), 0.0f, 1.0f));
+	ChangeSliderValue(Slider->GetValue());
+	return OnMouseWheel(InGeometry, InMouseEvent).NativeReply;
+}
+
 void UTTUIMap::GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY)
 {
+	MaxHeight = 1920 + (Layer * 200);
 	// Order : Current ( The first tile must be cleared. )
 	CreateButton(EButtonType::MONSTER, StartX, StartY);
 	int DivideLayer{ Layer / 2 };
@@ -52,7 +63,7 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 		if (StartLayer == GenerateLayer)
 		{
 			int ElementCount{ static_cast<int>((pow(2, GenerateLayer - 1) + 0.5)) };
-			int StrideX{ (1920 / ElementCount)  };
+			int StrideX{ (1800 / ElementCount)  };
 			int OffsetX{ (StartX / ElementCount) };
 			for (int i = 0; i < ElementCount; ++i)
 			{
@@ -84,6 +95,23 @@ void UTTUIMap::CreateButton(const EButtonType& ButtonType, int PosX, int PosY)
 	NewButton->SetRenderTranslation(
 		FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) });
 	NewButton->SetButtonType(WidgetCluster[static_cast<int>(ButtonType)]);
+	NewButton->SetOriginPosition(FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) - 300.0f });
 	ButtonCluster.Add(NewButton);
+
 	Panel->AddChild(NewButton);
+}
+
+void UTTUIMap::ChangeSliderValue(float Value)
+{
+	// 1.0 => Top, 0.0 = Bottom
+	for (auto& Button : ButtonCluster)
+	{
+		FVector2D OriginPosition{ Button->GetOriginPosition() };
+		Button->SetRenderTranslation(FVector2D{ OriginPosition.X, OriginPosition.Y + (Value * 300.0f)});
+		float YPos{ Button->RenderTransform.Translation.Y };
+		if (YPos > 20.0f && YPos < 1040.0f)
+			Button->SetVisibility(ESlateVisibility::Visible);
+		else
+			Button->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

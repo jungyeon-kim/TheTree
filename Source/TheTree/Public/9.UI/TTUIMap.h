@@ -14,6 +14,7 @@ protected:
 	virtual bool Initialize() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 private:
 	enum class EButtonType
 	{
@@ -24,16 +25,22 @@ private:
 		SHOP,
 		CURRENT
 	};
-
 	UPROPERTY()
-	TArray<class UButton*> ButtonCluster;
+	TArray<class UTTUIMapButton*> ButtonCluster;
 
 	UPROPERTY()
 	TArray<class USlateWidgetStyleAsset*> WidgetCluster;
 
 	UPROPERTY()
+	class UScrollBox* ScrollBox;
+
+	UPROPERTY()
 	class UCanvasPanel* Panel;
 
+	UPROPERTY()
+	class USlider* Slider;
+
+	int MaxHeight;
 	/*
 	 * Generate UI Map
 	 *
@@ -43,4 +50,7 @@ private:
 	void GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY);
 	void GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int StartY);
 	void CreateButton(const EButtonType& ButtonType, int PosX, int PosY);
+
+	UFUNCTION()
+	void ChangeSliderValue(float Value);
 };
