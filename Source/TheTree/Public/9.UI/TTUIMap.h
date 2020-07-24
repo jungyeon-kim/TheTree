@@ -4,6 +4,25 @@
 #include "Blueprint/UserWidget.h"
 #include "TTUIMap.generated.h"
 
+UENUM()
+enum class EButtonType
+{
+	MONSTER,
+	SHELTER,
+	TROOPER,
+	DURION,
+	SHOP,
+	CURRENT
+};
+
+USTRUCT()
+struct FDistElement
+{
+	GENERATED_USTRUCT_BODY()
+	EButtonType Type;
+	float Percentage;
+};
+
 UCLASS()
 class THETREE_API UTTUIMap : public UUserWidget
 {
@@ -16,15 +35,7 @@ protected:
 
 	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 private:
-	enum class EButtonType
-	{
-		MONSTER,
-		SHELTER,
-		TROOPER,
-		DURION,
-		SHOP,
-		CURRENT
-	};
+
 	UPROPERTY()
 	TArray<class UTTUIMapButton*> ButtonCluster;
 
@@ -53,4 +64,9 @@ private:
 
 	UFUNCTION()
 	void ChangeSliderValue(float Value);
+
+	UPROPERTY()
+	TArray<FDistElement> Dist;
 };
+
+EButtonType ProbAlgorithm(const TArray<FDistElement>& Items);

@@ -6,6 +6,9 @@ void UTTUIMap::NativeConstruct()
 	Panel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("TTUIMapPanel")));
 	Slider = Cast<USlider>(GetWidgetFromName(TEXT("TTUIMapSlider")));
 
+	Dist = TArray<FDistElement>{ {EButtonType::SHELTER, 10.0f} ,{EButtonType::MONSTER, 90.0f} };
+	Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+	
 	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapMonsterButton.UI_MapMonsterButton"))));
 	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
@@ -18,6 +21,7 @@ void UTTUIMap::NativeConstruct()
 	// Bottom-Up
 	GenerateMapRecursive(10, 900, 100, 900, 1000);
 	Slider->OnValueChanged.AddDynamic(this, &UTTUIMap::ChangeSliderValue);
+	Dist.Empty();
 }
 
 bool UTTUIMap::Initialize()
@@ -68,7 +72,7 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 			for (int i = 0; i < ElementCount; ++i)
 			{
 				int PosX{ StrideX * i };
-				CreateButton(EButtonType::MONSTER, PosX + OffsetX, StartY + ((GenerateLayer-1) * 100));
+				CreateButton(ProbAlgorithm(Dist), PosX + OffsetX, StartY + ((GenerateLayer-1) * 100));
 				PrevElement.Add(PosX + OffsetX);
 			}
 		}
@@ -79,7 +83,7 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 			for (int i = 0; i < PrevElementCount; i += 2)	
 			{
 				int PosX{ (PrevElement[i] + PrevElement[i + 1]) / 2 };
-				CreateButton(EButtonType::MONSTER, PosX, StartY + ((GenerateLayer-1) * 100));
+				CreateButton(ProbAlgorithm(Dist), PosX, StartY + ((GenerateLayer-1) * 100));
 				LastElement.Add(PosX);
 			}
 			PrevElement = std::move(LastElement);
@@ -114,4 +118,20 @@ void UTTUIMap::ChangeSliderValue(float Value)
 		else
 			Button->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+EButtonType ProbAlgorithm(const TArray<FDistElement>& Items)
+{
+	FRandomStream RandomStream{};
+	RandomStream.GenerateNewSeed();
+	float RandomSeed{ RandomStream.FRandRange(1.0f, 100.0f) };
+	float Cumulative{};
+
+	for (auto& Item : Items)
+	{
+		Cumulative += Item.Percentage;
+		if (RandomSeed <= Cumulative)
+			return Item.Type;
+	}
+	return EButtonType::MONSTER;
 }
