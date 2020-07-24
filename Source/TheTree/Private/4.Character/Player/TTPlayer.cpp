@@ -593,6 +593,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		SetActorHiddenInGame(false);
 		SetCanBeDamaged(true);
 
+		TTPlayerController->SetUIManual();
 		TTPlayerController->SetUIPlayerInGame(CharacterStat);
 		TTPlayerController->SetUIPlayerStatus(CharacterStat);
 		TTPlayerController->SetUIReinforce(CharacterStat);
