@@ -106,6 +106,7 @@ void ATTPlayerController::SetUIReinforce(UTTCharacterStatComponent* NewCharacter
 void ATTPlayerController::SetUIMap()
 {
 	TTUIMap = CreateWidget<UTTUIMap>(this, TTUIMapClass);
+	TTUIMap->SetWorldContext(GetWorld());
 	TTUIMap->AddToViewport();
 	TTUIMap->SetVisibility(ESlateVisibility::Hidden);
 }

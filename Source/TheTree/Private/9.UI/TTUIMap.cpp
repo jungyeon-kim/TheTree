@@ -1,5 +1,7 @@
 #include "TTUIMap.h"
-#include "TTUIMapButton.h"
+#include "TTUIMonsterButton.h"
+#include "TTUIShelterButton.h"
+#include "TTUITrooperButton.h"
 void UTTUIMap::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -19,20 +21,27 @@ void UTTUIMap::NativeConstruct()
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapDurionButton.UI_MapDurionButton"))));
 
 	// Bottom-Up
-	GenerateMapRecursive(10, 900, 100, 900, 1000);
 	Slider->OnValueChanged.AddDynamic(this, &UTTUIMap::ChangeSliderValue);
+	GenerateMapRecursive(10, 900, 100, 900, 1300);
 	Dist.Empty();
+
+	ButtonCluster.Sort([](const UTTUIMapButton& lhs, const UTTUIMapButton& rhs) 
+	{
+		if (static_cast<int>(lhs.GetOriginPosition().Y) == static_cast<int>(rhs.GetOriginPosition().Y))
+			return lhs.GetOriginPosition().X < rhs.GetOriginPosition().X;
+		else
+			return lhs.GetOriginPosition().Y < rhs.GetOriginPosition().Y;
+	});
+	ButtonCluster[0]->SetIsEnabled(true);
+	ButtonCluster[0]->RegistChild(ButtonCluster[1]);
+	ButtonCluster[0]->RegistChild(ButtonCluster[2]);
+	RegistryEachMapChild(10);
 }
 
 bool UTTUIMap::Initialize()
 {
 	Super::Initialize();
 	return true;
-}
-
-void UTTUIMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
 FReply UTTUIMap::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -50,12 +59,14 @@ void UTTUIMap::GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX,
 	CreateButton(EButtonType::MONSTER, StartX, StartY);
 	int DivideLayer{ Layer / 2 };
 	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY);
+	
 	// Trooper
 	CreateButton(EButtonType::TROOPER, StartX, StartY + (DivideLayer * 100) + 100);
 	// Trooper ~ Before the durion
 	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY + (DivideLayer * 100) + 100);
+	
 	// Durion
-	//CreateButton(EButtonType::DURION, EndX, EndY);
+	CreateButton(EButtonType::DURION, EndX, EndY);
 }
 
 void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int StartY)
@@ -94,12 +105,29 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 
 void UTTUIMap::CreateButton(const EButtonType& ButtonType, int PosX, int PosY)
 {
-	UTTUIMapButton* NewButton{ NewObject<UTTUIMapButton>(this) };
+	UTTUIMapButton* NewButton{};
+	switch (ButtonType)
+	{
+	case EButtonType::MONSTER:
+		NewButton = NewObject<UTTUIMonsterButton>(this);
+		break;
+	case EButtonType::SHELTER:
+		NewButton = NewObject<UTTUIShelterButton>(this);
+		break;
+	case EButtonType::TROOPER:
+		NewButton = NewObject<UTTUITrooperButton>(this);
+		break;
+	default:
+		NewButton = NewObject<UTTUIMapButton>(this);
+		break;
+	}
+
 	NewButton->SetRenderScale(FVector2D{ 1.0f, 2.0f });
 	NewButton->SetRenderTranslation(
 		FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) });
 	NewButton->SetButtonType(WidgetCluster[static_cast<int>(ButtonType)]);
 	NewButton->SetOriginPosition(FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) - 300.0f });
+	NewButton->SetWorldContext(WorldContext);
 	ButtonCluster.Add(NewButton);
 
 	Panel->AddChild(NewButton);
@@ -118,6 +146,46 @@ void UTTUIMap::ChangeSliderValue(float Value)
 		else
 			Button->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UTTUIMap::RegistryEachMapChild(int Layer)
+{
+	const int LastRowElementCount{ static_cast<int>((pow(2, (Layer / 2) - 1) + 0.5)) };
+	const int ElementCount{ ButtonCluster.Num() - 1 };
+	const int HalfElementCount{ ButtonCluster.Num() / 2 };
+
+	for (int Start = 0; Start < 2; ++Start) 
+	{
+		const int Offset{ (HalfElementCount ) * Start };
+		for (int i = 0; i < HalfElementCount - LastRowElementCount ; ++i)
+		{
+			const int LeftChild{ 2 * i + 1 + Offset};
+			const int RightChild{ LeftChild + 1};
+
+			ButtonCluster[i + Offset]->RegistChild(ButtonCluster[LeftChild]);
+			ButtonCluster[i + Offset]->RegistChild(ButtonCluster[RightChild]);
+			ButtonCluster[LeftChild]->SetParent(ButtonCluster[i + Offset]);
+			ButtonCluster[RightChild]->SetParent(ButtonCluster[i + Offset]);
+		}
+	}
+
+	// At last row elements must have Trooper or Durion
+	// ButtonCluster[ElementCount] -> Durion
+	// ButtonCluster[HalfElementCount] -> Trooper
+	for (int i = 0; i < LastRowElementCount; ++i)
+	{
+		const int FirstRow{ HalfElementCount - 1 - i };
+		const int SecondRow{ ElementCount - 1 - i };
+		ButtonCluster[FirstRow]->RegistChild(ButtonCluster[HalfElementCount]);
+		ButtonCluster[SecondRow]->RegistChild(ButtonCluster[ElementCount]);
+	}
+}
+
+void UTTUIMap::SetWorldContext(UWorld* World)
+{
+	WorldContext = World;
+	for (auto& Button : ButtonCluster)
+		Button->SetWorldContext(World);
 }
 
 EButtonType ProbAlgorithm(const TArray<FDistElement>& Items)

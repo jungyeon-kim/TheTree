@@ -31,7 +31,6 @@ class THETREE_API UTTUIMap : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 	virtual bool Initialize() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 private:
@@ -51,6 +50,9 @@ private:
 	UPROPERTY()
 	class USlider* Slider;
 
+	UPROPERTY()
+	UWorld* WorldContext;
+
 	int MaxHeight;
 	/*
 	 * Generate UI Map
@@ -61,12 +63,16 @@ private:
 	void GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY);
 	void GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int StartY);
 	void CreateButton(const EButtonType& ButtonType, int PosX, int PosY);
+	void RegistryEachMapChild(int Layer);
 
 	UFUNCTION()
 	void ChangeSliderValue(float Value);
 
 	UPROPERTY()
 	TArray<FDistElement> Dist;
+
+public:
+	void SetWorldContext(UWorld* World);
 };
 
 EButtonType ProbAlgorithm(const TArray<FDistElement>& Items);

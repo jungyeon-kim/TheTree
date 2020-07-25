@@ -9,16 +9,27 @@ class THETREE_API UTTUIMapButton : public UButton
 {
 	GENERATED_BODY()
 
+public:
 	UTTUIMapButton();
 
-private:
+protected:
 	FVector2D OriginPosition;
-
+	TArray<UButton*> Childs;
+	UTTUIMapButton* Parent;
+	UPROPERTY()
+	UWorld* WorldContext;
 public:
 	void SetButtonType(USlateWidgetStyleAsset* MapWidgetStyle);
 	void SetOriginPosition(const FVector2D& Coordinate);
-	inline FVector2D GetOriginPosition()
+	void RegistChild(UTTUIMapButton* Child);
+	void SetParent(UTTUIMapButton* Button);
+	void SetWorldContext(UWorld* World);
+	void SetEnableChilds(bool bFlag);
+	inline FVector2D GetOriginPosition() const
 	{
 		return OriginPosition;
 	}
+
+	UFUNCTION()
+	virtual void OnClickEvent();
 };
