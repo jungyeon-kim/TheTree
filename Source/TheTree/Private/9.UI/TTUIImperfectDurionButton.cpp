@@ -1,4 +1,5 @@
 #include "TTUIImperfectDurionButton.h"
+#include "TTBaseLevel.h"
 
 UTTUIImperfectDurionButton::UTTUIImperfectDurionButton()
 {
@@ -7,6 +8,10 @@ UTTUIImperfectDurionButton::UTTUIImperfectDurionButton()
 
 void UTTUIImperfectDurionButton::OnClickEvent()
 {
+	ATTBaseLevel* Level{ Cast<ATTBaseLevel>(WorldContext->GetLevelScriptActor()) };
+	if (!Level || Level->GetMonsterCount() > 0)
+		return;
+
 	Super::OnClickEvent();
 	UGameplayStatics::OpenLevel(WorldContext, FName{ "ImperfectDurion_Battle" });
 }

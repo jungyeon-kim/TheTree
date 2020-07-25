@@ -42,12 +42,17 @@ void ATTPortal::OnOverlapBegin(UPrimitiveComponent* OverlapComp , AActor* OtherA
 	ATTPlayer* Player{ Cast<ATTPlayer>(OtherActor) };
 	if (Player)
 	{
-		ATTCinema* FadeCinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
-		FadeCinema->SetCinema(TEXT("/Game/Level/Cinema/CI_FadeIn.CI_FadeIn"));
-		FScriptDelegate Script{};
-		Script.BindUFunction(this, "EndCinema");
-		FadeCinema->GetSequencePlayer()->OnFinished.Add(Script);
-		FadeCinema->PlayCinema();
+		if (*UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("ImperfectDurion_Battle"))
+		{
+			ATTCinema* FadeCinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
+			FadeCinema->SetCinema(TEXT("/Game/Level/Cinema/CI_FadeIn.CI_FadeIn"));
+			FScriptDelegate Script{};
+			Script.BindUFunction(this, "EndCinema");
+			FadeCinema->GetSequencePlayer()->OnFinished.Add(Script);
+			FadeCinema->PlayCinema();
+		}
+		else
+			Player->SetUIMapOpenForced(true);
 	}
 }
 

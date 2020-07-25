@@ -11,7 +11,7 @@ ATTCinema::ATTCinema()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	static ConstructorHelpers::FObjectFinder<ULevelSequence> SLS_FADE
-	{ TEXT("/Game/Level/Cinema/CI_FadeOut.CI_FadeOut") };
+	{ TEXT("/Game/Level/Cinema/CI_FadeIn.CI_FadeIn") };
 	if (SLS_FADE.Succeeded())
 		LevelSequence = SLS_FADE.Object;
 }
@@ -42,6 +42,7 @@ void ATTCinema::SetCinema(const TCHAR* Path)
 
 	Settings.bDisableMovementInput = true;
 	Settings.bDisableLookAtInput = true;
+	Settings.bHideHud = true;
 
 	ALevelSequenceActor* OutActor{ nullptr };
 
@@ -79,10 +80,11 @@ void ATTCinema::SetAndPlayCinema(const TCHAR* Path)
 	PlayCinema();
 }
 
-void ATTCinema::SetAndPlayCinema(ULevelSequence* Sequence, bool bRunAI)
+void ATTCinema::SetAndPlayCinema(ULevelSequence* Sequence, bool bRunAI, FName LevelName)
 {
-	bRunAIFlags = bRunAI;
+	bRunAIFlag = bRunAI;
 	SetCinema(Sequence);
+	OpenLevelName = LevelName;
 	PlayCinema();
 }
 
@@ -125,11 +127,13 @@ void ATTCinema::EndCinemaFunction()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),
 		ATTEnemyBase::StaticClass(), Arr);
 
-	if (bRunAIFlags)
+	if (bRunAIFlag)
 		for (AActor*& Enemy : Arr)
 			Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
 
-	
+	if (OpenLevelName != "")
+		UGameplayStatics::OpenLevel(GetWorld(), OpenLevelName);
+
 	Destroy();
 }
 

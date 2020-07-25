@@ -1,5 +1,8 @@
 #include "TTUIMonsterButton.h"
-#include "TheTree.h"
+#include "TTGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "TTBaseLevel.h"
+
 UTTUIMonsterButton::UTTUIMonsterButton()
 {
 	OnClicked.AddDynamic(this, &UTTUIMonsterButton::OnClickEvent);
@@ -7,6 +10,10 @@ UTTUIMonsterButton::UTTUIMonsterButton()
 
 void UTTUIMonsterButton::OnClickEvent()
 {
+	ATTBaseLevel* Level{ Cast<ATTBaseLevel>(WorldContext->GetLevelScriptActor()) };
+	if (!Level || Level->GetMonsterCount() > 0)
+		return;
+
 	Super::OnClickEvent();
-	UGameplayStatics::OpenLevel(WorldContext, FName{"Common_Battle_00"});
+	Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_00" });
 }

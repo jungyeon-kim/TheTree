@@ -1,5 +1,5 @@
 #include "TTUIMapButton.h"
-
+#include "TTPlayer.h"
 UTTUIMapButton::UTTUIMapButton()
 {
 	SetIsEnabled(false);
@@ -11,6 +11,8 @@ void UTTUIMapButton::OnClickEvent()
 	if (Parent)
 		Parent->SetEnableChilds(false);
 	SetIsEnabled(false);
+
+	Cast<ATTPlayer>(UGameplayStatics::GetPlayerCharacter(WorldContext, 0))->SetUIMapOpenForced(false);
 }
 
 void UTTUIMapButton::SetButtonType(USlateWidgetStyleAsset* MapWidgetStyle)

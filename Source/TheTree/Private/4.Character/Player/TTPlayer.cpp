@@ -760,3 +760,20 @@ void ATTPlayer::OpenUIMap()
 		UIMap->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+
+void ATTPlayer::SetUIMapOpenForced(bool bOpenMap)
+{
+	UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
+	TTPlayerController->bShowMouseCursor = bOpenMap;
+	TTPlayerController->SetIgnoreLookInput(bOpenMap);
+	if (bOpenMap)
+	{
+		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
+		UIMap->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		TTPlayerController->SetInputMode(FInputModeGameOnly{});
+		UIMap->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
