@@ -33,6 +33,7 @@ protected:
 	virtual bool Initialize() override;
 
 	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeDestruct() override;
 private:
 
 	UPROPERTY()

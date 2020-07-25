@@ -2,14 +2,13 @@
 #include "TTUIMonsterButton.h"
 #include "TTUIShelterButton.h"
 #include "TTUITrooperButton.h"
+#include "TTUIImperfectDurionButton.h"
+#include "TTGameInstance.h"
 void UTTUIMap::NativeConstruct()
 {
 	Super::NativeConstruct();
 	Panel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("TTUIMapPanel")));
 	Slider = Cast<USlider>(GetWidgetFromName(TEXT("TTUIMapSlider")));
-
-	Dist = TArray<FDistElement>{ {EButtonType::SHELTER, 10.0f} ,{EButtonType::MONSTER, 90.0f} };
-	Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 	
 	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapMonsterButton.UI_MapMonsterButton"))));
@@ -22,26 +21,48 @@ void UTTUIMap::NativeConstruct()
 
 	// Bottom-Up
 	Slider->OnValueChanged.AddDynamic(this, &UTTUIMap::ChangeSliderValue);
-	GenerateMapRecursive(10, 900, 100, 900, 1300);
-	Dist.Empty();
+	ButtonCluster = Cast<UTTGameInstance>(GetGameInstance())->GetButtonCluster();
 
-	ButtonCluster.Sort([](const UTTUIMapButton& lhs, const UTTUIMapButton& rhs) 
+	if (ButtonCluster.Num())
 	{
-		if (static_cast<int>(lhs.GetOriginPosition().Y) == static_cast<int>(rhs.GetOriginPosition().Y))
-			return lhs.GetOriginPosition().X < rhs.GetOriginPosition().X;
-		else
-			return lhs.GetOriginPosition().Y < rhs.GetOriginPosition().Y;
-	});
-	ButtonCluster[0]->SetIsEnabled(true);
-	ButtonCluster[0]->RegistChild(ButtonCluster[1]);
-	ButtonCluster[0]->RegistChild(ButtonCluster[2]);
-	RegistryEachMapChild(10);
+		//Replace Buttons
+		for (auto& Button : ButtonCluster)
+			Panel->AddChild(Button);
+	}
+	else
+	{
+		Dist = TArray<FDistElement>{ {EButtonType::SHELTER, 10.0f} ,{EButtonType::MONSTER, 90.0f} };
+		Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+		GenerateMapRecursive(10, 900, 100, 900, 1300);
+		Dist.Empty();
+
+		ButtonCluster.Sort([](const UTTUIMapButton& lhs, const UTTUIMapButton& rhs)
+			{
+				if (static_cast<int>(lhs.GetOriginPosition().Y) == static_cast<int>(rhs.GetOriginPosition().Y))
+					return lhs.GetOriginPosition().X < rhs.GetOriginPosition().X;
+				else
+					return lhs.GetOriginPosition().Y < rhs.GetOriginPosition().Y;
+			});
+		ButtonCluster[0]->SetIsEnabled(true);
+		ButtonCluster[0]->RegistChild(ButtonCluster[1]);
+		ButtonCluster[0]->RegistChild(ButtonCluster[2]);
+		RegistryEachMapChild(10);
+	}
+	for (auto& Button : ButtonCluster)
+		Button->SetWorldContext(WorldContext);
 }
 
 bool UTTUIMap::Initialize()
 {
 	Super::Initialize();
 	return true;
+}
+
+void UTTUIMap::NativeDestruct()
+{
+	UTTGameInstance* GameInstance{ Cast<UTTGameInstance>(GetGameInstance()) };
+	if (GameInstance && !GameInstance->GetButtonCluster().Num())
+		Cast<UTTGameInstance>(GetGameInstance())->SetButtonCluster(ButtonCluster);
 }
 
 FReply UTTUIMap::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -117,6 +138,9 @@ void UTTUIMap::CreateButton(const EButtonType& ButtonType, int PosX, int PosY)
 	case EButtonType::TROOPER:
 		NewButton = NewObject<UTTUITrooperButton>(this);
 		break;
+	case EButtonType::DURION:
+		NewButton = NewObject<UTTUIImperfectDurionButton>(this);
+		break;
 	default:
 		NewButton = NewObject<UTTUIMapButton>(this);
 		break;
@@ -184,8 +208,6 @@ void UTTUIMap::RegistryEachMapChild(int Layer)
 void UTTUIMap::SetWorldContext(UWorld* World)
 {
 	WorldContext = World;
-	for (auto& Button : ButtonCluster)
-		Button->SetWorldContext(World);
 }
 
 EButtonType ProbAlgorithm(const TArray<FDistElement>& Items)

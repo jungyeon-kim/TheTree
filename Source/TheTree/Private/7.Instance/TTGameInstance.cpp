@@ -47,3 +47,13 @@ const int32 UTTGameInstance::GetPlanOfClearCount()
 {
 	return PlanOfClearCount;
 }
+
+void UTTGameInstance::SetButtonCluster(TArray<class UTTUIMapButton*>& ButtonCluster)
+{
+	UIMapButtonCluster = std::move(ButtonCluster);
+}
+
+TArray<class UTTUIMapButton*>& UTTGameInstance::GetButtonCluster()
+{
+	return UIMapButtonCluster;
+}

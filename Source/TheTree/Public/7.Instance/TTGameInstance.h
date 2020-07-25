@@ -52,6 +52,8 @@ private:
 	class UDataTable* TTAITable;
 	UPROPERTY()
 	class UTTCharacterStatComponent* TTPlayerStat;
+	UPROPERTY()
+	TArray<class UTTUIMapButton*> UIMapButtonCluster;
 
 	int32 ClearCount{};
 
@@ -69,4 +71,7 @@ public:
 	int32 GetClearCount();
 	void AddClearCount();
 	const int32 GetPlanOfClearCount();
+
+	void SetButtonCluster(TArray<class UTTUIMapButton*>& ButtonCluster);
+	TArray<class UTTUIMapButton*>& GetButtonCluster();
 };

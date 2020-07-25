@@ -8,5 +8,5 @@ UTTUIMonsterButton::UTTUIMonsterButton()
 void UTTUIMonsterButton::OnClickEvent()
 {
 	Super::OnClickEvent();
-	//UGameplayStatics::OpenLevel(WorldContext, FName{"Common_Battle_00"});
+	UGameplayStatics::OpenLevel(WorldContext, FName{"Common_Battle_00"});
 }
