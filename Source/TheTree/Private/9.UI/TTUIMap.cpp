@@ -4,6 +4,7 @@
 #include "TTUITrooperButton.h"
 #include "TTUIImperfectDurionButton.h"
 #include "TTGameInstance.h"
+
 void UTTUIMap::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -33,9 +34,10 @@ void UTTUIMap::NativeConstruct()
 	{
 		Dist = TArray<FDistElement>{ {EButtonType::SHELTER, 10.0f} ,{EButtonType::MONSTER, 90.0f} };
 		Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
-		GenerateMapRecursive(10, 900, 100, 900, 2100);
-		Dist.Empty();
 
+		GenerateMapRecursive(10, 960, 100, 960, 2100);
+		Dist.Empty();
+		
 		ButtonCluster.Sort([](const UTTUIMapButton& lhs, const UTTUIMapButton& rhs)
 			{
 				if (static_cast<int>(lhs.GetOriginPosition().Y) == static_cast<int>(rhs.GetOriginPosition().Y))
@@ -60,6 +62,9 @@ bool UTTUIMap::Initialize()
 
 void UTTUIMap::NativeDestruct()
 {
+	for (auto& Button : ButtonCluster)
+		Button->SetRenderTranslation(Button->GetOriginPosition());
+
 	UTTGameInstance* GameInstance{ Cast<UTTGameInstance>(GetGameInstance()) };
 	if (GameInstance && !GameInstance->GetButtonCluster().Num())
 		Cast<UTTGameInstance>(GetGameInstance())->SetButtonCluster(ButtonCluster);
@@ -75,19 +80,18 @@ FReply UTTUIMap::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerE
 
 void UTTUIMap::GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY)
 {
-	MaxHeight = 1920 + (Layer * 200);
 	// Order : Current ( The first tile must be cleared. )
-	CreateButton(EButtonType::MONSTER, StartX, StartY);
+	CreateButton(EButtonType::MONSTER, StartX - HalfButtonXSize, StartY);
 	int DivideLayer{ Layer / 2 };
 	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY);
 	
 	// Trooper
-	CreateButton(EButtonType::TROOPER, StartX, StartY + (DivideLayer * 200));
+	CreateButton(EButtonType::TROOPER, StartX - HalfButtonXSize, StartY + (DivideLayer * StrideY));
 	// Trooper ~ Before the durion
-	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY + (DivideLayer * 200));
+	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY + (DivideLayer * StrideY));
 	
 	// Durion
-	CreateButton(EButtonType::DURION, EndX, EndY);
+	CreateButton(EButtonType::DURION, EndX - HalfButtonXSize, EndY);
 }
 
 void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int StartY)
@@ -99,13 +103,12 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 		if (StartLayer == GenerateLayer)
 		{
 			int ElementCount{ static_cast<int>((pow(2, GenerateLayer - 1) + 0.5)) };
-			int StrideX{ (1800 / ElementCount)  };
-			int OffsetX{ (StartX / ElementCount) };
+			int StrideX{ ((StartX * 2) / ElementCount)  };
 			for (int i = 0; i < ElementCount; ++i)
 			{
 				int PosX{ StrideX * i };
-				CreateButton(ProbAlgorithm(Dist), PosX + OffsetX, StartY + ((GenerateLayer - 1) * 200));
-				PrevElement.Add(PosX + OffsetX);
+				CreateButton(ProbAlgorithm(Dist), PosX + (ElementCount / 2), StartY + ((GenerateLayer - 1) * StrideY));
+				PrevElement.Add(PosX + (ElementCount / 2));
 			}
 		}
 		else
@@ -115,7 +118,7 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 			for (int i = 0; i < PrevElementCount; i += 2)	
 			{
 				int PosX{ (PrevElement[i] + PrevElement[i + 1]) / 2 };
-				CreateButton(ProbAlgorithm(Dist), PosX, StartY + ((GenerateLayer-1) * 200));
+				CreateButton(ProbAlgorithm(Dist), PosX, StartY + ((GenerateLayer-1) * StrideY));
 				LastElement.Add(PosX);
 			}
 			PrevElement = std::move(LastElement);
@@ -150,7 +153,7 @@ void UTTUIMap::CreateButton(const EButtonType& ButtonType, int PosX, int PosY)
 	NewButton->SetRenderTranslation(
 		FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) });
 	NewButton->SetButtonType(WidgetCluster[static_cast<int>(ButtonType)]);
-	NewButton->SetOriginPosition(FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) - 1500.0f });
+	NewButton->SetOriginPosition(FVector2D{ static_cast<float>(PosX), static_cast<float>(PosY) - OriginPostionStrideY });
 	NewButton->SetWorldContext(WorldContext);
 	ButtonCluster.Add(NewButton);
 
@@ -163,7 +166,7 @@ void UTTUIMap::ChangeSliderValue(float Value)
 	for (auto& Button : ButtonCluster)
 	{
 		FVector2D OriginPosition{ Button->GetOriginPosition() };
-		Button->SetRenderTranslation(FVector2D{ OriginPosition.X, OriginPosition.Y + (Value * 1500.0f)});
+		Button->SetRenderTranslation(FVector2D{ OriginPosition.X, OriginPosition.Y + (Value * OriginPostionStrideY)});
 		float YPos{ Button->RenderTransform.Translation.Y };
 		if (YPos > 20.0f && YPos < 1040.0f)
 			Button->SetVisibility(ESlateVisibility::Visible);
@@ -208,6 +211,14 @@ void UTTUIMap::RegistryEachMapChild(int Layer)
 void UTTUIMap::SetWorldContext(UWorld* World)
 {
 	WorldContext = World;
+}
+
+void UTTUIMap::ClearAllWidget()
+{
+	ButtonCluster.Empty();
+	UTTGameInstance* GameInstance{ Cast<UTTGameInstance>(GetGameInstance()) };
+	if (GameInstance)
+		Cast<UTTGameInstance>(GetGameInstance())->SetButtonCluster(ButtonCluster);
 }
 
 EButtonType ProbAlgorithm(const TArray<FDistElement>& Items)

@@ -116,7 +116,7 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ATTPlayer::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATTPlayer::Turn);
 	PlayerInputComponent->BindAction(TEXT("OpenUIPlayerStatus"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenUIPlayerStatus);
-	PlayerInputComponent->BindAction(TEXT("OpenUIMap"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenUIMap);
+	PlayerInputComponent->BindAction(TEXT("OpenUIMap"), EInputEvent::IE_Pressed, this, &ATTPlayer::SetUIMapOpenFlipFlop);
 }
 
 void ATTPlayer::BeginPlay()
@@ -628,6 +628,8 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]() 
 			{ 
+				UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
+				UIMap->ClearAllWidget();
 				CharacterStat->SetObjectStat(TEXT("Player"), GetGameInstance());
 				UGameplayStatics::OpenLevel(this, TEXT("Lobby"));
 			}), DeadTimer, false);
@@ -739,33 +741,23 @@ void ATTPlayer::OpenUIPlayerStatus()
 	else UIPlayerStatus->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void ATTPlayer::OpenUIMap()
+void ATTPlayer::SetUIMapOpenFlipFlop()
 {
-	static bool bIsOpened{};
-	UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
-
-	bIsOpened = !bIsOpened;
-	if (bIsOpened)
-	{
-		TTPlayerController->bShowMouseCursor = true;
-		TTPlayerController->SetIgnoreLookInput(true);
-		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
-		UIMap->SetVisibility(ESlateVisibility::Visible);
-	}
-	else
-	{
-		TTPlayerController->bShowMouseCursor = false;
-		TTPlayerController->SetIgnoreLookInput(false);
-		TTPlayerController->SetInputMode(FInputModeGameOnly{});
-		UIMap->SetVisibility(ESlateVisibility::Hidden);
-	}
+	bIsOpenedMap = !bIsOpenedMap;
+	SetUIMapOpenImpl(bIsOpenedMap);
 }
 
 void ATTPlayer::SetUIMapOpenForced(bool bOpenMap)
 {
+	SetUIMapOpenImpl(bOpenMap);
+}
+
+void ATTPlayer::SetUIMapOpenImpl(bool bOpenMap)
+{
 	UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
 	TTPlayerController->bShowMouseCursor = bOpenMap;
 	TTPlayerController->SetIgnoreLookInput(bOpenMap);
+	bIsOpenedMap = bOpenMap;
 	if (bOpenMap)
 	{
 		TTPlayerController->SetInputMode(FInputModeGameAndUI{});

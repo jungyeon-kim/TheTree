@@ -12,5 +12,5 @@ void UTTUIShelterButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	UGameplayStatics::OpenLevel(GetWorld(), FName{ "Common_Battle_00" });
+	Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_00" });
 }
