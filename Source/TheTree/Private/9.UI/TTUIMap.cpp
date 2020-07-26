@@ -102,13 +102,14 @@ void UTTUIMap::GenerateMapRecursiveImpl(int GenerateLayer, int StartX, int Start
 	{
 		if (StartLayer == GenerateLayer)
 		{
-			int ElementCount{ static_cast<int>((pow(2, GenerateLayer - 1) + 0.5)) };
-			int StrideX{ ((StartX * 2) / ElementCount)  };
+			const int ElementCount{ static_cast<int>((pow(2, GenerateLayer - 1) + 0.5)) };
+			const int StrideX{ ((StartX * 2) / ElementCount)  };
+			const int HalfElementCount{ ElementCount / 2 };
 			for (int i = 0; i < ElementCount; ++i)
 			{
 				int PosX{ StrideX * i };
-				CreateButton(ProbAlgorithm(Dist), PosX + (ElementCount / 2), StartY + ((GenerateLayer - 1) * StrideY));
-				PrevElement.Add(PosX + (ElementCount / 2));
+				CreateButton(ProbAlgorithm(Dist), PosX + HalfElementCount, StartY + ((GenerateLayer - 1) * StrideY));
+				PrevElement.Add(PosX + HalfElementCount);
 			}
 		}
 		else

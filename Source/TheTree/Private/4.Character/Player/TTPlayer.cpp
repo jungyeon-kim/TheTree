@@ -749,6 +749,7 @@ void ATTPlayer::SetUIMapOpenFlipFlop()
 
 void ATTPlayer::SetUIMapOpenForced(bool bOpenMap)
 {
+	bIsOpenedMap = bOpenMap;
 	SetUIMapOpenImpl(bOpenMap);
 }
 
@@ -757,7 +758,7 @@ void ATTPlayer::SetUIMapOpenImpl(bool bOpenMap)
 	UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
 	TTPlayerController->bShowMouseCursor = bOpenMap;
 	TTPlayerController->SetIgnoreLookInput(bOpenMap);
-	bIsOpenedMap = bOpenMap;
+
 	if (bOpenMap)
 	{
 		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
