@@ -62,8 +62,7 @@ bool UTTUIMap::Initialize()
 
 void UTTUIMap::NativeDestruct()
 {
-	for (auto& Button : ButtonCluster)
-		Button->SetRenderTranslation(Button->GetOriginPosition());
+	ChangeSliderValue(1.0f);
 
 	UTTGameInstance* GameInstance{ Cast<UTTGameInstance>(GetGameInstance()) };
 	if (GameInstance && !GameInstance->GetButtonCluster().Num())
