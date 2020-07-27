@@ -13,5 +13,5 @@ void UTTUIImperfectDurionButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	UGameplayStatics::OpenLevel(WorldContext, FName{ "ImperfectDurion_Battle" });
+	Level->PlayCinematic(nullptr, false, FName{ "ImperfectDurion_Battle" });
 }

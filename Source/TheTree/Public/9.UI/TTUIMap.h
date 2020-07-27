@@ -34,6 +34,7 @@ protected:
 
 	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeDestruct() override;
+
 private:
 
 	UPROPERTY()
@@ -54,7 +55,6 @@ private:
 	UPROPERTY()
 	UWorld* WorldContext;
 
-	int MaxHeight;
 	/*
 	 * Generate UI Map
 	 *
@@ -72,8 +72,13 @@ private:
 	UPROPERTY()
 	TArray<FDistElement> Dist;
 
+	const int HalfButtonXSize{ 50 };
+	const int StrideY{ 200 };
+	const float OriginPostionStrideY{ 1500.0f };
+
 public:
 	void SetWorldContext(UWorld* World);
+	void ClearAllWidget();
 };
 
 EButtonType ProbAlgorithm(const TArray<FDistElement>& Items);

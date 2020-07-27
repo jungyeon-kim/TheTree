@@ -2,6 +2,7 @@
 #include "TTPlayer.h"
 UTTUIMapButton::UTTUIMapButton()
 {
+	SetRenderTransformPivot(FVector2D{ 0.0f, 0.0f });
 	SetIsEnabled(false);
 }
 

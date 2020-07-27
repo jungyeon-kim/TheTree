@@ -13,5 +13,5 @@ void UTTUITrooperButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	UGameplayStatics::OpenLevel(WorldContext, FName{"Trooper_Battle"});
+	Level->PlayCinematic(nullptr, false, FName{ "Trooper_Battle" });
 }

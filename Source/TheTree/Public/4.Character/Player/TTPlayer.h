@@ -42,6 +42,8 @@ private:
 	bool bIsSwappingWeapon;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "KnockBack", Meta = (AllowPrivateAccess = true))
 	bool bIsKnockBacking;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	bool bIsOpenedMap;
 
 	UPROPERTY()
 	class ATTPlayerController* TTPlayerController;
@@ -62,7 +64,7 @@ private:
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
 	void OpenUIPlayerStatus();
-	void OpenUIMap();
+	void SetUIMapOpenImpl(bool bOpenMap);
 
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -113,5 +115,6 @@ public:
 	void SetPlayRate(float StartTime, float EndTime, float TimeDilation);
 	void SetWeapon();
 	void SetCharacterState(ECharacterState NewState);
+	void SetUIMapOpenFlipFlop();
 	void SetUIMapOpenForced(bool bOpenMap);
 };
