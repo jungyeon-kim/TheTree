@@ -4,6 +4,7 @@
 #include "TTUITrooperButton.h"
 #include "TTUIImperfectDurionButton.h"
 #include "TTGameInstance.h"
+
 void UTTUIMap::NativeConstruct()
 {
 	Super::NativeConstruct();
