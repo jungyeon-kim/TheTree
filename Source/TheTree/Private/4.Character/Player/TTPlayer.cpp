@@ -597,6 +597,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		TTPlayerController->SetUIPlayerInGame(CharacterStat);
 		TTPlayerController->SetUIPlayerStatus(CharacterStat);
 		TTPlayerController->SetUIReinforce(CharacterStat);
+		TTPlayerController->SetUIRecovery(CharacterStat);
 		TTPlayerController->SetUIMap();
 
 		SetControlMode(EControlMode::THIRD_PERSON);

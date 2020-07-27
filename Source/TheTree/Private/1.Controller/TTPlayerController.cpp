@@ -3,6 +3,7 @@
 #include "TTUIPlayerInGame.h"
 #include "TTUIPlayerStatus.h"
 #include "TTUIReinforce.h"
+#include "TTUIRecovery.h"
 #include "TTUIMap.h"
 
 ATTPlayerController::ATTPlayerController()
@@ -11,11 +12,13 @@ ATTPlayerController::ATTPlayerController()
 	static ConstructorHelpers::FClassFinder<UTTUIPlayerInGame> UI_PLAYER_INGAME{ TEXT("/Game/Blueprints/UI/UI_Player_InGame/UI_Player_InGame.UI_Player_InGame_C") };
 	static ConstructorHelpers::FClassFinder<UTTUIPlayerStatus> UI_PLAYER_STATUS{ TEXT("/Game/Blueprints/UI/UI_Player_Status/UI_Player_Status.UI_Player_Status_C") };
 	static ConstructorHelpers::FClassFinder<UTTUIReinforce> UI_REINFORCE{ TEXT("/Game/Blueprints/UI/UI_Reinforce/UI_Reinforce.UI_Reinforce_C") };
+	static ConstructorHelpers::FClassFinder<UTTUIRecovery> UI_RECOVERY{ TEXT("/Game/Blueprints/UI/UI_Recovery/UI_Recovery.UI_Recovery_C") };
 	static ConstructorHelpers::FClassFinder<UTTUIMap> UI_MAP{ TEXT("/Game/Blueprints/UI/UI_Map/UI_Map.UI_Map_C") };
 	if (UI_MANUAL.Succeeded()) TTUIManualClass = UI_MANUAL.Class;
 	if (UI_PLAYER_INGAME.Succeeded()) TTUIPlayerInGameClass = UI_PLAYER_INGAME.Class;
 	if (UI_PLAYER_STATUS.Succeeded()) TTUIPlayerStatusClass = UI_PLAYER_STATUS.Class;
 	if (UI_REINFORCE.Succeeded()) TTUIReinforceClass = UI_REINFORCE.Class;
+	if (UI_RECOVERY.Succeeded()) TTUIRecoveryClass = UI_RECOVERY.Class;
 	if (UI_MAP.Succeeded()) TTUIMapClass = UI_MAP.Class;
 }
 
@@ -63,6 +66,11 @@ UTTUIReinforce* ATTPlayerController::GetUIReinforce() const
 	return TTUIReinforce;
 }
 
+UTTUIRecovery* ATTPlayerController::GetUIRecovery() const
+{
+	return TTUIRecovery;
+}
+
 UTTUIMap* ATTPlayerController::GetUIMap() const
 {
 	return TTUIMap;
@@ -101,6 +109,16 @@ void ATTPlayerController::SetUIReinforce(UTTCharacterStatComponent* NewCharacter
 
 	TTUIReinforce->Init();
 	TTUIReinforce->BindCharacterStat(NewCharacterStat);
+}
+
+void ATTPlayerController::SetUIRecovery(UTTCharacterStatComponent* NewCharacterStat)
+{
+	TTUIRecovery = CreateWidget<UTTUIRecovery>(this, TTUIRecoveryClass);
+	TTUIRecovery->AddToViewport();
+	TTUIRecovery->SetVisibility(ESlateVisibility::Hidden);
+
+	TTUIRecovery->Init();
+	TTUIRecovery->BindCharacterStat(NewCharacterStat);
 }
 
 void ATTPlayerController::SetUIMap()

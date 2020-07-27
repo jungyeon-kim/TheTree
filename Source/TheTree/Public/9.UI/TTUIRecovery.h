@@ -2,40 +2,27 @@
 
 #include "TheTree.h"
 #include "Blueprint/UserWidget.h"
-#include "TTUIReinforce.generated.h"
+#include "TTUIRecovery.generated.h"
 
 UCLASS()
-class THETREE_API UTTUIReinforce : public UUserWidget
+class THETREE_API UTTUIRecovery : public UUserWidget
 {
 	GENERATED_BODY()
 private:
 	UPROPERTY()
-	class UButton* AtkUpButton;
+	class UButton* RecoveryHPButton;
 	UPROPERTY()
-	class UButton* DefUpButton;
-	UPROPERTY()
-	class UButton* MaxHPUpButton;
-	UPROPERTY()
-	class UButton* MaxStaUpButton;
-	UPROPERTY()
-	class UButton* GetStaUpButton;
+	class UButton* RecoveryStaButton;
 
 	UPROPERTY()
-	class UTextBlock* AtkGoldText;
+	class UTextBlock* RecoveryHPGoldText;
 	UPROPERTY()
-	class UTextBlock* DefGoldText;
-	UPROPERTY()
-	class UTextBlock* MaxHPGoldText;
-	UPROPERTY()
-	class UTextBlock* MaxStaGoldText;
-	UPROPERTY()
-	class UTextBlock* GetStaGoldText;
+	class UTextBlock* RecoveryStaGoldText;
 	UPROPERTY()
 	class UTextBlock* MyGoldText;
 
 	UPROPERTY()
 	TArray<int32> Price;
-	int32 PriceIncrease{};
 
 	UPROPERTY()
 	class UTTCharacterStatComponent* CurrentCharacterStat;
@@ -51,13 +38,7 @@ public:
 	void UpdatePlayerGold();
 
 	UFUNCTION()
-	void OnAtkUp();
+	void OnRecoveryHP();
 	UFUNCTION()
-	void OnDefUp();
-	UFUNCTION()
-	void OnMaxHPUp();
-	UFUNCTION()
-	void OnMaxStaUp();
-	UFUNCTION()
-	void OnGetStaUp();
+	void OnRecoverySta();
 };
