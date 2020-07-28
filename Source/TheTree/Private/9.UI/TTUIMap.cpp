@@ -3,6 +3,7 @@
 #include "TTUIShelterButton.h"
 #include "TTUITrooperButton.h"
 #include "TTUIImperfectDurionButton.h"
+#include "TTUIStoreButton.h"
 #include "TTGameInstance.h"
 
 void UTTUIMap::NativeConstruct()
@@ -19,6 +20,8 @@ void UTTUIMap::NativeConstruct()
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapTrooperButton.UI_MapTrooperButton"))));
 	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
 		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapDurionButton.UI_MapDurionButton"))));
+	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
+		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapStoreButton.UI_MapStoreButton"))));
 
 	// Bottom-Up
 	Slider->OnValueChanged.AddDynamic(this, &UTTUIMap::ChangeSliderValue);
@@ -32,7 +35,7 @@ void UTTUIMap::NativeConstruct()
 	}
 	else
 	{
-		Dist = TArray<FDistElement>{ {EButtonType::SHELTER, 10.0f} ,{EButtonType::MONSTER, 90.0f} };
+		Dist = TArray<FDistElement>{ {EButtonType::STORE, 15.0f}, {EButtonType::SHELTER, 15.0f} ,{EButtonType::MONSTER, 70.0f} };
 		Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
 		GenerateMapRecursive(10, 960, 100, 960, 2100);
@@ -79,7 +82,7 @@ FReply UTTUIMap::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerE
 
 void UTTUIMap::GenerateMapRecursive(int Layer, int StartX, int StartY, int EndX, int EndY)
 {
-	// Order : Current ( The first tile must be cleared. )
+	// Order : Monster ~ Trooper ~ Monster ~ Durion
 	CreateButton(EButtonType::MONSTER, StartX - HalfButtonXSize, StartY);
 	int DivideLayer{ Layer / 2 };
 	GenerateMapRecursiveImpl(DivideLayer, StartX, StartY);
@@ -143,6 +146,9 @@ void UTTUIMap::CreateButton(const EButtonType& ButtonType, int PosX, int PosY)
 		break;
 	case EButtonType::DURION:
 		NewButton = NewObject<UTTUIImperfectDurionButton>(this);
+		break;
+	case EButtonType::STORE:
+		NewButton = NewObject<UTTUIStoreButton>(this);
 		break;
 	default:
 		NewButton = NewObject<UTTUIMapButton>(this);

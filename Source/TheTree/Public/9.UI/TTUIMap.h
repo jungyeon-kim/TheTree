@@ -11,8 +11,7 @@ enum class EButtonType
 	SHELTER,
 	TROOPER,
 	DURION,
-	SHOP,
-	CURRENT
+	STORE,
 };
 
 USTRUCT()

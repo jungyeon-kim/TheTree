@@ -750,6 +750,9 @@ void ATTPlayer::SetUIMapOpenFlipFlop()
 
 void ATTPlayer::SetUIMapOpenForced(bool bOpenMap)
 {
+	if (bIsOpenedMap == bOpenMap)
+		return;
+
 	bIsOpenedMap = bOpenMap;
 	SetUIMapOpenImpl(bOpenMap);
 }
