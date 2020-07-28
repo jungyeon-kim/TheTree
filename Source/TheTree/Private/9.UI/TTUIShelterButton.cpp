@@ -13,5 +13,5 @@ void UTTUIShelterButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	Level->PlayCinematic(nullptr, false, FName{ "Recovery_Stage" });
+	Level->PlayCinematic(nullptr, false, FName{ "Shelter" });
 }

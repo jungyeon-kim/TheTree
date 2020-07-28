@@ -13,5 +13,5 @@ void UTTUIStoreButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	Level->PlayCinematic(nullptr, false, FName{ "Reinforce_Stage" });
+	Level->PlayCinematic(nullptr, false, FName{ "Store" });
 }
