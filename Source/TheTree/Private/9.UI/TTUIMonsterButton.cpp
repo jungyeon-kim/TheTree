@@ -15,5 +15,5 @@ void UTTUIMonsterButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_00" });
+	Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_Durion" });
 }

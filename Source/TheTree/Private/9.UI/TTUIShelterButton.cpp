@@ -1,5 +1,6 @@
 #include "TTUIShelterButton.h"
 #include "TTBaseLevel.h"
+
 UTTUIShelterButton::UTTUIShelterButton()
 {
 	OnClicked.AddDynamic(this, &UTTUIShelterButton::OnClickEvent);
@@ -12,5 +13,5 @@ void UTTUIShelterButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_00" });
+	Level->PlayCinematic(nullptr, false, FName{ "Recovery_Stage" });
 }
