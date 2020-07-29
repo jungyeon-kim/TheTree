@@ -2,23 +2,20 @@
 
 #include "TheTree.h"
 #include "GameFramework/Actor.h"
-#include "TTMapGenerator.generated.h"
+#include "TTBaseMapGenerator.generated.h"
 
-UCLASS()
-class THETREE_API ATTMapGenerator : public AActor
+UCLASS(Abstract)
+class THETREE_API ATTBaseMapGenerator : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ATTMapGenerator();
+	ATTBaseMapGenerator();
+	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
-	virtual void Tick(float DeltaTime) override;
-	virtual void PostInitializeComponents() override;
-private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
 	int32 BirthLimits;
@@ -27,10 +24,10 @@ private:
 	int32 DeathLimits;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	int32 MapXSize{ 30 };
+	int32 MapXSize { 30 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	int32 MapYSize{ 30 };
+	int32 MapYSize { 30 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
 	float MapOffsetX{ -4500.0f };
@@ -42,13 +39,13 @@ private:
 	float MapOffsetZ{ 0.0f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
-	int32 GenerateChance{ 45 };
+	int32 GenerateChance { 45 };
 
 	TArray<bool> MapTexture{};
 	TArray<UClass*> ClassCluster{};
 
 	TArray<bool> MakeMapTexture();
-	void CelluarAutomata(TArray<bool>& Texture);
+	void CelluarAutomata(TArray<bool>& Texture, int GenerationCount);
 	int32 CountNeighbours(const TArray<bool>& Texture, int x, int y);
 	int32 CountNeighboursWithoutThis(const TArray<bool>& Texture, int x, int y,
 		int Start = -1, int End = 2);
@@ -68,7 +65,7 @@ private:
 			{
 				if (MapTexture[GetIndexFromXY(x, y)] || CountNeighboursWithoutThis(MapTexture, x, y) > 2)
 					continue;
-				InPlaceActor(ClassCluster.Last(), MapOffsetX +  (x * 300.0f), MapOffsetY + (y * 300.0f));
+				InPlaceActor(ClassCluster.Last(), MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f));
 				ClassCluster.Pop();
 				--size;
 			}
@@ -82,4 +79,6 @@ private:
 	}
 	void SetMonstersImpl();
 	void InPlaceActor(UClass* Class, float XPos, float YPos);
+
+	void BuildObjects(TArray<bool>& Texture);
 };

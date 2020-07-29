@@ -1,99 +1,33 @@
-#include "TTMapGenerator.h"
+#include "TTBaseMapGenerator.h"
 #include "TTMapTile.h"
 #include "TTTorch.h"
 #include "TTChandelier.h"
+#include "TTEnemyBase.h"
 #include "GameFramework/PlayerStart.h"
-#include "TTArcdevaArcher.h"
-#include "TTArcdevaLancer.h"
-#include "TTArcdevaWarrior.h"
-#include "TTTrooper.h"
 #include "TTPortal.h"
 #include "Kismet/KismetMathLibrary.h"
 
-ATTMapGenerator::ATTMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
+ATTBaseMapGenerator::ATTBaseMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ATTMapGenerator::BeginPlay()
+void ATTBaseMapGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ATTMapGenerator::Tick(float DeltaTime)
+void ATTBaseMapGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void ATTMapGenerator::PostInitializeComponents()
+void ATTBaseMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	TArray<AActor*> PlayerStarts{};
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
-	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
-
-	if (!StartActor)
-		return;
-
-	StartActor->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	StartActor->GetRootComponent()->SetMobility(EComponentMobility::Movable);
-	
-	TArray<bool> Map{ MakeMapTexture() };
-
-	for (int i = 0; i < 20; ++i)
-		CelluarAutomata(Map);
-
-	FinalWork(Map);
-
-	bool bOnce{ false };
-	int32 TorchCount{};
-	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	for (int y = 0; y < MapYSize; ++y)
-	{
-		for (int x = 0; x < MapXSize; ++x)
-		{
-			if (Map[GetIndexFromXY(x, y)])
-			{
-				if(CountNeighboursWithoutThis(Map, x, y) < 8)
-				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
-					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{0.0f, 0.0f, 0.0f},Param);
-			}
-			else 
-			{
-				if (!bOnce && CountNeighboursWithoutThis(Map, x, y, -4, 5) < 1)
-				{
-					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
-					bOnce ^= true;
-				}
-				if (TorchCount > 5 && CountNeighboursWithoutThis(Map, x, y) > 3)
-				{
-					GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
-						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{0.0f, 0.0f, 0.0f});
-					TorchCount = 0;
-				}
-			}
-			++TorchCount;
-		}
-	}
-	SetChandelier(Map, MapXSize / 2, MapYSize / 2);
-
-	MapTexture = std::move(Map);
-	SetMonsters<ATTArcdevaArcher, ATTArcdevaWarrior, ATTArcdevaLancer>();
-	TArray<AActor*> monsters{};
-
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTArcdevaArcher::StaticClass(), monsters);
-	
-	if (monsters.Num())
-	{
-		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(StartActor->GetActorLocation(), monsters[0]->GetActorLocation()) };
-		StartActor->SetActorRotation(Rot);
-	}
-	
-
 }
 
-TArray<bool> ATTMapGenerator::MakeMapTexture()
+TArray<bool> ATTBaseMapGenerator::MakeMapTexture()
 {
 	FRandomStream RandomStream{ StaticCast<int32>(FDateTime::Now().GetTicks()) };
 	TArray<bool> NewMap{};
@@ -111,7 +45,7 @@ TArray<bool> ATTMapGenerator::MakeMapTexture()
 	return NewMap;
 }
 
-int32 ATTMapGenerator::CountNeighboursWithoutThis(const TArray<bool>& Texture, int x, int y, int Start, int End)
+int32 ATTBaseMapGenerator::CountNeighboursWithoutThis(const TArray<bool>& Texture, int x, int y, int Start, int End)
 {
 	int32 Count{};
 	for (int i = Start; i < End; ++i) {
@@ -131,9 +65,9 @@ int32 ATTMapGenerator::CountNeighboursWithoutThis(const TArray<bool>& Texture, i
 	return Count;
 }
 
-int32 ATTMapGenerator::CountNeighbours(const TArray<bool>& Texture, int x, int y)
+int32 ATTBaseMapGenerator::CountNeighbours(const TArray<bool>& Texture, int x, int y)
 {
-	
+
 	int32 Count{};
 	for (int i = -1; i < 2; ++i) {
 		for (int j = -1; j < 2; ++j) {
@@ -154,36 +88,39 @@ int32 ATTMapGenerator::CountNeighbours(const TArray<bool>& Texture, int x, int y
 	return Count;
 }
 
-void ATTMapGenerator::CelluarAutomata(TArray<bool>& Texture)
+void ATTBaseMapGenerator::CelluarAutomata(TArray<bool>& Texture, int GenerationCount)
 {
 	TArray<bool> NewMap{};
-	NewMap.SetNum(MapXSize * MapYSize);
-
-	for (int y = 0; y < MapYSize; ++y)
+	
+	while (GenerationCount--)
 	{
-		for (int x = 0; x < MapXSize; ++x)
+		NewMap.SetNum(MapXSize * MapYSize);
+		for (int y = 0; y < MapYSize; ++y)
 		{
-			int32 Nbs{ CountNeighbours(Texture, x, y) };
-			int32 MapOffsetXY{ GetIndexFromXY(x, y) };
-			bool bTempMapLive{ false };
-			if (Texture[MapOffsetXY] && Nbs >= DeathLimits)
-				bTempMapLive = true;
-			// 이웃의 수에 의해 태어나기가 적절한 지 판단
-			else if (!Texture[MapOffsetXY] && Nbs > BirthLimits)
-				bTempMapLive = true;
+			for (int x = 0; x < MapXSize; ++x)
+			{
+				int32 Nbs{ CountNeighbours(Texture, x, y) };
+				int32 MapOffsetXY{ GetIndexFromXY(x, y) };
+				bool bTempMapLive{ false };
+				if (Texture[MapOffsetXY] && Nbs >= DeathLimits)
+					bTempMapLive = true;
+				// 이웃의 수에 의해 태어나기가 적절한 지 판단
+				else if (!Texture[MapOffsetXY] && Nbs > BirthLimits)
+					bTempMapLive = true;
 
-			NewMap[MapOffsetXY] = bTempMapLive;
+				NewMap[MapOffsetXY] = bTempMapLive;
+			}
 		}
+		Texture = std::move(NewMap);
 	}
-	Texture = std::move(NewMap);
 }
 
-int32 ATTMapGenerator::GetIndexFromXY(int x, int y)
+int32 ATTBaseMapGenerator::GetIndexFromXY(int x, int y)
 {
 	return (y * MapXSize) + x;
 }
 
-void ATTMapGenerator::FinalWork(TArray<bool>& Texture)
+void ATTBaseMapGenerator::FinalWork(TArray<bool>& Texture)
 {
 	for (int y = 0; y < MapYSize; ++y)
 	{
@@ -195,7 +132,7 @@ void ATTMapGenerator::FinalWork(TArray<bool>& Texture)
 	}
 }
 
-void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
+void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -215,13 +152,13 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 					FVector{ MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
 				Portal->SetActorHiddenInGame(true);
 				Portal->SetActorEnableCollision(false);
-				
+
 				return;
 			}
 		}
 	}
 
-	for (int i = y-1; i < 0; --i)
+	for (int i = y - 1; i < 0; --i)
 	{
 		for (int j = x - 1; j < 0; --j)
 		{
@@ -244,16 +181,73 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 	TTLOG_S(Warning);
 }
 
-void ATTMapGenerator::SetMonstersImpl()
+void ATTBaseMapGenerator::SetMonstersImpl()
 {
 	// End
 }
 
-void ATTMapGenerator::InPlaceActor(UClass* Class, float XPos, float YPos)
+void ATTBaseMapGenerator::InPlaceActor(UClass* Class, float XPos, float YPos)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<ACharacter>(Class, FVector{ XPos, YPos, 200.0f },
 		FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+}
+
+void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture)
+{
+	TArray<AActor*> PlayerStarts{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
+	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
+
+	if (!StartActor)
+		return;
+
+	StartActor->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	StartActor->GetRootComponent()->SetMobility(EComponentMobility::Movable);
+
+	bool bOnce{ false };
+	int32 TorchCount{};
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	for (int y = 0; y < MapYSize; ++y)
+	{
+		for (int x = 0; x < MapXSize; ++x)
+		{
+			if (Texture[GetIndexFromXY(x, y)])
+			{
+				if (CountNeighboursWithoutThis(Texture, x, y) < 8)
+					GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
+						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+			}
+			else
+			{
+				if (!bOnce && CountNeighboursWithoutThis(Texture, x, y, -4, 5) < 1)
+				{
+					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
+					bOnce ^= true;
+				}
+				if (TorchCount > 5 && CountNeighboursWithoutThis(Texture, x, y) > 3)
+				{
+					GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
+						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{ 0.0f, 0.0f, 0.0f });
+					TorchCount = 0;
+				}
+			}
+			++TorchCount;
+		}
+	}
+	SetChandelier(Texture, MapXSize / 2, MapYSize / 2);
+
+	MapTexture = std::move(Texture);
+
+	TArray<AActor*> monsters{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), monsters);
+
+	if (monsters.Num())
+	{
+		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(StartActor->GetActorLocation(), monsters[0]->GetActorLocation()) };
+		StartActor->SetActorRotation(Rot);
+	}
 }
