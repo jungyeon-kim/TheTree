@@ -11,19 +11,7 @@ void UTTUIMap::NativeConstruct()
 	Super::NativeConstruct();
 	Panel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("TTUIMapPanel")));
 	Slider = Cast<USlider>(GetWidgetFromName(TEXT("TTUIMapSlider")));
-	
-	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
-		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapMonsterButton.UI_MapMonsterButton"))));
-	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
-		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapShelterButton.UI_MapShelterButton"))));
-	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
-		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapTrooperButton.UI_MapTrooperButton"))));
-	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
-		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapDurionButton.UI_MapDurionButton"))));
-	WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
-		nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapStoreButton.UI_MapStoreButton"))));
 
-	// Bottom-Up
 	Slider->OnValueChanged.AddDynamic(this, &UTTUIMap::ChangeSliderValue);
 	ButtonCluster = Cast<UTTGameInstance>(GetGameInstance())->GetButtonCluster();
 
@@ -35,6 +23,17 @@ void UTTUIMap::NativeConstruct()
 	}
 	else
 	{
+		WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
+			nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapMonsterButton.UI_MapMonsterButton"))));
+		WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
+			nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapShelterButton.UI_MapShelterButton"))));
+		WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
+			nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapTrooperButton.UI_MapTrooperButton"))));
+		WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
+			nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapDurionButton.UI_MapDurionButton"))));
+		WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
+			nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapStoreButton.UI_MapStoreButton"))));
+
 		Dist = TArray<FDistElement>{ {EButtonType::STORE, 15.0f}, {EButtonType::SHELTER, 15.0f} ,{EButtonType::MONSTER, 70.0f} };
 		Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 

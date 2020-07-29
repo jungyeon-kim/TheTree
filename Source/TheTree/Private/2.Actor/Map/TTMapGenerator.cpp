@@ -133,6 +133,7 @@ int32 ATTMapGenerator::CountNeighboursWithoutThis(const TArray<bool>& Texture, i
 
 int32 ATTMapGenerator::CountNeighbours(const TArray<bool>& Texture, int x, int y)
 {
+	
 	int32 Count{};
 	for (int i = -1; i < 2; ++i) {
 		for (int j = -1; j < 2; ++j) {
@@ -206,12 +207,12 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			if (Texture[GetIndexFromXY(j, i)])
 				continue;
 
-			if (!CountNeighboursWithoutThis(Texture, j, i, -4, 5))
+			if (!CountNeighboursWithoutThis(Texture, j, i, -3, 4))
 			{
 				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
-					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+					FVector(MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
 				ATTPortal* Portal{ GetWorld()->SpawnActor<ATTPortal>(ATTPortal::StaticClass(),
-					FVector{ MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
+					FVector{ MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
 				Portal->SetActorHiddenInGame(true);
 				Portal->SetActorEnableCollision(false);
 				
@@ -227,14 +228,20 @@ void ATTMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
 			if (Texture[GetIndexFromXY(j, i)])
 				continue;
 
-			if (!CountNeighboursWithoutThis(Texture, j, i, -1, 2))
+			if (!CountNeighboursWithoutThis(Texture, j, i, -3, 4))
 			{
 				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
-					FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+					FVector(MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+
+				ATTPortal* Portal{ GetWorld()->SpawnActor<ATTPortal>(ATTPortal::StaticClass(),
+				FVector{ MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
+				Portal->SetActorHiddenInGame(true);
+				Portal->SetActorEnableCollision(false);
 				return;
 			}
 		}
 	}
+	TTLOG_S(Warning);
 }
 
 void ATTMapGenerator::SetMonstersImpl()
@@ -247,7 +254,6 @@ void ATTMapGenerator::InPlaceActor(UClass* Class, float XPos, float YPos)
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	TTLOG(Warning, TEXT("%s"), *Class->GetName());
 	GetWorld()->SpawnActor<ACharacter>(Class, FVector{ XPos, YPos, 200.0f },
 		FRotator{ 0.0f, 0.0f, 0.0f }, Param);
 }
