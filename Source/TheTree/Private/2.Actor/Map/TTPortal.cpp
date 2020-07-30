@@ -63,12 +63,6 @@ void ATTPortal::EndCinema()
 	{
 		switch(FTTWorld::HashCode(*UGameplayStatics::GetCurrentLevelName(GetWorld())))
 		{
-		case FTTWorld::HashCode(TEXT("Common_Battle")):
-			if (Inst->GetClearCount() < Inst->GetPlanOfClearCount())
-				UGameplayStatics::OpenLevel(GetWorld(), FName{ "Common_Battle" });
-			else
-				UGameplayStatics::OpenLevel(GetWorld(), FName{ "ImperfectDurion_Battle" });
-			break;
 		case FTTWorld::HashCode(TEXT("ImperfectDurion_Battle")):
 			UGameplayStatics::OpenLevel(GetWorld(), FName{ "PerfectDurion_Battle" });
 			break;

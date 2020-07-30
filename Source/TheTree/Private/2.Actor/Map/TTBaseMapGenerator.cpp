@@ -5,6 +5,7 @@
 #include "TTEnemyBase.h"
 #include "GameFramework/PlayerStart.h"
 #include "TTPortal.h"
+#include "TTGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ATTBaseMapGenerator::ATTBaseMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
@@ -25,6 +26,7 @@ void ATTBaseMapGenerator::Tick(float DeltaTime)
 void ATTBaseMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	TTGameInstance = Cast<UTTGameInstance>(GetGameInstance());
 }
 
 TArray<bool> ATTBaseMapGenerator::MakeMapTexture()
@@ -181,7 +183,7 @@ void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int 
 	TTLOG_S(Warning);
 }
 
-void ATTBaseMapGenerator::SetMonstersImpl()
+void ATTBaseMapGenerator::SpawnMonstersImpl()
 {
 	// End
 }
@@ -241,9 +243,30 @@ void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture)
 	SetChandelier(Texture, MapXSize / 2, MapYSize / 2);
 
 	MapTexture = std::move(Texture);
+}
 
+UClass* ATTBaseMapGenerator::GetRandomMonsterClass(const TArray<UClass*>& MonsterCluster)
+{
+	int32 Count{ MonsterCluster.Num() };
+
+	static FRandomStream RandomStream{};
+	RandomStream.GenerateNewSeed();
+
+	int32 RandomSeed{ RandomStream.RandRange(0, Count-1) };
+	return MonsterCluster[RandomSeed];
+}
+
+void ATTBaseMapGenerator::TurnToMonster()
+{
 	TArray<AActor*> monsters{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), monsters);
+
+	TArray<AActor*> PlayerStarts{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
+	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
+
+	if (!StartActor)
+		return;
 
 	if (monsters.Num())
 	{

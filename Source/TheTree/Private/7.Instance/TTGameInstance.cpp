@@ -38,14 +38,9 @@ int32 UTTGameInstance::GetClearCount()
 	return ClearCount;
 }
 
-void UTTGameInstance::AddClearCount()
+void UTTGameInstance::SetClearCount(int32 Count)
 {
-	++ClearCount;
-}
-
-const int32 UTTGameInstance::GetPlanOfClearCount()
-{
-	return PlanOfClearCount;
+	ClearCount = Count;
 }
 
 void UTTGameInstance::SetButtonCluster(TArray<class UTTUIMapButton*>& ButtonCluster)
@@ -56,4 +51,13 @@ void UTTGameInstance::SetButtonCluster(TArray<class UTTUIMapButton*>& ButtonClus
 TArray<class UTTUIMapButton*>& UTTGameInstance::GetButtonCluster()
 {
 	return UIMapButtonCluster;
+}
+
+void UTTGameInstance::SetClearTrooper(bool bCleared)
+{
+	bIsClearTrooper = bCleared;
+}
+bool UTTGameInstance::GetClearTrooper()
+{
+	return bIsClearTrooper;
 }

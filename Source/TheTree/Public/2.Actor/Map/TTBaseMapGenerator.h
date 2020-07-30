@@ -2,6 +2,7 @@
 
 #include "TheTree.h"
 #include "GameFramework/Actor.h"
+#include "TTCommonBattleLevel.h"
 #include "TTBaseMapGenerator.generated.h"
 
 UCLASS(Abstract)
@@ -41,6 +42,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Maker", Meta = (AllowPrivateAccess = true))
 	int32 GenerateChance { 45 };
 
+	UPROPERTY()
+	class UTTGameInstance* TTGameInstance;
+
 	TArray<bool> MapTexture{};
 	TArray<UClass*> ClassCluster{};
 
@@ -54,31 +58,39 @@ protected:
 	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15);
 
 	template <typename ... Args>
-	constexpr void SetMonsters()
+	constexpr void SpawnMonsters(int NumOfMonster)
 	{
 		ClassCluster.Empty();
-		SetMonstersImpl(Args::StaticClass()...);
-		size_t size{ sizeof...(Args) };
+		SpawnMonstersImpl(Args::StaticClass()...);
+		size_t size{ static_cast<size_t>(NumOfMonster) };
+
 		for (int y = MapYSize / 2; y < MapYSize && size != 0; ++y)
 		{
 			for (int x = MapXSize / 2; x < MapXSize && size != 0; ++x)
 			{
 				if (MapTexture[GetIndexFromXY(x, y)] || CountNeighboursWithoutThis(MapTexture, x, y) > 2)
 					continue;
-				InPlaceActor(ClassCluster.Last(), MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f));
-				ClassCluster.Pop();
+
+				UClass* Class{ GetRandomMonsterClass(ClassCluster) };
+				InPlaceActor(Class, MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f));
 				--size;
 			}
 		}
+
+		ATTCommonBattleLevel* Level{ Cast<ATTCommonBattleLevel>(GetWorld()->GetLevelScriptActor()) };
+		if (Level)
+			Level->SetMonsterCount(NumOfMonster);
 	}
 	template <typename T, typename ... Args>
-	constexpr void SetMonstersImpl(T Class, Args ... LeftClass)
+	FORCEINLINE constexpr void SpawnMonstersImpl(T Class, Args ... LeftClass)
 	{
 		ClassCluster.Emplace(Class);
-		SetMonstersImpl(LeftClass...);
+		SpawnMonstersImpl(LeftClass...);
 	}
-	void SetMonstersImpl();
-	void InPlaceActor(UClass* Class, float XPos, float YPos);
 
+	void SpawnMonstersImpl();
+	void InPlaceActor(UClass* Class, float XPos, float YPos);
+	UClass* GetRandomMonsterClass(const TArray<UClass*>& MonsterCluster);
 	void BuildObjects(TArray<bool>& Texture);
+	void TurnToMonster();
 };

@@ -6,5 +6,11 @@ void ATTTrooperBattleLevel::AddMonsterCount(int32 Count)
 {
 	Super::AddMonsterCount(Count);
 	if (CurrentMonsterCount <= 0)
+	{
 		GetWorld()->SpawnActor<ATTPortal>(ATTPortal::StaticClass(), FVector{ 0.0f, 0.0f, 130.0f }, FRotator{ 0.0f, 0.0f, 0.0f });
+		UTTGameInstance* TTGameInstance{ Cast<UTTGameInstance>(GetGameInstance()) };
+		TTGameInstance->SetClearTrooper(true);
+		TTGameInstance->SetClearCount(0);
+	}
 }
+		

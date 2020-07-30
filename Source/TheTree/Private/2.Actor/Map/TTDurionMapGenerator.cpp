@@ -1,8 +1,8 @@
 #include "TTDurionMapGenerator.h"
-
 #include "TTArcdevaArcher.h"
 #include "TTArcdevaLancer.h"
 #include "TTArcdevaWarrior.h"
+#include "TTGameInstance.h"
 
 void ATTDurionMapGenerator::PostInitializeComponents()
 {
@@ -13,5 +13,8 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 	FinalWork(Map);
 
 	BuildObjects(Map);
-	SetMonsters<ATTArcdevaArcher, ATTArcdevaWarrior, ATTArcdevaLancer>();
+
+	SpawnMonsters<ATTArcdevaArcher, ATTArcdevaLancer, ATTArcdevaWarrior>(TTGameInstance->GetClearCount() + 3);
+
+	TurnToMonster();
 }

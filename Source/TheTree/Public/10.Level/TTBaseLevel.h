@@ -13,6 +13,8 @@ class THETREE_API ATTBaseLevel : public ALevelScriptActor
 protected:
 	int32 CurrentMonsterCount{};
 
+	virtual void BeginPlay() override;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
 	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag = true, FName OpenLevelName = "");

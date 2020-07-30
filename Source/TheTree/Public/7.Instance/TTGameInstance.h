@@ -56,9 +56,7 @@ private:
 	TArray<class UTTUIMapButton*> UIMapButtonCluster;
 
 	int32 ClearCount{};
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "LevelManage", Meta = (AllowPrivateAccess = true))
-	int32 PlanOfClearCount{ 3 };
+	bool bIsClearTrooper{};
 public:
 	UTTGameInstance();
 
@@ -69,8 +67,10 @@ public:
 	class UTTCharacterStatComponent* GetTTPlayerStat() const;
 
 	int32 GetClearCount();
-	void AddClearCount();
-	const int32 GetPlanOfClearCount();
+	void SetClearCount(int32 Count);
+
+	void SetClearTrooper(bool bCleared);
+	bool GetClearTrooper();	// 버튼 상속해서 만들기 귀찮~
 
 	void SetButtonCluster(TArray<class UTTUIMapButton*>& ButtonCluster);
 	TArray<class UTTUIMapButton*>& GetButtonCluster();

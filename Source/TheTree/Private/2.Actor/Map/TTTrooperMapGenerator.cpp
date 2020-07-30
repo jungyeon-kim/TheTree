@@ -1,7 +1,8 @@
 #include "TTTrooperMapGenerator.h"
-#include "TTArcdevaArcher.h"
-#include "TTArcdevaLancer.h"
-#include "TTArcdevaWarrior.h"
+#include "TTArgoniteGiant.h"
+#include "TTArgoniteGuardian.h"
+#include "TTArgoniteTrooper.h"
+#include "TTGameInstance.h"
 
 void ATTTrooperMapGenerator::PostInitializeComponents()
 {
@@ -12,5 +13,8 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 	FinalWork(Map);
 
 	BuildObjects(Map);
-	SetMonsters<ATTArcdevaArcher, ATTArcdevaWarrior, ATTArcdevaLancer>();
+
+	SpawnMonsters<ATTArgoniteGiant, ATTArgoniteGuardian, ATTArgoniteTrooper>(TTGameInstance->GetClearCount()+2);
+
+	TurnToMonster();
 }

@@ -2,6 +2,11 @@
 #include "TTCinema.h"
 #include "Kismet/GameplayStatics.h"
 
+void ATTBaseLevel::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag, FName OpenLevelName)
 {
 	ATTCinema* Cinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
@@ -29,3 +34,4 @@ int32 ATTBaseLevel::GetMonsterCount()
 {
 	return CurrentMonsterCount;
 }
+

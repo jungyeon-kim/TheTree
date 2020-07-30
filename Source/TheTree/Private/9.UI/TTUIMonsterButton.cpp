@@ -15,5 +15,12 @@ void UTTUIMonsterButton::OnClickEvent()
 		return;
 
 	Super::OnClickEvent();
-	Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_Durion" });
+
+	
+	UTTGameInstance* TTGameInstance{ Cast<UTTGameInstance>(WorldContext->GetGameInstance()) };
+
+	if(TTGameInstance->GetClearTrooper())
+		Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_Durion" });
+	else
+		Level->PlayCinematic(nullptr, false, FName{ "Common_Battle_Trooper" });
 }

@@ -4,7 +4,7 @@
 
 ATTCommonBattleLevel::ATTCommonBattleLevel()
 {
-	SetMonsterCount(3);
+	
 }
 
 void ATTCommonBattleLevel::AddMonsterCount(int32 Count)
@@ -17,7 +17,7 @@ void ATTCommonBattleLevel::AddMonsterCount(int32 Count)
 		UTTGameInstance* Inst{ GetGameInstance<UTTGameInstance>() };
 
 		if (Inst)
-			Inst->AddClearCount();
+			Inst->SetClearCount(Inst->GetClearCount() + 1);
 
 		if (Arr.Num())
 		{
