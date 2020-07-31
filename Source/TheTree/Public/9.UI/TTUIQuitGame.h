@@ -2,27 +2,29 @@
 
 #include "TheTree.h"
 #include "Blueprint/UserWidget.h"
-#include "TTUITitle.generated.h"
+#include "TTUIQuitGame.generated.h"
 
 UCLASS()
-class THETREE_API UTTUITitle : public UUserWidget
+class THETREE_API UTTUIQuitGame : public UUserWidget
 {
 	GENERATED_BODY()
 private:
 	UPROPERTY()
-	class UButton* StartButton;
+	class UButton* YesButton;
 	UPROPERTY()
-	class UButton* ExitButton;
+	class UButton* NoButton;
 
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	USoundWave* ClickSound;
 
-	bool bIsProcessing{};
+	bool* bIsOpened{};
 protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void OnStart();
+	void OnYes();
 	UFUNCTION()
-	void OnExit();
+	void OnNo();
+public:
+	void BindIsOpened(bool& NewIsOpened);
 };

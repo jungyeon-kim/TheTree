@@ -1,6 +1,5 @@
 #include "TTUITitle.h"
 #include "Components/Button.h"
-#include "TTAudioComponent.h"
 
 void UTTUITitle::NativeConstruct()
 {
@@ -19,18 +18,23 @@ void UTTUITitle::OnStart()
 {
 	UGameplayStatics::PlaySound2D(this, ClickSound);
 
+	if (bIsProcessing) return;
+
 	FTimerHandle TimerHandle{};
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda(
 		[&]()
 		{
-			RemoveFromParent();
 			UGameplayStatics::OpenLevel(this, TEXT("Lobby"));
 		}), 0.3, false);
+
+	bIsProcessing = true;
 }
 
 void UTTUITitle::OnExit()
 {
 	UGameplayStatics::PlaySound2D(this, ClickSound);
+
+	if (bIsProcessing) return;
 
 	FTimerHandle TimerHandle{};
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda(
@@ -38,4 +42,6 @@ void UTTUITitle::OnExit()
 		{
 			UKismetSystemLibrary::QuitGame(this, UGameplayStatics::GetPlayerController(this, 0), EQuitPreference::Quit, false);
 		}), 0.3, false);
+
+	bIsProcessing = true;
 }

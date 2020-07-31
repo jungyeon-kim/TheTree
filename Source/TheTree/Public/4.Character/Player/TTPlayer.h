@@ -65,6 +65,7 @@ private:
 	void Turn(float NewAxisValue);
 	void OpenUIPlayerStatus();
 	void SetUIMapOpenImpl(bool bOpenMap);
+	void OpenUIQuitGame();
 
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -108,6 +109,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 		AController* EventInstigator, AActor* DamageCauser) override;
+
+	void ResetPlayer();
 
 	ECharacterState GetCharacterState() const;
 	FName GetCurrentStateNodeName() const;

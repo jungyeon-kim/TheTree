@@ -62,7 +62,15 @@ void ATTEnemyBase::PossessedBy(AController* NewController)
 void ATTEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	SetCharacterState(ECharacterState::READY);
+}
+
+void ATTEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(DeadTimerHandle);
 }
 
 void ATTEnemyBase::Tick(float DeltaTime)
@@ -155,14 +163,12 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 		TTCharacterStat->SetGold(TTCharacterStat->GetGold() + FMath::RandRange(50, 200));
 		if (!FMath::RandRange(0, 1)) GetWorld()->SpawnActor<ATTHPBead>(GetActorLocation(), FRotator::ZeroRotator);
 
-		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]()
 			{ 
 				ATTBaseLevel* CurrentLevel{ Cast<ATTBaseLevel>(GetWorld()->GetLevelScriptActor()) };
 				if (CurrentLevel) CurrentLevel->AddMonsterCount(-1);
-				Destroy(); 
-			
+				Destroy();
 			}), DeadTimer, false);
 		break;
 	}

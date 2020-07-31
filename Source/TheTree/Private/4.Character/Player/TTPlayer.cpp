@@ -10,6 +10,7 @@
 #include "TTPlayerWeapon.h"
 #include "TTUIPlayerStatus.h"
 #include "TTUIMap.h"
+#include "TTUIQuitGame.h"
 #include "DrawDebugHelpers.h"
 
 ATTPlayer::ATTPlayer()
@@ -117,6 +118,7 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATTPlayer::Turn);
 	PlayerInputComponent->BindAction(TEXT("OpenUIPlayerStatus"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenUIPlayerStatus);
 	PlayerInputComponent->BindAction(TEXT("OpenUIMap"), EInputEvent::IE_Pressed, this, &ATTPlayer::SetUIMapOpenFlipFlop);
+	PlayerInputComponent->BindAction(TEXT("OpenUIQuitGame"), EInputEvent::IE_Pressed, this, &ATTPlayer::OpenUIQuitGame);
 }
 
 void ATTPlayer::BeginPlay()
@@ -173,6 +175,12 @@ float ATTPlayer::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
 	CharacterStat->SetDamage(FinalDamage);
 
 	return FinalDamage;
+}
+
+void ATTPlayer::ResetPlayer()
+{
+	TTPlayerController->GetUIMap()->ClearAllWidget();
+	CharacterStat->SetObjectStat(TEXT("Player"), GetGameInstance());
 }
 
 void ATTPlayer::StartInit()
@@ -238,7 +246,6 @@ void ATTPlayer::EndInit()
 		CurrentWeapon->SetActorRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 		break;
 	}
-
 }
 
 void ATTPlayer::Attack()
@@ -599,6 +606,7 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		TTPlayerController->SetUIReinforce(CharacterStat);
 		TTPlayerController->SetUIRecovery(CharacterStat);
 		TTPlayerController->SetUIMap();
+		TTPlayerController->SetUIQuitGame();
 
 		SetControlMode(EControlMode::THIRD_PERSON);
 		//EnableInput(TTPlayerController);
@@ -628,10 +636,8 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 		FTimerHandle DeadTimerHandle{};
 		GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 			[&]() 
-			{ 
-				UTTUIMap* UIMap{ TTPlayerController->GetUIMap() };
-				UIMap->ClearAllWidget();
-				CharacterStat->SetObjectStat(TEXT("Player"), GetGameInstance());
+			{
+				ResetPlayer();
 				UGameplayStatics::OpenLevel(this, TEXT("Lobby"));
 			}), DeadTimer, false);
 		break;
@@ -772,5 +778,27 @@ void ATTPlayer::SetUIMapOpenImpl(bool bOpenMap)
 	{
 		TTPlayerController->SetInputMode(FInputModeGameOnly{});
 		UIMap->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void ATTPlayer::OpenUIQuitGame()
+{
+	static bool bIsOpened{};
+	UTTUIQuitGame* UIQuitGame{ TTPlayerController->GetUIQuitGame() };
+
+	bIsOpened = !bIsOpened;
+	UIQuitGame->BindIsOpened(bIsOpened);
+	TTPlayerController->bShowMouseCursor = bIsOpened;
+	TTPlayerController->SetIgnoreLookInput(bIsOpened);
+
+	if (bIsOpened)
+	{
+		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
+		UIQuitGame->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		TTPlayerController->SetInputMode(FInputModeGameOnly{});
+		UIQuitGame->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

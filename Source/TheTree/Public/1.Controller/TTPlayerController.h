@@ -21,6 +21,8 @@ protected:
 	class UTTUIRecovery* TTUIRecovery;
 	UPROPERTY()
 	class UTTUIMap* TTUIMap;
+	UPROPERTY()
+	class UTTUIQuitGame* TTUIQuitGame;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UUserWidget> TTUIManualClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
@@ -33,6 +35,8 @@ protected:
 	TSubclassOf<class UTTUIRecovery> TTUIRecoveryClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UTTUIMap> TTUIMapClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<class UTTUIQuitGame> TTUIQuitGameClass;
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,12 +53,14 @@ public:
 	class UTTUIReinforce* GetUIReinforce() const;
 	class UTTUIRecovery* GetUIRecovery() const;
 	class UTTUIMap* GetUIMap() const;
+	class UTTUIQuitGame* GetUIQuitGame() const;
 	void SetUIManual();
 	void SetUIPlayerInGame(class UTTCharacterStatComponent* NewCharacterStat);
 	void SetUIPlayerStatus(class UTTCharacterStatComponent* NewCharacterStat);
 	void SetUIReinforce(class UTTCharacterStatComponent* NewCharacterStat);
 	void SetUIRecovery(class UTTCharacterStatComponent* NewCharacterStat);
 	void SetUIMap();
+	void SetUIQuitGame();
 
 	void SwapDebugMode();
 };

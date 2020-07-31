@@ -33,8 +33,8 @@ protected:
 	UPROPERTY()
 	AActor* LastDamageInstigator;
 protected:
-
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void TurnToTarget(AActor* Target, float InterpSpeed);
 public:
@@ -51,6 +51,8 @@ public:
 	FOnDefenseEndDelegate OnDefenseEnded{};
 	FOnDodgeEndDelegate OnDodgeEnded{};
 	FOnTeleportEndDelegate OnTeleportEnded{};
+
+	FTimerHandle DeadTimerHandle{};
 public:
 	ATTEnemyBase();
 

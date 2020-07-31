@@ -5,6 +5,7 @@
 #include "TTUIReinforce.h"
 #include "TTUIRecovery.h"
 #include "TTUIMap.h"
+#include "TTUIQuitGame.h"
 
 ATTPlayerController::ATTPlayerController()
 {
@@ -14,12 +15,14 @@ ATTPlayerController::ATTPlayerController()
 	static ConstructorHelpers::FClassFinder<UTTUIReinforce> UI_REINFORCE{ TEXT("/Game/Blueprints/UI/UI_Reinforce/UI_Reinforce.UI_Reinforce_C") };
 	static ConstructorHelpers::FClassFinder<UTTUIRecovery> UI_RECOVERY{ TEXT("/Game/Blueprints/UI/UI_Recovery/UI_Recovery.UI_Recovery_C") };
 	static ConstructorHelpers::FClassFinder<UTTUIMap> UI_MAP{ TEXT("/Game/Blueprints/UI/UI_Map/UI_Map.UI_Map_C") };
+	static ConstructorHelpers::FClassFinder<UTTUIQuitGame> UI_QUITGAME{ TEXT("/Game/Blueprints/UI/UI_Quit/UI_QuitGame.UI_QuitGame_C") };
 	if (UI_MANUAL.Succeeded()) TTUIManualClass = UI_MANUAL.Class;
 	if (UI_PLAYER_INGAME.Succeeded()) TTUIPlayerInGameClass = UI_PLAYER_INGAME.Class;
 	if (UI_PLAYER_STATUS.Succeeded()) TTUIPlayerStatusClass = UI_PLAYER_STATUS.Class;
 	if (UI_REINFORCE.Succeeded()) TTUIReinforceClass = UI_REINFORCE.Class;
 	if (UI_RECOVERY.Succeeded()) TTUIRecoveryClass = UI_RECOVERY.Class;
 	if (UI_MAP.Succeeded()) TTUIMapClass = UI_MAP.Class;
+	if (UI_QUITGAME.Succeeded()) TTUIQuitGameClass = UI_QUITGAME.Class;
 }
 
 void ATTPlayerController::PostInitializeComponents()
@@ -76,6 +79,11 @@ UTTUIMap* ATTPlayerController::GetUIMap() const
 	return TTUIMap;
 }
 
+UTTUIQuitGame* ATTPlayerController::GetUIQuitGame() const
+{
+	return TTUIQuitGame;
+}
+
 void ATTPlayerController::SetUIManual()
 {
 	TTUIManual = CreateWidget<UUserWidget>(this, TTUIManualClass);
@@ -127,6 +135,13 @@ void ATTPlayerController::SetUIMap()
 	TTUIMap->SetWorldContext(GetWorld());
 	TTUIMap->AddToViewport();
 	TTUIMap->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ATTPlayerController::SetUIQuitGame()
+{
+	TTUIQuitGame = CreateWidget<UTTUIQuitGame>(this, TTUIQuitGameClass);
+	TTUIQuitGame->AddToViewport();
+	TTUIQuitGame->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ATTPlayerController::SwapDebugMode()
