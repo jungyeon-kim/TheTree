@@ -787,13 +787,13 @@ void ATTPlayer::OpenUIQuitGame()
 	UTTUIQuitGame* UIQuitGame{ TTPlayerController->GetUIQuitGame() };
 
 	bIsOpened = !bIsOpened;
-	UIQuitGame->BindIsOpened(bIsOpened);
 	TTPlayerController->bShowMouseCursor = bIsOpened;
 	TTPlayerController->SetIgnoreLookInput(bIsOpened);
 
 	if (bIsOpened)
 	{
 		TTPlayerController->SetInputMode(FInputModeGameAndUI{});
+		UIQuitGame->BindIsOpened(bIsOpened);
 		UIQuitGame->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
