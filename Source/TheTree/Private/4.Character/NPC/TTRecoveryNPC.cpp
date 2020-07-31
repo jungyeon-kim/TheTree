@@ -54,8 +54,6 @@ void ATTRecoveryNPC::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* Ot
 
 	Audio->PlaySoundCue2D(TEXT("Greet"));
 
-	TTPlayerController->GetUIRecovery()->UpdatePlayerGold();
-
 	TTPlayerController->bShowMouseCursor = true;
 	TTPlayerController->SetIgnoreLookInput(true);
 	TTPlayerController->SetInputMode(FInputModeGameAndUI{});

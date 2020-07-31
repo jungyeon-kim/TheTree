@@ -15,16 +15,6 @@ private:
 	class UButton* RecoveryStaButton;
 
 	UPROPERTY()
-	class UTextBlock* RecoveryHPGoldText;
-	UPROPERTY()
-	class UTextBlock* RecoveryStaGoldText;
-	UPROPERTY()
-	class UTextBlock* MyGoldText;
-
-	UPROPERTY()
-	TArray<int32> Price;
-
-	UPROPERTY()
 	class UTTCharacterStatComponent* CurrentCharacterStat;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	class UTTAudioComponent* Audio;
@@ -35,7 +25,6 @@ public:
 	void Init();
 
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
-	void UpdatePlayerGold();
 
 	UFUNCTION()
 	void OnRecoveryHP();
