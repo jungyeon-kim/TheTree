@@ -1,9 +1,9 @@
-#include "TTMapTile.h"
+#include "TTDurionMapTile.h"
 
-ATTMapTile::ATTMapTile()
+ATTDurionMapTile::ATTDurionMapTile()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	MapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MAPMESH"));
+	MapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DURIONMAPMESH"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_MESH
 	{ TEXT("/Game/Assets/StaticMesh/CastleTower/SM_Plains_CastleTower_01.SM_Plains_CastleTower_01") };
 
@@ -14,12 +14,12 @@ ATTMapTile::ATTMapTile()
 	MapMesh->SetMobility(EComponentMobility::Static);
 }
 
-void ATTMapTile::BeginPlay()
+void ATTDurionMapTile::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ATTMapTile::Tick(float DeltaTime)
+void ATTDurionMapTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }

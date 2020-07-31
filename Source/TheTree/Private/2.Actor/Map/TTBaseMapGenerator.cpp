@@ -1,12 +1,11 @@
 #include "TTBaseMapGenerator.h"
-#include "TTMapTile.h"
 #include "TTTorch.h"
 #include "TTChandelier.h"
 #include "TTEnemyBase.h"
-#include "GameFramework/PlayerStart.h"
 #include "TTPortal.h"
 #include "TTGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/PlayerStart.h"
 
 ATTBaseMapGenerator::ATTBaseMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -134,7 +133,7 @@ void ATTBaseMapGenerator::FinalWork(TArray<bool>& Texture)
 	}
 }
 
-void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y)
+void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int y, bool bSetChandelier)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -148,8 +147,10 @@ void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int 
 
 			if (!CountNeighboursWithoutThis(Texture, j, i, -3, 4))
 			{
+				if(bSetChandelier)
 				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
 					FVector(MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+				
 				ATTPortal* Portal{ GetWorld()->SpawnActor<ATTPortal>(ATTPortal::StaticClass(),
 					FVector{ MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
 				Portal->SetActorHiddenInGame(true);
@@ -169,7 +170,8 @@ void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int 
 
 			if (!CountNeighboursWithoutThis(Texture, j, i, -3, 4))
 			{
-				GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
+				if (bSetChandelier)
+				GetWorld()->SpawnActor<ATTChandelier>(ATTChandelier::StaticClass(),
 					FVector(MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 1020.0f), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
 
 				ATTPortal* Portal{ GetWorld()->SpawnActor<ATTPortal>(ATTPortal::StaticClass(),
@@ -180,7 +182,6 @@ void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int 
 			}
 		}
 	}
-	TTLOG_S(Warning);
 }
 
 void ATTBaseMapGenerator::SpawnMonstersImpl()
@@ -197,8 +198,11 @@ void ATTBaseMapGenerator::InPlaceActor(UClass* Class, float XPos, float YPos)
 		FRotator{ 0.0f, 0.0f, 0.0f }, Param);
 }
 
-void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture)
+void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
 {
+	static FRandomStream RandomStream{};
+	RandomStream.GenerateNewSeed();
+
 	TArray<AActor*> PlayerStarts{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
 	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
@@ -220,8 +224,9 @@ void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture)
 			if (Texture[GetIndexFromXY(x, y)])
 			{
 				if (CountNeighboursWithoutThis(Texture, x, y) < 8)
-					GetWorld()->SpawnActor<ATTMapTile>(ATTMapTile::StaticClass(),
-						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+					GetWorld()->SpawnActor<AActor>(MeshClass,
+						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), 
+						FRotator{ 0.0f, RandomStream.FRandRange(0.0f, 360.0f), 0.0f}, Param);
 			}
 			else
 			{
@@ -230,19 +235,27 @@ void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture)
 					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
 					bOnce ^= true;
 				}
-				if (TorchCount > 5 && CountNeighboursWithoutThis(Texture, x, y) > 3)
+				if (bSetTorch)
 				{
-					GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
-						FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{ 0.0f, 0.0f, 0.0f });
-					TorchCount = 0;
+					if (TorchCount > 5 && CountNeighboursWithoutThis(Texture, x, y) > 3)
+					{
+						GetWorld()->SpawnActor<ATTTorch>(ATTTorch::StaticClass(),
+							FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), MapOffsetZ), FRotator{ 0.0f, 0.0f, 0.0f });
+						TorchCount = 0;
+					}
 				}
 			}
 			++TorchCount;
 		}
 	}
-	SetChandelier(Texture, MapXSize / 2, MapYSize / 2);
+	SetChandelier(Texture, MapXSize / 2, MapYSize / 2, bSetTorch);
 
 	MapTexture = std::move(Texture);
+}
+
+void ATTBaseMapGenerator::SetMapTileActorClass(UClass* Class)
+{
+	MeshClass = Class;
 }
 
 UClass* ATTBaseMapGenerator::GetRandomMonsterClass(const TArray<UClass*>& MonsterCluster)

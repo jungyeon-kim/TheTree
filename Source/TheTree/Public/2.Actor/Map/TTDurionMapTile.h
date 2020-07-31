@@ -2,15 +2,15 @@
 
 #include "TheTree.h"
 #include "GameFramework/Actor.h"
-#include "TTMapTile.generated.h"
+#include "TTDurionMapTile.generated.h"
 
 UCLASS()
-class THETREE_API ATTMapTile : public AActor
+class THETREE_API ATTDurionMapTile : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ATTMapTile();
+	ATTDurionMapTile();
 
 protected:
 	virtual void BeginPlay() override;

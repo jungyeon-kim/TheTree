@@ -45,6 +45,9 @@ protected:
 	UPROPERTY()
 	class UTTGameInstance* TTGameInstance;
 
+	UPROPERTY()
+	UClass* MeshClass;
+
 	TArray<bool> MapTexture{};
 	TArray<UClass*> ClassCluster{};
 
@@ -55,7 +58,7 @@ protected:
 		int Start = -1, int End = 2);
 	int32 GetIndexFromXY(int x, int y);
 	void FinalWork(TArray<bool>& Texture);
-	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15);
+	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
 
 	template <typename ... Args>
 	constexpr void SpawnMonsters(int NumOfMonster)
@@ -91,6 +94,7 @@ protected:
 	void SpawnMonstersImpl();
 	void InPlaceActor(UClass* Class, float XPos, float YPos);
 	UClass* GetRandomMonsterClass(const TArray<UClass*>& MonsterCluster);
-	void BuildObjects(TArray<bool>& Texture);
+	void SetMapTileActorClass(UClass* Class);
+	void BuildObjects(TArray<bool>& Texture, bool bSetTorch);
 	void TurnToMonster();
 };

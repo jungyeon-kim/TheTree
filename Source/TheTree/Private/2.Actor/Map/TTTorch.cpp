@@ -48,7 +48,7 @@ ATTTorch::ATTTorch()
 
 	TorchParticle->SetupAttachment(RootComponent);
 	TorchParticle->SetRelativeLocation(FVector{ -5.0f, 0.0f, 1920.0f });
-	TorchParticle->SetWorldScale3D(FVector{ 4.0f,4.0f,2.0f });
+	TorchParticle->SetWorldScale3D(FVector{ 8.0f,8.0f,8.0f });
 
 	TorchMesh->SetMobility(EComponentMobility::Static);
 }

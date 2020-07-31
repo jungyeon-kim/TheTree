@@ -2,6 +2,7 @@
 #include "TTArgoniteGiant.h"
 #include "TTArgoniteGuardian.h"
 #include "TTArgoniteTrooper.h"
+#include "TTTrooperMapTile.h"
 #include "TTGameInstance.h"
 
 void ATTTrooperMapGenerator::PostInitializeComponents()
@@ -12,7 +13,9 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 	CelluarAutomata(Map, 20);
 	FinalWork(Map);
 
-	BuildObjects(Map);
+	SetMapTileActorClass(ATTTrooperMapTile::StaticClass());
+
+	BuildObjects(Map, false);
 
 	SpawnMonsters<ATTArgoniteGiant, ATTArgoniteGuardian, ATTArgoniteTrooper>(TTGameInstance->GetClearCount()+2);
 
