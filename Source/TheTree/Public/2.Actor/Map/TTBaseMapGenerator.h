@@ -6,6 +6,14 @@
 #include "TTAIController.h"
 #include "TTBaseMapGenerator.generated.h"
 
+USTRUCT()
+struct FMonsterDistElement
+{
+	GENERATED_USTRUCT_BODY()
+	UClass* Type;
+	float Percentage;
+};
+
 UCLASS(Abstract)
 class THETREE_API ATTBaseMapGenerator : public AActor
 {
@@ -64,33 +72,14 @@ protected:
 	void FinalWork(TArray<bool>& Texture);
 	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
 
-	template <typename ... Args>
-	constexpr void SpawnMonsters(int NumOfMonster)
-	{
-		ClassCluster.Empty();
-		SpawnMonstersImpl(Args::StaticClass()...);
+	void SpawnMonsters(TArray<FMonsterDistElement>& DistElements, int NumOfMonster);
 
-		while (NumOfMonster--)
-			InPlaceActorRandom(GetRandomMonsterClass(ClassCluster));
-		
-		ATTCommonBattleLevel* Level{ Cast<ATTCommonBattleLevel>(GetWorld()->GetLevelScriptActor()) };
-
-		if (Level)
-			Level->SetMonsterCount(NumOfMonster);
-		TurnToMonster();
-	}
-	template <typename T, typename ... Args>
-	FORCEINLINE constexpr void SpawnMonstersImpl(T Class, Args ... LeftClass)
-	{
-		ClassCluster.Emplace(Class);
-		SpawnMonstersImpl(LeftClass...);
-	}
-
-	void SpawnMonstersImpl();
 	void InPlaceActorRandom(UClass* MonsterClass);
-	UClass* GetRandomMonsterClass(const TArray<UClass*>& MonsterCluster);
 	void SetMapTileActorClass(UClass* Class);
 	void BuildObjects(TArray<bool>& Texture, bool bSetTorch);
 	void TurnToMonster();
 	void RebuildNavigation();
+
+private:
+	UClass* ProbAlgorithm(const TArray<FMonsterDistElement>& Items);
 };

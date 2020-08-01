@@ -188,9 +188,17 @@ void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int 
 	}
 }
 
-void ATTBaseMapGenerator::SpawnMonstersImpl()
+void ATTBaseMapGenerator::SpawnMonsters(TArray<FMonsterDistElement>& DistElements, int NumOfMonster)
 {
-	// End
+	for (int i = 0 ; i < NumOfMonster; ++i)
+		InPlaceActorRandom(ProbAlgorithm(DistElements));
+
+	ATTCommonBattleLevel* Level{ Cast<ATTCommonBattleLevel>(GetWorld()->GetLevelScriptActor()) };
+
+	if (Level)
+		Level->SetMonsterCount(NumOfMonster);
+
+	TurnToMonster();
 }
 
 void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
@@ -203,6 +211,7 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 
 	ACharacter* Char{ GetWorld()->SpawnActor<ACharacter>(MonsterClass, FVector{ 0.0f, 0.0f, 200.0f },
 	FRotator{ 0.0f, 0.0f, 0.0f }, Param) };
+	AAIController* Controller{ Char->GetController<AAIController>() };
 
 	FPathFollowingRequestResult FResult{};
 	do
@@ -215,13 +224,11 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 
 		Char->SetActorLocation(FVector{ MapOffsetX + (RandX * 300.0f), MapOffsetY + (RandY * 300.0f), 200.0f });
 
-		AAIController* Controller{ Char->GetController<AAIController>() };
-
 		FAIMoveRequest Request{};
 		Request.SetGoalActor(PlayerStart);
 		FResult = Controller->MoveTo(Request);
 	}
-	while (!FResult.MoveId.IsValid());
+	while (!(FResult.Code == EPathFollowingResult::Success));
 }
 
 void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
@@ -287,17 +294,6 @@ void ATTBaseMapGenerator::SetMapTileActorClass(UClass* Class)
 	MeshClass = Class;
 }
 
-UClass* ATTBaseMapGenerator::GetRandomMonsterClass(const TArray<UClass*>& MonsterCluster)
-{
-	int32 Count{ MonsterCluster.Num() };
-
-	static FRandomStream RandomStream{};
-	RandomStream.GenerateNewSeed();
-
-	int32 RandomSeed{ RandomStream.RandRange(0, Count-1) };
-	return MonsterCluster[RandomSeed];
-}
-
 void ATTBaseMapGenerator::TurnToMonster()
 {
 	TArray<AActor*> monsters{};
@@ -320,4 +316,20 @@ void ATTBaseMapGenerator::RebuildNavigation()
 		for (int32 i = 0; i < NavSystem->NavDataSet.Num(); ++i)
 			NavSystem->NavDataSet[i]->EnsureBuildCompletion();
 	}
+}
+
+UClass* ATTBaseMapGenerator::ProbAlgorithm(const TArray<FMonsterDistElement>& Items)
+{
+	static FRandomStream RandomStream{};
+	RandomStream.GenerateNewSeed();
+	float RandomSeed{ RandomStream.FRandRange(1.0f, 100.0f) };
+	float Cumulative{};
+
+	for (auto& Item : Items)
+	{
+		Cumulative += Item.Percentage;
+		if (RandomSeed <= Cumulative)
+			return Item.Type;
+	}
+	return Items.Last().Type;
 }

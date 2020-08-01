@@ -12,5 +12,11 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 	TArray<bool> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTTrooperMapTile::StaticClass());
 	BuildObjects(Map, false);
-	SpawnMonsters<ATTArgoniteGiant, ATTArgoniteGuardian, ATTArgoniteTrooper>(TTGameInstance->GetClearCount() + 2);
+
+	const float ElementPerAdd{ 5.0f * TTGameInstance->GetClearCount() };
+	TArray<FMonsterDistElement> Dist { {ATTArgoniteGuardian::StaticClass(), -5.0f + ElementPerAdd},
+		{ATTArgoniteGiant::StaticClass(), ElementPerAdd} ,{ATTArgoniteTrooper::StaticClass(), 100.0f} };
+	Dist.Sort([](const FMonsterDistElement& lhs, const FMonsterDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+
+	SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 2);
 }

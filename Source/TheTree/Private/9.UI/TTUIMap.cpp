@@ -34,8 +34,8 @@ void UTTUIMap::NativeConstruct()
 		WidgetCluster.Add(Cast<USlateWidgetStyleAsset>(StaticLoadObject(USlateWidgetStyleAsset::StaticClass(),
 			nullptr, TEXT("/Game/Assets/UI/Slate/UI_MapStoreButton.UI_MapStoreButton"))));
 
-		Dist = TArray<FDistElement>{ {EButtonType::STORE, 15.0f}, {EButtonType::SHELTER, 15.0f} ,{EButtonType::MONSTER, 70.0f} };
-		Dist.Sort([](const FDistElement& lhs, const FDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+		Dist = TArray<FButtonDistElement>{ {EButtonType::STORE, 15.0f}, {EButtonType::SHELTER, 15.0f} ,{EButtonType::MONSTER, 70.0f} };
+		Dist.Sort([](const FButtonDistElement& lhs, const FButtonDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
 		GenerateMapRecursive(10, 960, 100, 960, 2100);
 		Dist.Empty();
@@ -226,7 +226,7 @@ void UTTUIMap::ClearAllWidget()
 		Cast<UTTGameInstance>(GetGameInstance())->SetButtonCluster(ButtonCluster);
 }
 
-EButtonType ProbAlgorithm(const TArray<FDistElement>& Items)
+EButtonType ProbAlgorithm(const TArray<FButtonDistElement>& Items)
 {
 	FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();

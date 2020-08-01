@@ -15,7 +15,7 @@ enum class EButtonType
 };
 
 USTRUCT()
-struct FDistElement
+struct FButtonDistElement
 {
 	GENERATED_USTRUCT_BODY()
 	EButtonType Type;
@@ -69,7 +69,7 @@ private:
 	void ChangeSliderValue(float Value);
 
 	UPROPERTY()
-	TArray<FDistElement> Dist;
+	TArray<FButtonDistElement> Dist;
 
 	const int HalfButtonXSize{ 50 };
 	const int StrideY{ 200 };
@@ -80,4 +80,4 @@ public:
 	void ClearAllWidget();
 };
 
-EButtonType ProbAlgorithm(const TArray<FDistElement>& Items);
+EButtonType ProbAlgorithm(const TArray<FButtonDistElement>& Items);
