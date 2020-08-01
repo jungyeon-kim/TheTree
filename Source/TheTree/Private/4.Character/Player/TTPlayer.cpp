@@ -66,6 +66,11 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->JumpZVelocity = 1100.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
 	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
+	SkillCost.Emplace(7.5f);
+	SkillCost.Emplace(15.0f);
+	SkillCost.Emplace(20.0f);
+	SkillCost.Emplace(25.0f);
+	SkillCost.Emplace(40.0f);
 
 	SetCharacterState(ECharacterState::LOADING);
 }
@@ -274,43 +279,43 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 		switch (SkillAttackType)
 		{
 		case 0:
-			if (!bIsSkillAttacking[0] && CharacterStat->GetSta() >= 7.5f)
+			if (!bIsSkillAttacking[0] && CharacterStat->GetSta() >= SkillCost[0])
 			{
 				TTAnimInstance->PlayMontage(TEXT("SmashAttack"));
 				bIsSkillAttacking[0] = true;
-				CharacterStat->SetSta(CharacterStat->GetSta() - 7.5f);
+				CharacterStat->SetSta(CharacterStat->GetSta() - SkillCost[0]);
 			}
 			break;
 		case 1:
-			if (!bIsSkillAttacking[1] && CharacterStat->GetSta() >= 15.0f)
+			if (!bIsSkillAttacking[1] && CharacterStat->GetSta() >= SkillCost[1])
 			{
 				TTAnimInstance->PlayMontage(TEXT("SlidingSlashAttack"));
 				bIsSkillAttacking[1] = true;
-				CharacterStat->SetSta(CharacterStat->GetSta() - 15.0f);
+				CharacterStat->SetSta(CharacterStat->GetSta() - SkillCost[1]);
 			}
 			break;
 		case 2:
-			if (!bIsSkillAttacking[2] && CharacterStat->GetSta() >= 20.0f)
+			if (!bIsSkillAttacking[2] && CharacterStat->GetSta() >= SkillCost[2])
 			{
 				TTAnimInstance->PlayMontage(TEXT("WindCutterAttack"));
 				bIsSkillAttacking[2] = true;
-				CharacterStat->SetSta(CharacterStat->GetSta() - 20.0f);
+				CharacterStat->SetSta(CharacterStat->GetSta() - SkillCost[2]);
 			}
 			break;
 		case 3:
-			if (!bIsSkillAttacking[3] && CharacterStat->GetSta() >= 25.0f)
+			if (!bIsSkillAttacking[3] && CharacterStat->GetSta() >= SkillCost[3])
 			{
 				TTAnimInstance->PlayMontage(TEXT("GaiaCrushAttack"));
 				bIsSkillAttacking[3] = true;
-				CharacterStat->SetSta(CharacterStat->GetSta() - 25.0f);
+				CharacterStat->SetSta(CharacterStat->GetSta() - SkillCost[3]);
 			}
 			break;
 		case 4:
-			if (!bIsSkillAttacking[4] && CharacterStat->GetSta() >= 40.0f)
+			if (!bIsSkillAttacking[4] && CharacterStat->GetSta() >= SkillCost[4])
 			{
 				TTAnimInstance->PlayMontage(TEXT("DrawSwordAttack"));
 				bIsSkillAttacking[4] = true;
-				CharacterStat->SetSta(CharacterStat->GetSta() - 40.0f);
+				CharacterStat->SetSta(CharacterStat->GetSta() - SkillCost[4]);
 			}
 			break;
 		}
@@ -554,6 +559,11 @@ ECharacterState ATTPlayer::GetCharacterState() const
 FName ATTPlayer::GetCurrentStateNodeName() const
 {
 	return TTAnimInstance->GetCurrentStateName(TTAnimInstance->GetStateMachineIndex(TEXT("BaseAction")));
+}
+
+TArray<float> ATTPlayer::GetSkillCost() const
+{
+	return SkillCost;
 }
 
 void ATTPlayer::SetPlayRate(float StartTime, float EndTime, float TimeDilation)

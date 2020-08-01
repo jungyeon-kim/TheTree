@@ -10,14 +10,23 @@ class THETREE_API UTTUIPlayerInGame : public UUserWidget
 	GENERATED_BODY()
 private:
 	UPROPERTY()
-	class UTTCharacterStatComponent* CurrentCharacterStat{};
+	class ATTPlayer* TTPlayer;
+	UPROPERTY()
+	class UTTCharacterStatComponent* CurrentCharacterStat;
+
+	TArray<float> SkillCost;
+	TArray<bool> bIsSkillEnabled;
+
 	UPROPERTY()
 	class UProgressBar* HPBar;
 	UPROPERTY()
 	class UProgressBar* StaBar;
+	UPROPERTY()
+	TArray<class UImage*> SkillIcon;
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
+	void ChangeSkillIconColor();
 };
