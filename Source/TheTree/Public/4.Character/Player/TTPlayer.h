@@ -4,8 +4,6 @@
 #include "GameFramework/Character.h"
 #include "TTPlayer.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
-
 UCLASS()
 class THETREE_API ATTPlayer : public ACharacter
 {
@@ -24,6 +22,8 @@ private:
 	bool bIsAttacking;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	TArray<bool> bIsSkillAttacking;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	TArray<float> SkillCost;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	bool bCanNextCombo;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
@@ -114,6 +114,7 @@ public:
 
 	ECharacterState GetCharacterState() const;
 	FName GetCurrentStateNodeName() const;
+	TArray<float> GetSkillCost() const;
 
 	void SetPlayRate(float StartTime, float EndTime, float TimeDilation);
 	void SetWeapon();

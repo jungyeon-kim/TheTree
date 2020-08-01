@@ -1,7 +1,9 @@
 #include "TTUIPlayerInGame.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "TTCharacterStatComponent.h"
+#include "TTPlayer.h"
 
 void UTTUIPlayerInGame::NativeConstruct()
 {
@@ -9,6 +11,16 @@ void UTTUIPlayerInGame::NativeConstruct()
 
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbHP")));
 	StaBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbSta")));
+
+	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_Smash"))));
+	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_SlidingSlash"))));
+	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_WindCutter"))));
+	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_GaiaCrush"))));
+	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_DrawSword"))));
+	for (int i = 0; i < SkillIcon.Num(); ++i) bIsSkillEnabled.Emplace(true);
+
+	TTPlayer = Cast<ATTPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	SkillCost = TTPlayer->GetSkillCost();
 }
 
 void UTTUIPlayerInGame::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -17,6 +29,8 @@ void UTTUIPlayerInGame::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 
 	HPBar->SetPercent(FMath::FInterpTo(HPBar->Percent, CurrentCharacterStat->GetHPRatio(), InDeltaTime, 5.0f));
 	StaBar->SetPercent(FMath::FInterpTo(StaBar->Percent, CurrentCharacterStat->GetStaRatio(), InDeltaTime, 5.0f));
+
+	ChangeSkillIconColor();
 }
 
 void UTTUIPlayerInGame::BindCharacterStat(UTTCharacterStatComponent* CharacterStat)
@@ -26,4 +40,21 @@ void UTTUIPlayerInGame::BindCharacterStat(UTTCharacterStatComponent* CharacterSt
 
 	HPBar->SetPercent(CurrentCharacterStat->GetHPRatio());
 	StaBar->SetPercent(CurrentCharacterStat->GetStaRatio());
+}
+
+void UTTUIPlayerInGame::ChangeSkillIconColor()
+{
+	for (int i = 0; i < SkillIcon.Num(); ++i)
+	{
+		if (bIsSkillEnabled[i] && CurrentCharacterStat->GetSta() < SkillCost[i])
+		{
+			SkillIcon[i]->SetColorAndOpacity(FLinearColor{ 0.2f, 0.2f, 0.2f, 0.5f });
+			bIsSkillEnabled[i] = false;
+		}
+		else if (!bIsSkillEnabled[i] && CurrentCharacterStat->GetSta() >= SkillCost[i])
+		{
+			SkillIcon[i]->SetColorAndOpacity(FLinearColor{ 1.0f, 1.0f, 1.0f, 1.0f });
+			bIsSkillEnabled[i] = true;
+		}
+	}
 }
