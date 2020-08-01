@@ -9,15 +9,8 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TArray<bool> Map{ MakeMapTexture() };
-	CelluarAutomata(Map, 20);
-	FinalWork(Map);
-
+	TArray<bool> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTTrooperMapTile::StaticClass());
-
 	BuildObjects(Map, false);
-
-	SpawnMonsters<ATTArgoniteGiant, ATTArgoniteGuardian, ATTArgoniteTrooper>(TTGameInstance->GetClearCount()+2);
-
-	TurnToMonster();
+	SpawnMonsters<ATTArgoniteGiant, ATTArgoniteGuardian, ATTArgoniteTrooper>(TTGameInstance->GetClearCount() + 2);
 }

@@ -6,6 +6,7 @@
 #include "TTGameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/PlayerStart.h"
+#include "NavigationSystem.h"
 
 ATTBaseMapGenerator::ATTBaseMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -28,7 +29,7 @@ void ATTBaseMapGenerator::PostInitializeComponents()
 	TTGameInstance = Cast<UTTGameInstance>(GetGameInstance());
 }
 
-TArray<bool> ATTBaseMapGenerator::MakeMapTexture()
+TArray<bool> ATTBaseMapGenerator::MakeMapTexture(int GenerationCount)
 {
 	FRandomStream RandomStream{ StaticCast<int32>(FDateTime::Now().GetTicks()) };
 	TArray<bool> NewMap{};
@@ -43,6 +44,9 @@ TArray<bool> ATTBaseMapGenerator::MakeMapTexture()
 			NewMap.Add(bMapLive);
 		}
 	}	//Generate
+
+	CelluarAutomata(NewMap, GenerationCount);
+	FinalWork(NewMap);
 	return NewMap;
 }
 
@@ -189,13 +193,35 @@ void ATTBaseMapGenerator::SpawnMonstersImpl()
 	// End
 }
 
-void ATTBaseMapGenerator::InPlaceActor(UClass* Class, float XPos, float YPos)
+void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	GetWorld()->SpawnActor<ACharacter>(Class, FVector{ XPos, YPos, 200.0f },
-		FRotator{ 0.0f, 0.0f, 0.0f }, Param);
+	static FRandomStream RandomStream{};
+	RandomStream.GenerateNewSeed();
+
+	ACharacter* Char{ GetWorld()->SpawnActor<ACharacter>(MonsterClass, FVector{ 0.0f, 0.0f, 200.0f },
+	FRotator{ 0.0f, 0.0f, 0.0f }, Param) };
+
+	FPathFollowingRequestResult FResult{};
+	do
+	{
+		int32 RandX{ RandomStream.RandRange(0, MapXSize - 1)};
+		int32 RandY{ RandomStream.RandRange(0, MapYSize - 1)};
+
+		if (MapTexture[GetIndexFromXY(RandX, RandY)])
+			continue;
+
+		Char->SetActorLocation(FVector{ MapOffsetX + (RandX * 300.0f), MapOffsetY + (RandY * 300.0f), 200.0f });
+
+		AAIController* Controller{ Char->GetController<AAIController>() };
+
+		FAIMoveRequest Request{};
+		Request.SetGoalActor(PlayerStart);
+		FResult = Controller->MoveTo(Request);
+	}
+	while (!FResult.MoveId.IsValid());
 }
 
 void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
@@ -205,13 +231,14 @@ void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
 
 	TArray<AActor*> PlayerStarts{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
-	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
+	PlayerStart = Cast<APlayerStart>(PlayerStarts[0]);
 
-	if (!StartActor)
+	
+	if (!PlayerStart)
 		return;
 
-	StartActor->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	StartActor->GetRootComponent()->SetMobility(EComponentMobility::Movable);
+	PlayerStart->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	PlayerStart->GetRootComponent()->SetMobility(EComponentMobility::Movable);
 
 	bool bOnce{ false };
 	int32 TorchCount{};
@@ -232,7 +259,7 @@ void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
 			{
 				if (!bOnce && CountNeighboursWithoutThis(Texture, x, y, -4, 5) < 1)
 				{
-					StartActor->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
+					PlayerStart->SetActorLocation(FVector(MapOffsetX + (x * 300.0f), MapOffsetY + (y * 300.0f), 198.0f));
 					bOnce ^= true;
 				}
 				if (bSetTorch)
@@ -251,6 +278,8 @@ void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
 	SetChandelier(Texture, MapXSize / 2, MapYSize / 2, bSetTorch);
 
 	MapTexture = std::move(Texture);
+
+	RebuildNavigation();
 }
 
 void ATTBaseMapGenerator::SetMapTileActorClass(UClass* Class)
@@ -274,16 +303,21 @@ void ATTBaseMapGenerator::TurnToMonster()
 	TArray<AActor*> monsters{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), monsters);
 
-	TArray<AActor*> PlayerStarts{};
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
-	APlayerStart* StartActor{ Cast<APlayerStart>(PlayerStarts[0]) };
-
-	if (!StartActor)
-		return;
-
 	if (monsters.Num())
 	{
-		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(StartActor->GetActorLocation(), monsters[0]->GetActorLocation()) };
-		StartActor->SetActorRotation(Rot);
+		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(PlayerStart->GetActorLocation(), monsters[0]->GetActorLocation()) };
+		PlayerStart->SetActorRotation(Rot);
+	}
+}
+
+void ATTBaseMapGenerator::RebuildNavigation()
+{
+	UNavigationSystemV1* NavSystem{ UNavigationSystemV1::GetCurrent(GetWorld()) };
+	if (NavSystem)
+	{
+		NavSystem->SetGeometryGatheringMode(ENavDataGatheringModeConfig::Instant);
+		NavSystem->Tick(UGameplayStatics::GetTimeSeconds(GetWorld()));
+		for (int32 i = 0; i < NavSystem->NavDataSet.Num(); ++i)
+			NavSystem->NavDataSet[i]->EnsureBuildCompletion();
 	}
 }
