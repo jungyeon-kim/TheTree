@@ -9,15 +9,8 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TArray<bool> Map{ MakeMapTexture() };
-	CelluarAutomata(Map, 20);
-	FinalWork(Map);
-
+	TArray<bool> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTDurionMapTile::StaticClass());
-
 	BuildObjects(Map, true);
-
 	SpawnMonsters<ATTArcdevaArcher, ATTArcdevaLancer, ATTArcdevaWarrior>(TTGameInstance->GetClearCount() + 3);
-
-	TurnToMonster();
 }
