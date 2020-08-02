@@ -41,6 +41,7 @@ ATTPlayer::ATTPlayer()
 	if (PLAYER_ANIM.Succeeded()) GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 
 	Effect->AddEffect(TEXT("HitImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_HitImpact.P_Player_HitImpact"));
+	Effect->AddEffect(TEXT("ExplosionRock"), TEXT("/Game/Assets/Effect/Particle/P_PerfectDurion_ExplosionRock.P_PerfectDurion_ExplosionRock"));
 	Effect->AddEffect(TEXT("Lightning"), TEXT("/Game/Assets/Effect/Particle/P_Player_Lightning.P_Player_Lightning"));
 	Effect->AddEffect(TEXT("GaiaLightning"), TEXT("/Game/Assets/Effect/Particle/P_Player_GaiaLightning.P_Player_GaiaLightning"));
 	Effect->AddEffect(TEXT("GaiaImpact"), TEXT("/Game/Assets/Effect/Particle/P_Player_GaiaImpact.P_Player_GaiaImpact"));
@@ -428,6 +429,7 @@ void ATTPlayer::AttackCheck()
 			Audio->PlaySoundWave2D(TEXT("HitSmashAttack"));
 		}
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
+		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation * 2.0f, 0.5f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 		if (bResult)
