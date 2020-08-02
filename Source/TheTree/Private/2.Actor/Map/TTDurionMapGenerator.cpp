@@ -12,6 +12,11 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 	TArray<bool> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTDurionMapTile::StaticClass());
 	BuildObjects(Map, true);
+}
+
+void ATTDurionMapGenerator::BeginPlay()
+{
+	Super::BeginPlay();
 
 	const float ElementPerAdd{ 5.0f * TTGameInstance->GetClearCount() };
 	TArray<FMonsterDistElement> Dist{ {ATTArcdevaLancer::StaticClass(), -5.0f + ElementPerAdd},

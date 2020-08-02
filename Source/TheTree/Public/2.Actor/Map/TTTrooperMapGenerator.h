@@ -12,4 +12,5 @@ class THETREE_API ATTTrooperMapGenerator : public ATTBaseMapGenerator
 public:
 	ATTTrooperMapGenerator() = default;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 };

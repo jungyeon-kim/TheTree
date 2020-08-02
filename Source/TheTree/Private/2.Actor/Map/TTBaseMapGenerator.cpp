@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/PlayerStart.h"
 #include "NavigationSystem.h"
+#include "NavigationPath.h"
+#include "TTPlayer.h"
 
 ATTBaseMapGenerator::ATTBaseMapGenerator() : BirthLimits{ 5 }, DeathLimits{ 4 }
 {
@@ -211,9 +213,8 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 
 	ACharacter* Char{ GetWorld()->SpawnActor<ACharacter>(MonsterClass, FVector{ 0.0f, 0.0f, 200.0f },
 	FRotator{ 0.0f, 0.0f, 0.0f }, Param) };
-	AAIController* Controller{ Char->GetController<AAIController>() };
-
-	FPathFollowingRequestResult FResult{};
+	UNavigationSystemV1* NavSystem{ UNavigationSystemV1::GetCurrent(GetWorld()) };
+	FPathFindingResult FResult{};
 	do
 	{
 		int32 RandX{ RandomStream.RandRange(0, MapXSize - 1)};
@@ -224,11 +225,13 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 
 		Char->SetActorLocation(FVector{ MapOffsetX + (RandX * 300.0f), MapOffsetY + (RandY * 300.0f), 200.0f });
 
-		FAIMoveRequest Request{};
-		Request.SetGoalActor(PlayerStart);
-		FResult = Controller->MoveTo(Request);
+		FPathFindingQuery Query{};
+		Query.StartLocation = Char->GetActorLocation();
+		Query.EndLocation = PlayerStart->GetActorLocation();
+		Query.NavData = NavSystem->GetDefaultNavDataInstance();
+		FResult = NavSystem->FindPathSync(Query);
 	}
-	while (!(FResult.Code == EPathFollowingResult::Success));
+	while (!FResult.IsSuccessful());
 }
 
 void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
@@ -296,12 +299,11 @@ void ATTBaseMapGenerator::SetMapTileActorClass(UClass* Class)
 
 void ATTBaseMapGenerator::TurnToMonster()
 {
-	TArray<AActor*> monsters{};
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), monsters);
-
-	if (monsters.Num())
+	TArray<AActor*> Monsters{}, Player{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), Monsters);
+	if (Monsters.Num() && Player.Num())
 	{
-		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(PlayerStart->GetActorLocation(), monsters[0]->GetActorLocation()) };
+		FRotator Rot{ UKismetMathLibrary::FindLookAtRotation(Player[0]->GetActorLocation(), Monsters[0]->GetActorLocation()) };
 		PlayerStart->SetActorRotation(Rot);
 	}
 }

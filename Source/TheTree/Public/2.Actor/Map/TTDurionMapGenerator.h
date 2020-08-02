@@ -12,4 +12,5 @@ class THETREE_API ATTDurionMapGenerator : public ATTBaseMapGenerator
 public:
 	ATTDurionMapGenerator() = default;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 };
