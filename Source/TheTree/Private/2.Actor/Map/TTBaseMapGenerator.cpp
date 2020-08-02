@@ -206,32 +206,26 @@ void ATTBaseMapGenerator::SpawnMonsters(TArray<FMonsterDistElement>& DistElement
 void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 {
 	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	static FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();
 
 	ACharacter* Char{ GetWorld()->SpawnActor<ACharacter>(MonsterClass, FVector{ 0.0f, 0.0f, 200.0f },
 	FRotator{ 0.0f, 0.0f, 0.0f }, Param) };
-	UNavigationSystemV1* NavSystem{ UNavigationSystemV1::GetCurrent(GetWorld()) };
-	FPathFindingResult FResult{};
+	UNavigationPath* Path{};
 	do
 	{
 		int32 RandX{ RandomStream.RandRange(0, MapXSize - 1)};
 		int32 RandY{ RandomStream.RandRange(0, MapYSize - 1)};
 
-		if (MapTexture[GetIndexFromXY(RandX, RandY)])
+		if (MapTexture[GetIndexFromXY(RandX, RandY)] || CountNeighboursWithoutThis(MapTexture, RandX, RandY, -2, 3) > 1)
 			continue;
 
 		Char->SetActorLocation(FVector{ MapOffsetX + (RandX * 300.0f), MapOffsetY + (RandY * 300.0f), 200.0f });
-
-		FPathFindingQuery Query{};
-		Query.StartLocation = Char->GetActorLocation();
-		Query.EndLocation = PlayerStart->GetActorLocation();
-		Query.NavData = NavSystem->GetDefaultNavDataInstance();
-		FResult = NavSystem->FindPathSync(Query);
+		Path = UNavigationSystemV1::FindPathToActorSynchronously(GetWorld(), Char->GetActorLocation(), PlayerStart);
 	}
-	while (!FResult.IsSuccessful());
+	while (!Path || Path->IsPartial());
 }
 
 void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)
