@@ -4,25 +4,21 @@
 
 ATTCommonBattleLevel::ATTCommonBattleLevel()
 {
-	
+	ClearMonsterDelegate.AddUObject(this, &ATTCommonBattleLevel::ClearEvents);
 }
 
-void ATTCommonBattleLevel::AddMonsterCount(int32 Count)
+void ATTCommonBattleLevel::ClearEvents()
 {
-	Super::AddMonsterCount(Count);
-	if (CurrentMonsterCount <= 0)
+	TArray<AActor*> Arr{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTPortal::StaticClass(), Arr);
+	UTTGameInstance* Inst{ GetGameInstance<UTTGameInstance>() };
+
+	if (Inst)
+		Inst->SetClearCount(Inst->GetClearCount() + 1);
+
+	if (Arr.Num())
 	{
-		TArray<AActor*> Arr{};
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTPortal::StaticClass(), Arr);
-		UTTGameInstance* Inst{ GetGameInstance<UTTGameInstance>() };
-
-		if (Inst)
-			Inst->SetClearCount(Inst->GetClearCount() + 1);
-
-		if (Arr.Num())
-		{
-			Arr[0]->SetActorHiddenInGame(false);
-			Arr[0]->SetActorEnableCollision(true);
-		}
+		Arr[0]->SetActorHiddenInGame(false);
+		Arr[0]->SetActorEnableCollision(true);
 	}
 }

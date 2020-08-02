@@ -23,5 +23,5 @@ void ATTTrooperMapGenerator::BeginPlay()
 	{ATTArgoniteGiant::StaticClass(), ElementPerAdd} ,{ATTArgoniteTrooper::StaticClass(), 100.0f} };
 	Dist.Sort([](const FMonsterDistElement& lhs, const FMonsterDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
-	SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 10);
+	SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 2);
 }

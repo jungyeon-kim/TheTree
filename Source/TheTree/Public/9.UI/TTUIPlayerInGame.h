@@ -23,10 +23,13 @@ private:
 	class UProgressBar* StaBar;
 	UPROPERTY()
 	TArray<class UImage*> SkillIcon;
+	UPROPERTY()
+	class UTextBlock* PortalText;
 protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
 	void ChangeSkillIconColor();
+	void ShowPortalText();
 };

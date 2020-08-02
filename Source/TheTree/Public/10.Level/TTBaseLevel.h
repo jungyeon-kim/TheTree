@@ -5,6 +5,8 @@
 #include "LevelSequencePlayer.h"
 #include "TTBaseLevel.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FClearMonsterDelegate)
+
 UCLASS()
 class THETREE_API ATTBaseLevel : public ALevelScriptActor
 {
@@ -14,7 +16,7 @@ protected:
 	int32 CurrentMonsterCount{};
 
 	virtual void BeginPlay() override;
-
+	virtual void BeginDestroy() override;
 public:
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
 	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag = true, FName OpenLevelName = "");
@@ -26,4 +28,6 @@ public:
 	
 	virtual void AddMonsterCount(int32 Count);
 	int32 GetMonsterCount();
+
+	FClearMonsterDelegate ClearMonsterDelegate;
 };

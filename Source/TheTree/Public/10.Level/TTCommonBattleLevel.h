@@ -7,7 +7,10 @@ UCLASS()
 class THETREE_API ATTCommonBattleLevel : public ATTBaseLevel
 {
 	GENERATED_BODY()
+
+private:
+	void ClearEvents();
+
 public:
 	ATTCommonBattleLevel();
-	virtual void AddMonsterCount(int32 Count) override;
 };
