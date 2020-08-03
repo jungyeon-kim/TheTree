@@ -203,6 +203,27 @@ void ATTBaseMapGenerator::SpawnMonsters(TArray<FMonsterDistElement>& DistElement
 	TurnToMonster();
 }
 
+void ATTBaseMapGenerator::SpawnMonsters(UDataTable* MonsterDataTable, int Row)
+{
+	// Monsters in DataTable must be spawned at least once.
+	TArray<FTTLevelDesign*> Elements{};
+	MonsterDataTable->GetAllRows<FTTLevelDesign>(TEXT(""), Elements);
+
+	const int Index{ Row };
+	const int SpawnCount{ Elements[Index]->HowManySpawn };
+	const int MonsterClassCount{ Elements[Index]->Monsters.Num() };
+
+	for (int i = 0; i < SpawnCount; ++i)
+		InPlaceActorRandom(Elements[Index]->Monsters[i % MonsterClassCount]);
+
+	ATTCommonBattleLevel* Level { Cast<ATTCommonBattleLevel>(GetWorld()->GetLevelScriptActor())};
+
+	if (Level)
+		Level->SetMonsterCount(SpawnCount);
+
+	TurnToMonster();
+}
+
 void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 {
 	FActorSpawnParameters Param;

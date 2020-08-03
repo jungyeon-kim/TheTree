@@ -10,7 +10,11 @@ class THETREE_API ATTTrooperMapGenerator : public ATTBaseMapGenerator
 	GENERATED_BODY()
 	
 public:
-	ATTTrooperMapGenerator() = default;
+	ATTTrooperMapGenerator();
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY()
+	class UDataTable* LevelDesignTable;
 };
