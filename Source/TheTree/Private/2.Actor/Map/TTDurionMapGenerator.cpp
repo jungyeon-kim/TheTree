@@ -3,7 +3,14 @@
 #include "TTArcdevaLancer.h"
 #include "TTArcdevaWarrior.h"
 #include "TTDurionMapTile.h"
+#include "TTDurionMineral.h"
 #include "TTGameInstance.h"
+
+ATTDurionMapGenerator::ATTDurionMapGenerator()
+{
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_DLDTABLE{ TEXT("/Game/GameData/TTDurionLevelDesign.TTDurionLevelDesign") };
+	if (DT_DLDTABLE.Succeeded()) LevelDesignTable = DT_DLDTABLE.Object;
+}
 
 void ATTDurionMapGenerator::PostInitializeComponents()
 {
@@ -12,16 +19,23 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 	TArray<bool> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTDurionMapTile::StaticClass());
 	BuildObjects(Map, true);
+
+	InPlaceActorRandom(ATTDurionMineral::StaticClass(), 20, 100.0f);
 }
 
 void ATTDurionMapGenerator::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const float ElementPerAdd{ 5.0f * TTGameInstance->GetClearCount() };
-	TArray<FMonsterDistElement> Dist{ {ATTArcdevaLancer::StaticClass(), -5.0f + ElementPerAdd},
-		{ATTArcdevaArcher::StaticClass(), ElementPerAdd} ,{ATTArcdevaWarrior::StaticClass(), 105.0f - ElementPerAdd} };
-	Dist.Sort([](const FMonsterDistElement& lhs, const FMonsterDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+	if (LevelDesignTable)
+		SpawnMonsters(LevelDesignTable, TTGameInstance->GetClearCount());
+	else
+	{
+		const float ElementPerAdd{ 5.0f * TTGameInstance->GetClearCount() };
+		TArray<FMonsterDistElement> Dist{ {ATTArcdevaLancer::StaticClass(), -5.0f + ElementPerAdd},
+			{ATTArcdevaArcher::StaticClass(), ElementPerAdd} ,{ATTArcdevaWarrior::StaticClass(), 105.0f - ElementPerAdd} };
+		Dist.Sort([](const FMonsterDistElement& lhs, const FMonsterDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
-	SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 3);
+		SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 3);
+	}
 }

@@ -193,7 +193,7 @@ void ATTBaseMapGenerator::SetChandelier(const TArray<bool>& Texture, int x, int 
 void ATTBaseMapGenerator::SpawnMonsters(TArray<FMonsterDistElement>& DistElements, int NumOfMonster)
 {
 	for (int i = 0 ; i < NumOfMonster; ++i)
-		InPlaceActorRandom(ProbAlgorithm(DistElements));
+		InPlaceCharacterRandom(ProbAlgorithm(DistElements));
 
 	ATTCommonBattleLevel* Level{ Cast<ATTCommonBattleLevel>(GetWorld()->GetLevelScriptActor()) };
 
@@ -203,7 +203,28 @@ void ATTBaseMapGenerator::SpawnMonsters(TArray<FMonsterDistElement>& DistElement
 	TurnToMonster();
 }
 
-void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
+void ATTBaseMapGenerator::SpawnMonsters(UDataTable* MonsterDataTable, int Row)
+{
+	// Monsters in DataTable must be spawned at least once.
+	TArray<FTTLevelDesign*> Elements{};
+	MonsterDataTable->GetAllRows<FTTLevelDesign>(TEXT(""), Elements);
+
+	const int Index{ Row };
+	const int SpawnCount{ Elements[Index]->HowManySpawn };
+	const int MonsterClassCount{ Elements[Index]->Monsters.Num() };
+
+	for (int i = 0; i < SpawnCount; ++i)
+		InPlaceCharacterRandom(Elements[Index]->Monsters[i % MonsterClassCount]);
+
+	ATTCommonBattleLevel* Level { Cast<ATTCommonBattleLevel>(GetWorld()->GetLevelScriptActor())};
+
+	if (Level)
+		Level->SetMonsterCount(SpawnCount);
+
+	TurnToMonster();
+}
+
+void ATTBaseMapGenerator::InPlaceCharacterRandom(UClass* CharacterClass)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -211,7 +232,7 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 	static FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();
 
-	ACharacter* Char{ GetWorld()->SpawnActor<ACharacter>(MonsterClass, FVector{ 0.0f, 0.0f, 200.0f },
+	ACharacter* Char{ GetWorld()->SpawnActor<ACharacter>(CharacterClass, FVector{ 0.0f, 0.0f, 200.0f },
 	FRotator{ 0.0f, 0.0f, 0.0f }, Param) };
 	UNavigationPath* Path{};
 	do
@@ -226,6 +247,33 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* MonsterClass)
 		Path = UNavigationSystemV1::FindPathToActorSynchronously(GetWorld(), Char->GetActorLocation(), PlayerStart);
 	}
 	while (!Path || Path->IsPartial());
+}
+
+void ATTBaseMapGenerator::InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, bool bPossibleBlocking)
+{
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	static FRandomStream RandomStream{};
+	RandomStream.GenerateNewSeed();
+
+	for (int i = 0; i < SpawnCount; ++i)
+	{	
+		int32 RandX{};
+		int32 RandY{};
+		int32 Index{};
+
+		do
+		{
+			RandX = RandomStream.RandRange(0, MapXSize - 1);
+			RandY = RandomStream.RandRange(0, MapYSize - 1);
+			Index = GetIndexFromXY(RandX, RandY);
+		} while (MapTexture[Index]);
+		GetWorld()->SpawnActor<AActor>(ActorClass, 
+			FVector{ MapOffsetX + (RandX * 300.0f), MapOffsetY + (RandY * 300.0f), OffsetZ }, 
+			FRotator::ZeroRotator, Param);
+		MapTexture[Index] = bPossibleBlocking;
+	}
 }
 
 void ATTBaseMapGenerator::BuildObjects(TArray<bool>& Texture, bool bSetTorch)

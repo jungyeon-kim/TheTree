@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "TTCommonBattleLevel.h"
 #include "TTAIController.h"
+#include "Engine/DataTable.h"
 #include "TTBaseMapGenerator.generated.h"
 
 USTRUCT()
@@ -12,6 +13,16 @@ struct FMonsterDistElement
 	GENERATED_USTRUCT_BODY()
 	UClass* Type;
 	float Percentage;
+};
+
+USTRUCT(BlueprintType)
+struct FTTLevelDesign : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TSubclassOf<class ATTEnemyBase>> Monsters;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int HowManySpawn;
 };
 
 UCLASS(Abstract)
@@ -73,8 +84,10 @@ protected:
 	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
 
 	void SpawnMonsters(TArray<FMonsterDistElement>& DistElements, int NumOfMonster);
+	void SpawnMonsters(UDataTable* MonsterDataTable, int Row);
 
-	void InPlaceActorRandom(UClass* MonsterClass);
+	void InPlaceCharacterRandom(UClass* CharacterClass);
+	void InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, bool bPossibleBlocking = true);
 	void SetMapTileActorClass(UClass* Class);
 	void BuildObjects(TArray<bool>& Texture, bool bSetTorch);
 	void TurnToMonster();

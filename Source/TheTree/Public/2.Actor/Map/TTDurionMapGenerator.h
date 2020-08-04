@@ -10,7 +10,11 @@ class THETREE_API ATTDurionMapGenerator : public ATTBaseMapGenerator
 	GENERATED_BODY()
 
 public:
-	ATTDurionMapGenerator() = default;
+	ATTDurionMapGenerator();
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY()
+	class UDataTable* LevelDesignTable;
 };
