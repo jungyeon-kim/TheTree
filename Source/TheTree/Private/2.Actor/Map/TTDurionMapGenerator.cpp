@@ -3,6 +3,7 @@
 #include "TTArcdevaLancer.h"
 #include "TTArcdevaWarrior.h"
 #include "TTDurionMapTile.h"
+#include "TTDurionMineral.h"
 #include "TTGameInstance.h"
 
 ATTDurionMapGenerator::ATTDurionMapGenerator()
@@ -18,6 +19,8 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 	TArray<bool> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTDurionMapTile::StaticClass());
 	BuildObjects(Map, true);
+
+	InPlaceActorRandom(ATTDurionMineral::StaticClass(), 20, 100.0f);
 }
 
 void ATTDurionMapGenerator::BeginPlay()

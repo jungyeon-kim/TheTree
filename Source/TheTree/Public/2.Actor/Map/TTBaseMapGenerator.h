@@ -86,7 +86,8 @@ protected:
 	void SpawnMonsters(TArray<FMonsterDistElement>& DistElements, int NumOfMonster);
 	void SpawnMonsters(UDataTable* MonsterDataTable, int Row);
 
-	void InPlaceActorRandom(UClass* MonsterClass);
+	void InPlaceCharacterRandom(UClass* CharacterClass);
+	void InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, bool bPossibleBlocking = true);
 	void SetMapTileActorClass(UClass* Class);
 	void BuildObjects(TArray<bool>& Texture, bool bSetTorch);
 	void TurnToMonster();
