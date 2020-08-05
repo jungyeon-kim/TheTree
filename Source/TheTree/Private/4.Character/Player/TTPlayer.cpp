@@ -67,7 +67,7 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->JumpZVelocity = 1100.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
 	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
-	SkillCost.Emplace(7.5f);
+	SkillCost.Emplace(0.0f);
 	SkillCost.Emplace(15.0f);
 	SkillCost.Emplace(20.0f);
 	SkillCost.Emplace(25.0f);
@@ -423,7 +423,7 @@ void ATTPlayer::AttackCheck()
 				if (Result.Actor.IsValid())
 				{
 					FDamageEvent DamageEvent{};
-					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 3.0f, DamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, DamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			Audio->PlaySoundWave2D(TEXT("HitSmashAttack"));
