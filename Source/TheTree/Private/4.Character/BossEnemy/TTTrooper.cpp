@@ -1,10 +1,12 @@
 #include "TTTrooper.h"
 #include "TTEnemyAnimInstance.h"
 #include "TTAIController.h"
+#include "TTPlayerController.h"
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
+#include "TTUIPlayerInGame.h"
 #include "DrawDebugHelpers.h"
 
 ATTTrooper::ATTTrooper()
@@ -28,7 +30,7 @@ ATTTrooper::ATTTrooper()
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
 	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
-	DeadTimer = 20.0f;
+	DeadTimer = 10.0f;
 }
 
 void ATTTrooper::PostInitializeComponents()
@@ -61,6 +63,15 @@ void ATTTrooper::PossessedBy(AController* NewController)
 void ATTTrooper::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TTPlayerController = Cast<ATTPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+}
+
+void ATTTrooper::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	TTPlayerController->GetUIPlayerInGame()->ShowBossHPBar(ESlateVisibility::Hidden);
 }
 
 void ATTTrooper::Tick(float DeltaTime)
@@ -253,6 +264,12 @@ void ATTTrooper::AttackCheck()
 		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
+}
+
+void ATTTrooper::ShowBossHPBar()
+{
+	TTPlayerController->GetUIPlayerInGame()->ShowBossHPBar(ESlateVisibility::Visible);
+	TTPlayerController->GetUIPlayerInGame()->BindAIStat(AIStat);
 }
 
 void ATTTrooper::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)

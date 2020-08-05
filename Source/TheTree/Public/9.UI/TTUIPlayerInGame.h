@@ -13,6 +13,8 @@ private:
 	class ATTPlayer* TTPlayer;
 	UPROPERTY()
 	class UTTCharacterStatComponent* CurrentCharacterStat;
+	UPROPERTY()
+	class UTTAIStatComponent* CurrentAIStat;
 
 	TArray<float> SkillCost;
 	TArray<bool> bIsSkillEnabled;
@@ -22,6 +24,10 @@ private:
 	UPROPERTY()
 	class UProgressBar* StaBar;
 	UPROPERTY()
+	class UProgressBar* BossHPBar;
+	UPROPERTY()
+	class UImage* BossHPBarFrame;
+	UPROPERTY()
 	TArray<class UImage*> SkillIcon;
 	UPROPERTY()
 	class UTextBlock* PortalText;
@@ -30,6 +36,8 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 public:
 	void BindCharacterStat(class UTTCharacterStatComponent* CharacterStat);
+	void BindAIStat(class UTTAIStatComponent* AIStat);
 	void ChangeSkillIconColor();
+	void ShowBossHPBar(ESlateVisibility NewVisibility);
 	void ShowPortalText();
 };

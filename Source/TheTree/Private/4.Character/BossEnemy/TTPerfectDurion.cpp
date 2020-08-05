@@ -1,10 +1,12 @@
 #include "TTPerfectDurion.h"
 #include "TTEnemyAnimInstance.h"
 #include "TTAIController.h"
+#include "TTPlayerController.h"
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
+#include "TTUIPlayerInGame.h"
 #include "DrawDebugHelpers.h"
 
 ATTPerfectDurion::ATTPerfectDurion()
@@ -31,7 +33,7 @@ ATTPerfectDurion::ATTPerfectDurion()
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
 	GeneralMoveSpeed = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
-	DeadTimer = 20.0f;
+	DeadTimer = 10.0f;
 }
 
 void ATTPerfectDurion::PostInitializeComponents()
@@ -64,6 +66,15 @@ void ATTPerfectDurion::PossessedBy(AController* NewController)
 void ATTPerfectDurion::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TTPlayerController = Cast<ATTPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+}
+
+void ATTPerfectDurion::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	TTPlayerController->GetUIPlayerInGame()->ShowBossHPBar(ESlateVisibility::Hidden);
 }
 
 void ATTPerfectDurion::Tick(float DeltaTime)
@@ -213,6 +224,12 @@ void ATTPerfectDurion::AttackCheck()
 		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
+}
+
+void ATTPerfectDurion::ShowBossHPBar()
+{
+	TTPlayerController->GetUIPlayerInGame()->ShowBossHPBar(ESlateVisibility::Visible);
+	TTPlayerController->GetUIPlayerInGame()->BindAIStat(AIStat);
 }
 
 void ATTPerfectDurion::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)

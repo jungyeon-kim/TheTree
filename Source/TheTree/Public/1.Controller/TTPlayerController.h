@@ -37,7 +37,6 @@ protected:
 	TSubclassOf<class UTTUIMap> TTUIMapClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<class UTTUIQuitGame> TTUIQuitGameClass;
-
 protected:
 	virtual void BeginPlay() override;
 public:
