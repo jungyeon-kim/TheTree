@@ -4,6 +4,8 @@
 #include "TTArcdevaWarrior.h"
 #include "TTDurionMapTile.h"
 #include "TTDurionMineral.h"
+#include "TTDurionMineralMiddle.h"
+#include "TTDurionMineralLarge.h"
 #include "TTGameInstance.h"
 
 ATTDurionMapGenerator::ATTDurionMapGenerator()
@@ -16,11 +18,14 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TArray<bool> Map{ MakeMapTexture(20) };
+	TArray<ETextureType> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTDurionMapTile::StaticClass());
 	BuildObjects(Map, true);
 
-	InPlaceActorRandom(ATTDurionMineral::StaticClass(), 20, 100.0f);
+	TArray<FActorDistElement> Dist{ {ATTDurionMineral::StaticClass(), 33.3f},
+		{ATTDurionMineralMiddle::StaticClass(), 33.3f}, {ATTDurionMineralLarge::StaticClass(), 33.4f} };
+
+	InPlaceActorRandom(Dist, 10, 100.0f);
 }
 
 void ATTDurionMapGenerator::BeginPlay()
@@ -32,9 +37,9 @@ void ATTDurionMapGenerator::BeginPlay()
 	else
 	{
 		const float ElementPerAdd{ 5.0f * TTGameInstance->GetClearCount() };
-		TArray<FMonsterDistElement> Dist{ {ATTArcdevaLancer::StaticClass(), -5.0f + ElementPerAdd},
+		TArray<FActorDistElement> Dist{ {ATTArcdevaLancer::StaticClass(), -5.0f + ElementPerAdd},
 			{ATTArcdevaArcher::StaticClass(), ElementPerAdd} ,{ATTArcdevaWarrior::StaticClass(), 105.0f - ElementPerAdd} };
-		Dist.Sort([](const FMonsterDistElement& lhs, const FMonsterDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+		Dist.Sort([](const FActorDistElement& lhs, const FActorDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
 		SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 3);
 	}

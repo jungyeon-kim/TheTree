@@ -1,12 +1,12 @@
-#include "TTDurionMineral.h"
+#include "TTDurionMineralLarge.h"
 
-ATTDurionMineral::ATTDurionMineral()
+ATTDurionMineralLarge::ATTDurionMineralLarge()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	MineralMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DURIONMAPMESH1"));
+	MineralMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DURIONMAPMESH2"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_MESH
-	{ TEXT("/Game/Assets/StaticMesh/Durion/Mineral/SM_Durion_Mineral_03.SM_Durion_Mineral_03") };
+	{ TEXT("/Game/Assets/StaticMesh/Durion/Mineral/SM_Durion_Mineral_04.SM_Durion_Mineral_04") };
 
 	if (SM_MESH.Succeeded())
 		MineralMesh->SetStaticMesh(SM_MESH.Object);
@@ -20,18 +20,15 @@ ATTDurionMineral::ATTDurionMineral()
 	SetActorScale3D(FVector(Scale, Scale, Scale));
 	SetActorRotation(FRotator{ 0.0f, Rotate, 0.0f });
 	MineralMesh->SetMobility(EComponentMobility::Static);
-
 }
 
-void ATTDurionMineral::BeginPlay()
+void ATTDurionMineralLarge::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-void ATTDurionMineral::Tick(float DeltaTime)
+void ATTDurionMineralLarge::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
