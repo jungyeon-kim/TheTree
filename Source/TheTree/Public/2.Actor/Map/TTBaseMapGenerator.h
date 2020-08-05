@@ -8,7 +8,7 @@
 #include "TTBaseMapGenerator.generated.h"
 
 USTRUCT()
-struct FMonsterDistElement
+struct FActorDistElement
 {
 	GENERATED_USTRUCT_BODY()
 	UClass* Type;
@@ -23,6 +23,15 @@ struct FTTLevelDesign : public FTableRowBase
 	TArray<TSubclassOf<class ATTEnemyBase>> Monsters;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int HowManySpawn;
+};
+
+UENUM()
+enum class ETextureType
+{
+	OPENED,
+	BLOCKED,
+	ONUPPER,
+	RESERVED
 };
 
 UCLASS(Abstract)
@@ -71,28 +80,29 @@ protected:
 	UPROPERTY()
 	class APlayerStart* PlayerStart;
 
-	TArray<bool> MapTexture{};
+	TArray<ETextureType> MapTexture{};
 	TArray<UClass*> ClassCluster{};
 
-	TArray<bool> MakeMapTexture(int GenerationCount);
-	void CelluarAutomata(TArray<bool>& Texture, int GenerationCount);
-	int32 CountNeighbours(const TArray<bool>& Texture, int x, int y);
-	int32 CountNeighboursWithoutThis(const TArray<bool>& Texture, int x, int y,
+	TArray<ETextureType> MakeMapTexture(int GenerationCount);
+	void CelluarAutomata(TArray<ETextureType>& Texture, int GenerationCount);
+	int32 CountNeighbours(const TArray<ETextureType>& Texture, int x, int y);
+	int32 CountNeighboursWithoutThis(const TArray<ETextureType>& Texture, int x, int y,
 		int Start = -1, int End = 2);
 	int32 GetIndexFromXY(int x, int y);
-	void FinalWork(TArray<bool>& Texture);
-	void SetChandelier(const TArray<bool>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
+	void FinalWork(TArray<ETextureType>& Texture);
+	void SetChandelier(TArray<ETextureType>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
 
-	void SpawnMonsters(TArray<FMonsterDistElement>& DistElements, int NumOfMonster);
+	void SpawnMonsters(TArray<FActorDistElement>& DistElements, int NumOfMonster);
 	void SpawnMonsters(UDataTable* MonsterDataTable, int Row);
 
 	void InPlaceCharacterRandom(UClass* CharacterClass);
-	void InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, bool bPossibleBlocking = true);
+	void InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, ETextureType PossibleBlocking = ETextureType::BLOCKED);
+	void InPlaceActorRandom(const TArray<FActorDistElement>& DistElements, int NumOfSpawning, float OffsetZ, ETextureType PossibleBlocking = ETextureType::BLOCKED);
 	void SetMapTileActorClass(UClass* Class);
-	void BuildObjects(TArray<bool>& Texture, bool bSetTorch);
+	void BuildObjects(TArray<ETextureType>& Texture, bool bSetTorch);
 	void TurnToMonster();
 	void RebuildNavigation();
 
 private:
-	UClass* ProbAlgorithm(const TArray<FMonsterDistElement>& Items);
+	UClass* ProbAlgorithm(const TArray<FActorDistElement>& Items);
 };

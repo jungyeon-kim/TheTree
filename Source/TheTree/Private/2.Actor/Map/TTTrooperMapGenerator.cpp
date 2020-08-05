@@ -16,11 +16,11 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TArray<bool> Map{ MakeMapTexture(20) };
+	TArray<ETextureType> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTTrooperMapTile::StaticClass());
 	BuildObjects(Map, false);
 
-	InPlaceActorRandom(ATTDurionMineral::StaticClass(), 20, 100.0f);
+	InPlaceActorRandom(ATTDurionMineral::StaticClass(), 10, 100.0f);
 }
 
 void ATTTrooperMapGenerator::BeginPlay()
@@ -32,9 +32,9 @@ void ATTTrooperMapGenerator::BeginPlay()
 	else
 	{
 		const float ElementPerAdd{ 5.0f * TTGameInstance->GetClearCount() };
-		TArray<FMonsterDistElement> Dist{ {ATTArgoniteGuardian::StaticClass(), -5.0f + ElementPerAdd},
+		TArray<FActorDistElement> Dist{ {ATTArgoniteGuardian::StaticClass(), -5.0f + ElementPerAdd},
 		{ATTArgoniteGiant::StaticClass(), ElementPerAdd} ,{ATTArgoniteTrooper::StaticClass(), 100.0f} };
-		Dist.Sort([](const FMonsterDistElement& lhs, const FMonsterDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
+		Dist.Sort([](const FActorDistElement& lhs, const FActorDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
 		SpawnMonsters(Dist, TTGameInstance->GetClearCount() + 2);
 	}
