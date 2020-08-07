@@ -4,6 +4,8 @@
 #include "TTArgoniteTrooper.h"
 #include "TTTrooperMapTile.h"
 #include "TTDurionMineral.h"
+#include "TTDurionMineralMiddle.h"
+#include "TTDurionMineralLarge.h"
 #include "TTGameInstance.h"
 
 ATTTrooperMapGenerator::ATTTrooperMapGenerator()
@@ -20,7 +22,10 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 	SetMapTileActorClass(ATTTrooperMapTile::StaticClass());
 	BuildObjects(Map, false);
 
-	InPlaceActorRandom(ATTDurionMineral::StaticClass(), 10, 100.0f);
+	TArray<FActorDistElement> Dist{ {ATTDurionMineral::StaticClass(), 33.3f},
+	{ATTDurionMineralMiddle::StaticClass(), 33.3f}, {ATTDurionMineralLarge::StaticClass(), 33.4f} };
+
+	InPlaceActorRandom(Dist, 10, 100.0f);
 }
 
 void ATTTrooperMapGenerator::BeginPlay()
