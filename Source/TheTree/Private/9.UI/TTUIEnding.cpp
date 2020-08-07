@@ -1,6 +1,5 @@
 #include "TTUIEnding.h"
 #include "Components/Button.h"
-#include "TTPlayer.h"
 
 void UTTUIEnding::NativeConstruct()
 {
