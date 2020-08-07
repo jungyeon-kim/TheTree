@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "TTBaseLevel.h"
 #include "TTCharacterStatComponent.h"
+#include "TTAIStatComponent.h"
 #include "TTPlayer.h"
 
 void UTTUIPlayerInGame::NativeConstruct()
@@ -13,9 +14,11 @@ void UTTUIPlayerInGame::NativeConstruct()
 
 	HPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbHP")));
 	StaBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbSta")));
+	BossHPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("pbBossHP")));
 
-	PortalText = Cast<UTextBlock>(GetWidgetFromName(TEXT("PortalText")));
+	PortalText = Cast<UTextBlock>(GetWidgetFromName(TEXT("txtNextStage")));
 
+	BossHPBarFrame = Cast<UImage>(GetWidgetFromName(TEXT("BossHPFrame")));
 	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_Smash"))));
 	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_SlidingSlash"))));
 	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_WindCutter"))));
@@ -23,9 +26,12 @@ void UTTUIPlayerInGame::NativeConstruct()
 	SkillIcon.Emplace(Cast<UImage>(GetWidgetFromName(TEXT("Icon_DrawSword"))));
 	for (int i = 0; i < SkillIcon.Num(); ++i) bIsSkillEnabled.Emplace(true);
 
+	BossHPBar->SetVisibility(ESlateVisibility::Hidden);
+	BossHPBarFrame->SetVisibility(ESlateVisibility::Hidden);
+	PortalText->SetVisibility(ESlateVisibility::Hidden);
 	TTPlayer = Cast<ATTPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	SkillCost = TTPlayer->GetSkillCost();
-	PortalText->SetVisibility(ESlateVisibility::Hidden);
+	
 	Cast<ATTBaseLevel>(TTPlayer->GetWorld()->GetLevelScriptActor())->ClearMonsterDelegate.AddUObject(this, &UTTUIPlayerInGame::ShowPortalText);
 }
 
@@ -35,6 +41,7 @@ void UTTUIPlayerInGame::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 
 	HPBar->SetPercent(FMath::FInterpTo(HPBar->Percent, CurrentCharacterStat->GetHPRatio(), InDeltaTime, 5.0f));
 	StaBar->SetPercent(FMath::FInterpTo(StaBar->Percent, CurrentCharacterStat->GetStaRatio(), InDeltaTime, 5.0f));
+	if (CurrentAIStat) BossHPBar->SetPercent(FMath::FInterpTo(BossHPBar->Percent, CurrentAIStat->GetHPRatio(), InDeltaTime, 5.0f));
 
 	ChangeSkillIconColor();
 }
@@ -46,6 +53,14 @@ void UTTUIPlayerInGame::BindCharacterStat(UTTCharacterStatComponent* CharacterSt
 
 	HPBar->SetPercent(CurrentCharacterStat->GetHPRatio());
 	StaBar->SetPercent(CurrentCharacterStat->GetStaRatio());
+}
+
+void UTTUIPlayerInGame::BindAIStat(UTTAIStatComponent* AIStat)
+{
+	TTCHECK(AIStat);
+	CurrentAIStat = AIStat;
+
+	BossHPBar->SetPercent(CurrentAIStat->GetHPRatio());
 }
 
 void UTTUIPlayerInGame::ChangeSkillIconColor()
@@ -63,6 +78,12 @@ void UTTUIPlayerInGame::ChangeSkillIconColor()
 			bIsSkillEnabled[i] = true;
 		}
 	}
+}
+
+void UTTUIPlayerInGame::ShowBossHPBar(ESlateVisibility NewVisibility)
+{
+	BossHPBar->SetVisibility(NewVisibility);
+	BossHPBarFrame->SetVisibility(NewVisibility);
 }
 
 void UTTUIPlayerInGame::ShowPortalText()

@@ -1,10 +1,12 @@
 #include "TTImperfectDurion.h"
 #include "TTEnemyAnimInstance.h"
 #include "TTAIController.h"
+#include "TTPlayerController.h"
 #include "TTCameraShake.h"
 #include "TTParticleSystemComponent.h"
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
+#include "TTUIPlayerInGame.h"
 #include "DrawDebugHelpers.h"
 
 ATTImperfectDurion::ATTImperfectDurion()
@@ -61,6 +63,15 @@ void ATTImperfectDurion::PossessedBy(AController* NewController)
 void ATTImperfectDurion::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	TTPlayerController = Cast<ATTPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+}
+
+void ATTImperfectDurion::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	TTPlayerController->GetUIPlayerInGame()->ShowBossHPBar(ESlateVisibility::Hidden);
 }
 
 void ATTImperfectDurion::Tick(float DeltaTime)
@@ -195,6 +206,12 @@ void ATTImperfectDurion::AttackCheck()
 		float DebugLifeTime{ 1.0f };
 		DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, CapsuleRot, DrawColor, false, DebugLifeTime);
 	}
+}
+
+void ATTImperfectDurion::ShowBossHPBar()
+{
+	TTPlayerController->GetUIPlayerInGame()->ShowBossHPBar(ESlateVisibility::Visible);
+	TTPlayerController->GetUIPlayerInGame()->BindAIStat(AIStat);
 }
 
 void ATTImperfectDurion::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)

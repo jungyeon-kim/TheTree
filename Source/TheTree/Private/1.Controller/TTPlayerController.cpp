@@ -96,7 +96,7 @@ void ATTPlayerController::SetUIPlayerInGame(UTTCharacterStatComponent* NewCharac
 	TTUIPlayerInGame = CreateWidget<UTTUIPlayerInGame>(this, TTUIPlayerInGameClass);
 	TTUIPlayerInGame->AddToViewport();
 	TTUIPlayerInGame->SetVisibility(ESlateVisibility::Hidden);
-
+	
 	TTUIPlayerInGame->BindCharacterStat(NewCharacterStat);
 }
 

@@ -9,9 +9,16 @@ class THETREE_API ATTTrooper : public ATTEnemyBase
 {
 	GENERATED_BODY()
 protected:
+	UPROPERTY()
+	class ATTPlayerController* TTPlayerController;
+protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	void AttackCheck();
 
+	UFUNCTION(BlueprintCallable)
+	void ShowBossHPBar();
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 public:
