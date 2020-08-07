@@ -61,5 +61,8 @@ public:
 	void SetUIMap();
 	void SetUIQuitGame();
 
+	// for Demonstration
+	void ClearAllMonster();
+	// for Debug
 	void SwapDebugMode();
 };

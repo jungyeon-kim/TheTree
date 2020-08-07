@@ -12,7 +12,7 @@ DECLARE_LOG_CATEGORY_EXTERN(TheTree, Log, All);
 // Output log (string must be followed by *)
 #define TTLOG(Verbosity, Format, ...) UE_LOG(TheTree, Verbosity, TEXT("%s %s"), *TTLOG_CALLINFO, *FString::Printf(Format, ##__VA_ARGS__))
 
-// If the condition is not true, red log is returned.In a function with a return value, the return value must be given as the second argument.
+// If the condition is not true, red log is returned. In a function with a return value, the return value must be given as the second argument.
 #define TTCHECK(Expr, ...) { if(!(Expr)) { TTLOG(Error, TEXT("ASSERTION : %s"), TEXT("'"#Expr"'")); return __VA_ARGS__; } }
 
 UENUM()

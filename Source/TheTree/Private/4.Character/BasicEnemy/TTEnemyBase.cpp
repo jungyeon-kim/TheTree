@@ -156,6 +156,7 @@ void ATTEnemyBase::SetCharacterState(ECharacterState NewState)
 	{
 		GetCapsuleComponent()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 		TTAIController->StopAI();
+		TTAIController->StopMovement();
 		TTAnimInstance->StopAllMontages(0.25f);
 		TTAnimInstance->SetDead();
 

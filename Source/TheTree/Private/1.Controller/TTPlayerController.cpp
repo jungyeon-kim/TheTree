@@ -6,6 +6,7 @@
 #include "TTUIRecovery.h"
 #include "TTUIMap.h"
 #include "TTUIQuitGame.h"
+#include "TTEnemyBase.h"
 
 ATTPlayerController::ATTPlayerController()
 {
@@ -34,6 +35,7 @@ void ATTPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	
+	InputComponent->BindAction(TEXT("ClearAllMonster"), EInputEvent::IE_Pressed, this, &ATTPlayerController::ClearAllMonster);
 	InputComponent->BindAction(TEXT("SwapDebugMode"), EInputEvent::IE_Pressed, this, &ATTPlayerController::SwapDebugMode);
 }
 
@@ -142,6 +144,14 @@ void ATTPlayerController::SetUIQuitGame()
 	TTUIQuitGame = CreateWidget<UTTUIQuitGame>(this, TTUIQuitGameClass);
 	TTUIQuitGame->AddToViewport();
 	TTUIQuitGame->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ATTPlayerController::ClearAllMonster()
+{
+	TArray<AActor*> Arr{};
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), Arr);
+	for (auto Monster : Arr) Cast<ATTEnemyBase>(Monster)->SetCharacterState(ECharacterState::DEAD);
 }
 
 void ATTPlayerController::SwapDebugMode()
