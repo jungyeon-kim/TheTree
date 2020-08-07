@@ -151,7 +151,7 @@ void ATTPlayerController::ClearAllMonster()
 	TArray<AActor*> Arr{};
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), Arr);
-	for (auto& Monster : Arr) Cast<ATTEnemyBase>(Monster)->SetCharacterState(ECharacterState::DEAD);
+	for (auto Monster : Arr) Cast<ATTEnemyBase>(Monster)->SetCharacterState(ECharacterState::DEAD);
 }
 
 void ATTPlayerController::SwapDebugMode()
