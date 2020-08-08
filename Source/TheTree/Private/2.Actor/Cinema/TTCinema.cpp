@@ -5,6 +5,7 @@
 #include "TTUIPlayerInGame.h"
 #include "LevelSequencePlayer.h"
 #include "TTUIMap.h"
+#include "TTPlayerWeapon.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
 ATTCinema::ATTCinema()
@@ -31,8 +32,8 @@ void ATTCinema::SetCinema(class ULevelSequence* Sequence)
 
 		StartFuncDelegate.BindUFunction(this, "StartCinemaFunction");
 		EndFuncDelegate.BindUFunction(this, "EndCinemaFunction");
-		SequencePlayer->OnPlay.AddUnique(StartFuncDelegate);
-		SequencePlayer->OnFinished.AddUnique(EndFuncDelegate);
+		SequencePlayer->OnPlay.Add(StartFuncDelegate);
+		SequencePlayer->OnFinished.Add(EndFuncDelegate);
 	}
 }
 void ATTCinema::SetCinema(const TCHAR* Path)
@@ -113,7 +114,14 @@ void ATTCinema::StartCinemaFunction()
 		->StopAI();
 
 	if (bHideCharacter)
+	{
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->SetActorHiddenInGame(true);
+		TArray<AActor*> Weapon{};
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTPlayerWeapon::StaticClass(), Weapon);
+		if (Weapon.Num())
+			Weapon[0]->SetActorHiddenInGame(true);
+	}
+		
 }
 
 void ATTCinema::EndCinemaFunction()
@@ -135,7 +143,14 @@ void ATTCinema::EndCinemaFunction()
 			Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
 
 	if (bHideCharacter)
+	{
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->SetActorHiddenInGame(false);
+		TArray<AActor*> Weapon{};
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTPlayerWeapon::StaticClass(), Weapon);
+		if (Weapon.Num())
+			Weapon[0]->SetActorHiddenInGame(false);
+	}
+		
 
 	if (OpenLevelName != "")
 		UGameplayStatics::OpenLevel(GetWorld(), OpenLevelName);

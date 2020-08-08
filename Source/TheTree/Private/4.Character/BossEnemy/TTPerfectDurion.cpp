@@ -33,7 +33,7 @@ ATTPerfectDurion::ATTPerfectDurion()
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
 	GeneralMoveSpeed = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
-	DeadTimer = 10.0f;
+	DeadTimer = 1.0f;
 }
 
 void ATTPerfectDurion::PostInitializeComponents()

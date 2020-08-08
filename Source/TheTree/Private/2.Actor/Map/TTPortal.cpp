@@ -42,7 +42,8 @@ void ATTPortal::OnOverlapBegin(UPrimitiveComponent* OverlapComp , AActor* OtherA
 	ATTPlayer* Player{ Cast<ATTPlayer>(OtherActor) };
 	if (Player)
 	{
-		if (*UGameplayStatics::GetCurrentLevelName(GetWorld()) == FString("ImperfectDurion_Battle"))
+		FString WorldName{ *UGameplayStatics::GetCurrentLevelName(GetWorld()) };
+		if (WorldName == FString("ImperfectDurion_Battle") || WorldName == FString("PerfectDurion_Battle"))
 		{
 			ATTCinema* FadeCinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
 			FadeCinema->SetCinema(TEXT("/Game/Level/Cinema/CI_FadeIn.CI_FadeIn"));
@@ -65,6 +66,9 @@ void ATTPortal::EndCinema()
 		{
 		case FTTWorld::HashCode(TEXT("ImperfectDurion_Battle")):
 			UGameplayStatics::OpenLevel(GetWorld(), FName{ "PerfectDurion_Battle" });
+			break;
+		case FTTWorld::HashCode(TEXT("PerfectDurion_Battle")):
+			UGameplayStatics::OpenLevel(GetWorld(), FName{ "Ending" });
 			break;
 		}
 	}

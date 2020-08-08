@@ -18,4 +18,7 @@ public:
 	void SpawnSoundAndBackup(USoundBase* Sound);
 
 	void ClearEvents();
+
+	UFUNCTION()
+	void SpawnPortal();
 };
