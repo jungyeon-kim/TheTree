@@ -13,10 +13,10 @@ void ATTBaseLevel::BeginDestroy()
 	ClearMonsterDelegate.Clear();
 }
 
-ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag, FName OpenLevelName)
+ULevelSequencePlayer* ATTBaseLevel::PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag, FName OpenLevelName, bool bHidePlayer)
 {
 	ATTCinema* Cinema{ GetWorld()->SpawnActor<ATTCinema>(ATTCinema::StaticClass()) };
-	Cinema->SetAndPlayCinema(Sequence, bRunAIFlag, OpenLevelName);
+	Cinema->SetAndPlayCinema(Sequence, bRunAIFlag, OpenLevelName, bHidePlayer);
 	return Cinema->GetSequencePlayer();
 }
 

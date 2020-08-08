@@ -19,7 +19,7 @@ protected:
 	virtual void BeginDestroy() override;
 public:
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
-	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag = true, FName OpenLevelName = "");
+	ULevelSequencePlayer* PlayCinematic(ULevelSequence* Sequence, bool bRunAIFlag = true, FName OpenLevelName = "", bool bHidePlayer = false);
 
 	UFUNCTION(BlueprintCallable, Category = LevelBlueprint)
 	void DestroyActors(UPARAM(ref) TArray<AActor*>& Actors);

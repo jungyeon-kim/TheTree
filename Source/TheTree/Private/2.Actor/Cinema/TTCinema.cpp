@@ -80,9 +80,10 @@ void ATTCinema::SetAndPlayCinema(const TCHAR* Path)
 	PlayCinema();
 }
 
-void ATTCinema::SetAndPlayCinema(ULevelSequence* Sequence, bool bRunAI, FName LevelName)
+void ATTCinema::SetAndPlayCinema(ULevelSequence* Sequence, bool bRunAI, FName LevelName, bool bHidePlayer)
 {
 	bRunAIFlag = bRunAI;
+	bHideCharacter = bHidePlayer;
 	SetCinema(Sequence);
 	OpenLevelName = LevelName;
 	PlayCinema();
@@ -98,7 +99,6 @@ void ATTCinema::StartCinemaFunction()
 	static ATTPlayerController* PlayerController{};
 	PlayerController = Cast<ATTPlayerController>(GetWorld()->GetFirstPlayerController());
 
-	TTCHECK(PlayerController);
 	UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(PlayerController);
 	if (PlayerController->GetUIPlayerInGame()) 
 		PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden);
@@ -111,6 +111,9 @@ void ATTCinema::StartCinemaFunction()
 	for (AActor* Enemy : Arr)
 		Cast<ATTAIController>(UAIBlueprintHelperLibrary::GetAIController(Enemy))
 		->StopAI();
+
+	if (bHideCharacter)
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->SetActorHiddenInGame(true);
 }
 
 void ATTCinema::EndCinemaFunction()
@@ -130,6 +133,9 @@ void ATTCinema::EndCinemaFunction()
 	if (bRunAIFlag)
 		for (AActor*& Enemy : Arr)
 			Cast<ATTEnemyBase>(Enemy)->GetController<ATTAIController>()->RunAI();
+
+	if (bHideCharacter)
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->SetActorHiddenInGame(false);
 
 	if (OpenLevelName != "")
 		UGameplayStatics::OpenLevel(GetWorld(), OpenLevelName);

@@ -17,5 +17,11 @@
 				"Slate"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "ApexDestruction",
+			"Enabled": true
+		}
 	]
 }

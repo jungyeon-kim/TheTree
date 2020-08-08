@@ -22,7 +22,7 @@ public:
 	void SetCinema(class ULevelSequence* Sequence);
 	void PlayCinema();
 	void SetAndPlayCinema(const TCHAR* Path);
-	void SetAndPlayCinema(class ULevelSequence* Sequence, bool bRunAI = false, FName LevelName = "");
+	void SetAndPlayCinema(class ULevelSequence* Sequence, bool bRunAI = false, FName LevelName = "", bool bHidePlayer = false);
 
 	class ULevelSequencePlayer* GetSequencePlayer();
 
@@ -39,4 +39,5 @@ private:
 	FName OpenLevelName;
 
 	bool bRunAIFlag{ true };
+	bool bHideCharacter{ false };
 };
