@@ -13,7 +13,7 @@ bool UBTDecorator_IsMontagePlaying::CalculateRawConditionValue(UBehaviorTreeComp
 	const auto& ControllingCharacter{ OwnerComp.GetAIOwner()->GetCharacter() };
 	if (!ControllingCharacter) return false;
 
-	bResult = ControllingCharacter->GetCurrentMontage();
+	bResult = StaticCast<bool>(ControllingCharacter->GetCurrentMontage());
 
 	return bResult;
 }
