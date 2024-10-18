@@ -61,10 +61,11 @@ ATTPlayer::ATTPlayer()
 	SpringArm->TargetArmLength = 800.0f;
 	MaxCombo = 4;
 	DeadTimer = 5.0f;
-	GeneralMoveSpeed = 1000.0f;
+	GeneralMoveSpeed = 1200.0f;
 	AdvancedMoveSpeed = GeneralMoveSpeed * 1.2f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
-	GetCharacterMovement()->JumpZVelocity = 1100.0f;
+	GetCharacterMovement()->MaxAcceleration = 2000.0f;
+	GetCharacterMovement()->JumpZVelocity = 1500.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
 	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
 	SkillCost.Emplace(0.0f);
@@ -627,12 +628,12 @@ void ATTPlayer::SetCharacterState(ECharacterState NewState)
 	}
 	case ECharacterState::NOBATTLE:
 	{
-		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
+		//GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 		break;
 	}
 	case ECharacterState::BATTLE:
 	{
-		GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.8f;
+		//GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed * 0.8f;
 		break;
 	}
 	case ECharacterState::DEAD:
