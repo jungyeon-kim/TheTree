@@ -6,6 +6,8 @@
 #include "TTUIStoreButton.h"
 #include "TTGameInstance.h"
 
+#include "WidgetLayoutLibrary.h"
+
 void UTTUIMap::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -37,7 +39,18 @@ void UTTUIMap::NativeConstruct()
 		Dist = TArray<FButtonDistElement>{ {EButtonType::STORE, 15.0f}, {EButtonType::SHELTER, 15.0f} ,{EButtonType::MONSTER, 70.0f} };
 		Dist.Sort([](const FButtonDistElement& lhs, const FButtonDistElement& rhs) {return lhs.Percentage < rhs.Percentage; });
 
-		GenerateMapRecursive(10, 960, 100, 960, 2100);
+		int ViewportHalfSizeX = 960;
+
+		if (UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport())
+		{
+			FVector2D ViewportSize;
+			ViewportClient->GetViewportSize(ViewportSize);
+			float const DPIScale = UWidgetLayoutLibrary::GetViewportScale(this);
+
+			ViewportHalfSizeX = StaticCast<int>(ViewportSize.X / DPIScale) / 2;
+		}
+
+		GenerateMapRecursive(10, ViewportHalfSizeX, 100, ViewportHalfSizeX, 2100);
 		Dist.Empty();
 		
 		ButtonCluster.Sort([](const UTTUIMapButton& lhs, const UTTUIMapButton& rhs)
