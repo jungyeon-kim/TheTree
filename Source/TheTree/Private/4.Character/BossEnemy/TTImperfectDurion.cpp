@@ -29,7 +29,7 @@ ATTImperfectDurion::ATTImperfectDurion()
 	Audio->AddSoundWave(TEXT("Drain"), TEXT("/Game/Assets/Sound/BossEnemy/ImperfectDurion/ImperfectDurion_Drain.ImperfectDurion_Drain"));
 	Audio->AddSoundWave(TEXT("BigHand"), TEXT("/Game/Assets/Sound/BossEnemy/ImperfectDurion/ImperfectDurion_BigHand.ImperfectDurion_BigHand"));
 
-	GetCapsuleComponent()->SetCapsuleSize(100.0f, 200.0f);
+	GetCapsuleComponent()->SetCapsuleSize(200.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
 	GeneralMoveSpeed = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;

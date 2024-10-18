@@ -19,6 +19,7 @@ ATTArcdevaWarrior::ATTArcdevaWarrior()
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_Attack_SoundCue.ArcdevaWarrior_Attack_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaWarrior/ArcdevaWarrior_HitAttack_SoundCue.ArcdevaWarrior_HitAttack_SoundCue"));
 
+	GetCapsuleComponent()->SetCapsuleSize(88.0f, 88.0f);
 	GeneralMoveSpeed = 600.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 	DeadTimer = 10.0f;

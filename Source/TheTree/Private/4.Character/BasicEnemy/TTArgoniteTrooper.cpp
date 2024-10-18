@@ -19,6 +19,7 @@ ATTArgoniteTrooper::ATTArgoniteTrooper()
 	Audio->AddSoundCue(TEXT("Attack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArgoniteTrooper/ArgoniteTrooper_Attack_SoundCue.ArgoniteTrooper_Attack_SoundCue"));
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArgoniteTrooper/ArgoniteTrooper_HitAttack_SoundCue.ArgoniteTrooper_HitAttack_SoundCue"));
 
+	GetCapsuleComponent()->SetCapsuleSize(88.0f, 88.0f);
 	GeneralMoveSpeed = 500.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 	DeadTimer = 10.0f;

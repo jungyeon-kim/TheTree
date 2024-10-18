@@ -20,6 +20,7 @@ ATTArcdevaArcher::ATTArcdevaArcher()
 	Audio->AddSoundWave(TEXT("AttackStart"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_AttackStart.ArcdevaArcher_AttackStart"));
 	Audio->AddSoundWave(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaArcher/ArcdevaArcher_HitAttack.ArcdevaArcher_HitAttack"));
 
+	GetCapsuleComponent()->SetCapsuleSize(88.0f, 88.0f);
 	GeneralMoveSpeed = 800.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
 	DeadTimer = 10.0f;

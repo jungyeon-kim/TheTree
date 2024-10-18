@@ -24,7 +24,7 @@ ATTArgoniteGiant::ATTArgoniteGiant()
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArgoniteGiant/ArgoniteGiant_HitAttack_SoundCue.ArgoniteGiant_HitAttack_SoundCue"));
 	Audio->AddSoundWave(TEXT("HitChargeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
 
-	GetCapsuleComponent()->SetCapsuleSize(80.0f, 140.0f);
+	GetCapsuleComponent()->SetCapsuleSize(140.0f, 140.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -140.0f));
 	GeneralMoveSpeed = 450.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;

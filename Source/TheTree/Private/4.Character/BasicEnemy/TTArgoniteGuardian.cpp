@@ -21,7 +21,7 @@ ATTArgoniteGuardian::ATTArgoniteGuardian()
 	Audio->AddSoundCue(TEXT("HitAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitAttack_SoundCue.ArcdevaLancer_HitAttack_SoundCue"));
 	Audio->AddSoundWave(TEXT("ShieldDefense"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefence.ArcdevaLancer_ShieldDefence"));
 
-	GetCapsuleComponent()->SetCapsuleSize(100.0f, 150.0f);
+	GetCapsuleComponent()->SetCapsuleSize(150.0f, 150.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -150.0f));
 	GeneralMoveSpeed = 700.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;

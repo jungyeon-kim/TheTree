@@ -29,7 +29,7 @@ ATTPerfectDurion::ATTPerfectDurion()
 	Audio->AddSoundWave(TEXT("SummonWeapon"), TEXT("/Game/Assets/Sound/Common/Common_Casting_00.Common_Casting_00"));
 	Audio->AddSoundWave(TEXT("SummonBlood"), TEXT("/Game/Assets/Sound/Common/Common_HitBlood_00.Common_HitBlood_00"));
 
-	GetCapsuleComponent()->SetCapsuleSize(100.0f, 200.0f);
+	GetCapsuleComponent()->SetCapsuleSize(200.0f, 200.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -200.0f));
 	GeneralMoveSpeed = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;

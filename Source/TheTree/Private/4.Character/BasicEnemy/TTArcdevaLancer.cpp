@@ -22,7 +22,7 @@ ATTArcdevaLancer::ATTArcdevaLancer()
 	Audio->AddSoundWave(TEXT("HitChargeAttack"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_HitChargeAttack.ArcdevaLancer_HitChargeAttack"));
 	Audio->AddSoundWave(TEXT("ShieldDefense"), TEXT("/Game/Assets/Sound/BasicEnemy/ArcdevaLancer/ArcdevaLancer_ShieldDefence.ArcdevaLancer_ShieldDefence"));
 
-	GetCapsuleComponent()->SetCapsuleSize(100.0f, 150.0f);
+	GetCapsuleComponent()->SetCapsuleSize(150.0f, 150.0f);
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -150.0f));
 	GeneralMoveSpeed = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = GeneralMoveSpeed;
