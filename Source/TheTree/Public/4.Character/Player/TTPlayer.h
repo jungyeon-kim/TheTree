@@ -25,10 +25,6 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	TArray<float> SkillCost;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	bool bCanNextCombo;
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	bool bIsComboInputOn;
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	int32 CurrentCombo;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
@@ -51,10 +47,12 @@ private:
 	class UTTPlayerAnimInstance* TTAnimInstance;
 	UPROPERTY()
 	class UTTGhostTrailComponent* TTGhostTrail;
+
+	FTimerHandle AttackCancelTimer = FTimerHandle();
 private:
 	void StartInit();
 	void EndInit();
-	void Attack();
+	void Attack(const bool bInAttacking);
 	void SkillAttack(int32 SkillAttackType);
 	void Dodge(int32 DodgeType);
 	void SwapBattleMode();

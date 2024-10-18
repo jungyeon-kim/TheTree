@@ -89,13 +89,14 @@ void ATTPlayer::PostInitializeComponents()
 	TTAnimInstance->OnAttackHitCheck.AddUObject(this, &ATTPlayer::AttackCheck);
 	TTAnimInstance->OnNextAttackCheck.AddLambda([&]()
 		{
-			bCanNextCombo = false;
-			if (bIsComboInputOn)
+			if (bIsAttacking)
 			{
 				AttackStartComboState();
-				TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
 			}
-			else TTAnimInstance->StopAllMontages(0.25f);
+			else
+			{
+				TTAnimInstance->StopAllMontages(0.25f);
+			}
 		});
 	TTAnimInstance->OnSwapWeapon.AddUObject(this, &ATTPlayer::SetWeapon);
 }
@@ -109,7 +110,8 @@ void ATTPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, bool>>(TEXT("Attack"), EInputEvent::IE_Pressed, this, &ATTPlayer::Attack, true);
+	PlayerInputComponent->BindAction<TBaseDelegate<void, bool>>(TEXT("Attack"), EInputEvent::IE_Released, this, &ATTPlayer::Attack, false);
 	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("SmashAttack"), EInputEvent::IE_Pressed, this, &ATTPlayer::SkillAttack, 0);
 	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("SkillAttack1"), EInputEvent::IE_Pressed, this, &ATTPlayer::SkillAttack, 1);
 	PlayerInputComponent->BindAction<TBaseDelegate<void, int32>>(TEXT("SkillAttack2"), EInputEvent::IE_Pressed, this, &ATTPlayer::SkillAttack, 2);
@@ -255,21 +257,22 @@ void ATTPlayer::EndInit()
 	}
 }
 
-void ATTPlayer::Attack()
+void ATTPlayer::Attack(const bool bInAttacking)
 {
-	if (bIsAttacking)
+	if (bInAttacking && GetCurrentStateNodeName() == TEXT("Ground") &&
+		!TTAnimInstance->GetCurrentActiveMontage() && CurrentState == ECharacterState::BATTLE)
 	{
-		TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
-		if (bCanNextCombo) bIsComboInputOn = true;
-	}
-	else if (GetCurrentStateNodeName() == TEXT("Ground")
-		&& !TTAnimInstance->GetCurrentActiveMontage() && CurrentState == ECharacterState::BATTLE)
-	{
-		TTCHECK(!CurrentCombo);
-		AttackStartComboState();
 		TTAnimInstance->PlayMontage(TEXT("BasicAttack"));
-		TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
-		bIsAttacking = true;
+		AttackStartComboState();
+
+		if (GetWorld()->GetTimerManager().IsTimerActive(AttackCancelTimer))
+		{
+			GetWorld()->GetTimerManager().ClearTimer(AttackCancelTimer);
+		}
+	}
+	else if (!bInAttacking)
+	{
+		AttackEndComboState();
 	}
 }
 
@@ -326,17 +329,17 @@ void ATTPlayer::SkillAttack(int32 SkillAttackType)
 
 void ATTPlayer::AttackStartComboState()
 {
-	bCanNextCombo = true;
-	bIsComboInputOn = false;
-	TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1));
-	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+	TTCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo));
+
+	CurrentCombo = (CurrentCombo % MaxCombo) + 1;
+	TTAnimInstance->JumpToAttackMontageSection(CurrentCombo);
+	bIsAttacking = true;
 }
 
 void ATTPlayer::AttackEndComboState()
 {
-	bIsComboInputOn = false;
-	bCanNextCombo = false;
 	CurrentCombo = 0;
+	bIsAttacking = false;
 }
 
 void ATTPlayer::AttackCheck()
@@ -516,8 +519,8 @@ void ATTPlayer::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	switch (FTTWorld::HashCode(*Montage->GetName()))
 	{
 	case FTTWorld::HashCode(TEXT("PlayerAttackMontage")):
-		bIsAttacking = false;
-		AttackEndComboState();
+		//bIsAttacking = false;
+		//AttackEndComboState();
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSmashAttackMontage")):
 		bIsSkillAttacking[0] = false;
