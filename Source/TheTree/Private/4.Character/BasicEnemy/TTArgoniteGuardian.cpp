@@ -6,6 +6,7 @@
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DamageEvents.h"
 
 ATTArgoniteGuardian::ATTArgoniteGuardian()
 {
@@ -106,13 +107,13 @@ void ATTArgoniteGuardian::AttackCheck()
 		Params);
 
 	if (bResult)
-		if (HitResult.Actor.IsValid())
+		if (HitResult.GetActor())
 		{
 			if (GetCurrentMontage()->GetName() == TEXT("ArgoniteGuardianAttackMontage"))
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -120,8 +121,8 @@ void ATTArgoniteGuardian::AttackCheck()
 			else
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));

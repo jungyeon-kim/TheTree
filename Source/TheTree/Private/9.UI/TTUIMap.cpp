@@ -185,7 +185,7 @@ void UTTUIMap::ChangeSliderValue(float Value)
 	{
 		FVector2D OriginPosition{ Button->GetOriginPosition() };
 		Button->SetRenderTranslation(FVector2D{ OriginPosition.X, OriginPosition.Y + (Value * OriginPostionStrideY)});
-		float YPos{ Button->RenderTransform.Translation.Y };
+		float YPos = StaticCast<float>(Button->RenderTransform.Translation.Y);
 		if (YPos > 20.0f && YPos < 1040.0f)
 			Button->SetVisibility(ESlateVisibility::Visible);
 		else
@@ -243,7 +243,7 @@ EButtonType ProbAlgorithm(const TArray<FButtonDistElement>& Items)
 {
 	FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();
-	float RandomSeed{ RandomStream.FRandRange(1.0f, 100.0f) };
+	float RandomSeed = RandomStream.FRandRange(1.0f, 100.0f);
 	float Cumulative{};
 
 	for (auto& Item : Items)

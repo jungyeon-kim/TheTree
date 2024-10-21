@@ -21,7 +21,9 @@ void ATTAIController::OnPossess(APawn* InPawn)
 void ATTAIController::RunAI()
 {
 	TTCHECK(BTAsset && BBAsset);
-	if (UseBlackboard(BBAsset, Blackboard)) Blackboard->SetValueAsVector(HomePosKey, GetPawn()->GetActorLocation());
+
+	UBlackboardComponent* BlackboardComp = Blackboard;
+	if (UseBlackboard(BBAsset, BlackboardComp)) Blackboard->SetValueAsVector(HomePosKey, GetPawn()->GetActorLocation());
 	RunBehaviorTree(BTAsset);
 }
 

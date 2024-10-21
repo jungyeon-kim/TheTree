@@ -100,18 +100,24 @@ void ATTCinema::StartCinemaFunction()
 	static ATTPlayerController* PlayerController{};
 	PlayerController = Cast<ATTPlayerController>(GetWorld()->GetFirstPlayerController());
 
-	UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(PlayerController);
-	if (PlayerController->GetUIPlayerInGame()) 
+	if (UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+	{
+		UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->DisableInput(PlayerController);
+	}
+
+	if (PlayerController->GetUIPlayerInGame())
+	{
 		PlayerController->GetUIPlayerInGame()->SetVisibility(ESlateVisibility::Hidden);
+	}
 
 	TArray<AActor*> Arr{};
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(),
-		ATTEnemyBase::StaticClass(), Arr);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATTEnemyBase::StaticClass(), Arr);
 
 	for (AActor* Enemy : Arr)
-		Cast<ATTAIController>(UAIBlueprintHelperLibrary::GetAIController(Enemy))
-		->StopAI();
+	{
+		Cast<ATTAIController>(UAIBlueprintHelperLibrary::GetAIController(Enemy))->StopAI();
+	}
 
 	if (bHideCharacter)
 	{

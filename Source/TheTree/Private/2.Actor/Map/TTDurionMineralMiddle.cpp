@@ -14,8 +14,8 @@ ATTDurionMineralMiddle::ATTDurionMineralMiddle()
 
 	static FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();
-	float Scale{ RandomStream.FRandRange(0.1f, 0.5f) };
-	float Rotate{ RandomStream.FRandRange(0.0f, 360.0f) };
+	float Scale = RandomStream.FRandRange(0.1f, 0.5f);
+	float Rotate = RandomStream.FRandRange(0.0f, 360.0f);
 
 	SetActorScale3D(FVector(Scale, Scale, Scale));
 	SetActorRotation(FRotator{ 0.0f, Rotate, 0.0f });

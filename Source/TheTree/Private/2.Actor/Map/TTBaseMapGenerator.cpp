@@ -31,18 +31,18 @@ void ATTBaseMapGenerator::PostInitializeComponents()
 	TTGameInstance = Cast<UTTGameInstance>(GetGameInstance());
 }
 
-TArray<ETextureType> ATTBaseMapGenerator::MakeMapTexture(int GenerationCount)
+TArray<ETTTextureType> ATTBaseMapGenerator::MakeMapTexture(int GenerationCount)
 {
 	FRandomStream RandomStream{ StaticCast<int32>(FDateTime::Now().GetTicks()) };
-	TArray<ETextureType> NewMap{};
+	TArray<ETTTextureType> NewMap{};
 	for (int y = 0; y < MapYSize; ++y)
 	{
 		for (int x = 0; x < MapXSize; ++x)
 		{
 			int32 RandomSeed{ RandomStream.RandRange(1, 100) };
-			ETextureType Type{ ETextureType::OPENED };
+			ETTTextureType Type{ ETTTextureType::OPENED };
 			if (RandomSeed <= GenerateChance)
-				Type = ETextureType::BLOCKED;
+				Type = ETTTextureType::BLOCKED;
 			NewMap.Add(Type);
 		}
 	}	//Generate
@@ -52,7 +52,7 @@ TArray<ETextureType> ATTBaseMapGenerator::MakeMapTexture(int GenerationCount)
 	return NewMap;
 }
 
-int32 ATTBaseMapGenerator::CountNeighboursWithoutThis(const TArray<ETextureType>& Texture, int x, int y, int Start, int End)
+int32 ATTBaseMapGenerator::CountNeighboursWithoutThis(const TArray<ETTTextureType>& Texture, int x, int y, int Start, int End)
 {
 	int32 Count{};
 	for (int i = Start; i < End; ++i) {
@@ -65,14 +65,14 @@ int32 ATTBaseMapGenerator::CountNeighboursWithoutThis(const TArray<ETextureType>
 			else if ((NeighbourX < 0 || NeighbourY < 0 || NeighbourX >= MapXSize || NeighbourY >= MapYSize))
 				++Count;
 
-			else if (Texture[GetIndexFromXY(NeighbourX, NeighbourY)] == ETextureType::BLOCKED)
+			else if (Texture[GetIndexFromXY(NeighbourX, NeighbourY)] == ETTTextureType::BLOCKED)
 				++Count;
 		}
 	}
 	return Count;
 }
 
-int32 ATTBaseMapGenerator::CountNeighbours(const TArray<ETextureType>& Texture, int x, int y)
+int32 ATTBaseMapGenerator::CountNeighbours(const TArray<ETTTextureType>& Texture, int x, int y)
 {
 
 	int32 Count{};
@@ -80,24 +80,24 @@ int32 ATTBaseMapGenerator::CountNeighbours(const TArray<ETextureType>& Texture, 
 		for (int j = -1; j < 2; ++j) {
 			int NeighbourX{ x + j };
 			int NeighbourY{ y + i };
-			// i == 0 && j == 0 Àº ÇöÀç ¼¼Æ÷ÀÇ Áß¾ÓÁ¡¿¡ ÀÖ´Ù´Â ¶æ, ±×¶© ³Ñ°Ü¾ß ÇÔ 
+			// i == 0 && j == 0 ì€ í˜„ìž¬ ì„¸í¬ì˜ ì¤‘ì•™ì ì— ìžˆë‹¤ëŠ” ëœ», ê·¸ë• ë„˜ê²¨ì•¼ í•¨ 
 			if (i == 0 && j == 0)
 				continue;
 
-			// Áöµµ °¡ÀåÀÚ¸®¿¡¼­ index º¸´Â °æ¿ì
+			// ì§€ë„ ê°€ìž¥ìžë¦¬ì—ì„œ index ë³´ëŠ” ê²½ìš°
 			else if (NeighbourX < 0 || NeighbourY < 0 || NeighbourX >= MapXSize || NeighbourY >= MapYSize)
 				Count = Count + 1;
 
-			else if (Texture[GetIndexFromXY(NeighbourX, NeighbourY)] == ETextureType::BLOCKED)
+			else if (Texture[GetIndexFromXY(NeighbourX, NeighbourY)] == ETTTextureType::BLOCKED)
 				Count = Count + 1;
 		}
 	}
 	return Count;
 }
 
-void ATTBaseMapGenerator::CelluarAutomata(TArray<ETextureType>& Texture, int GenerationCount)
+void ATTBaseMapGenerator::CelluarAutomata(TArray<ETTTextureType>& Texture, int GenerationCount)
 {
-	TArray<ETextureType> NewMap{};
+	TArray<ETTTextureType> NewMap{};
 	
 	while (GenerationCount--)
 	{
@@ -108,13 +108,13 @@ void ATTBaseMapGenerator::CelluarAutomata(TArray<ETextureType>& Texture, int Gen
 			{
 				int32 Nbs{ CountNeighbours(Texture, x, y) };
 				int32 MapOffsetXY{ GetIndexFromXY(x, y) };
-				ETextureType Type{ ETextureType::OPENED };
+				ETTTextureType Type{ ETTTextureType::OPENED };
 
-				if (Texture[MapOffsetXY] == ETextureType::BLOCKED && Nbs >= DeathLimits)
-					Type = ETextureType::BLOCKED;
-				// ÀÌ¿ôÀÇ ¼ö¿¡ ÀÇÇØ ÅÂ¾î³ª±â°¡ ÀûÀýÇÑ Áö ÆÇ´Ü
-				else if (Texture[MapOffsetXY] == ETextureType::OPENED && Nbs > BirthLimits)
-					Type = ETextureType::BLOCKED;
+				if (Texture[MapOffsetXY] == ETTTextureType::BLOCKED && Nbs >= DeathLimits)
+					Type = ETTTextureType::BLOCKED;
+				// ì´ì›ƒì˜ ìˆ˜ì— ì˜í•´ íƒœì–´ë‚˜ê¸°ê°€ ì ì ˆí•œ ì§€ íŒë‹¨
+				else if (Texture[MapOffsetXY] == ETTTextureType::OPENED && Nbs > BirthLimits)
+					Type = ETTTextureType::BLOCKED;
 
 				NewMap[MapOffsetXY] = Type;
 			}
@@ -128,19 +128,19 @@ int32 ATTBaseMapGenerator::GetIndexFromXY(int x, int y)
 	return (y * MapXSize) + x;
 }
 
-void ATTBaseMapGenerator::FinalWork(TArray<ETextureType>& Texture)
+void ATTBaseMapGenerator::FinalWork(TArray<ETTTextureType>& Texture)
 {
 	for (int y = 0; y < MapYSize; ++y)
 	{
 		for (int x = 0; x < MapXSize; ++x)
 		{
 			if (x == 0 || y == 0 || x == MapXSize - 1 || y == MapYSize - 1)
-				Texture[GetIndexFromXY(x, y)] = ETextureType::BLOCKED;
+				Texture[GetIndexFromXY(x, y)] = ETTTextureType::BLOCKED;
 		}
 	}
 }
 
-void ATTBaseMapGenerator::SetChandelier(TArray<ETextureType>& Texture, int x, int y, bool bSetChandelier)
+void ATTBaseMapGenerator::SetChandelier(TArray<ETTTextureType>& Texture, int x, int y, bool bSetChandelier)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -149,7 +149,7 @@ void ATTBaseMapGenerator::SetChandelier(TArray<ETextureType>& Texture, int x, in
 	{
 		for (int j = x; j < MapXSize; ++j)
 		{
-			if (Texture[GetIndexFromXY(j, i)] == ETextureType::BLOCKED)
+			if (Texture[GetIndexFromXY(j, i)] == ETTTextureType::BLOCKED)
 				continue;
 
 			if (!CountNeighboursWithoutThis(Texture, j, i, -3, 4))
@@ -162,7 +162,7 @@ void ATTBaseMapGenerator::SetChandelier(TArray<ETextureType>& Texture, int x, in
 					FVector{ MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
 				Portal->SetActorHiddenInGame(true);
 				Portal->SetActorEnableCollision(false);
-				Texture[GetIndexFromXY(j, i)] = ETextureType::RESERVED;
+				Texture[GetIndexFromXY(j, i)] = ETTTextureType::RESERVED;
 				return;
 			}
 		}
@@ -172,7 +172,7 @@ void ATTBaseMapGenerator::SetChandelier(TArray<ETextureType>& Texture, int x, in
 	{
 		for (int j = x - 1; j < 0; --j)
 		{
-			if (Texture[GetIndexFromXY(j, i)] == ETextureType::BLOCKED)
+			if (Texture[GetIndexFromXY(j, i)] == ETTTextureType::BLOCKED)
 				continue;
 
 			if (!CountNeighboursWithoutThis(Texture, j, i, -3, 4))
@@ -185,7 +185,7 @@ void ATTBaseMapGenerator::SetChandelier(TArray<ETextureType>& Texture, int x, in
 				FVector{ MapOffsetX + (j * 300.0f), MapOffsetY + (i * 300.0f), MapOffsetZ + 240.0f }, FRotator{ 0.0f, 0.0f, 0.0f }) };
 				Portal->SetActorHiddenInGame(true);
 				Portal->SetActorEnableCollision(false);
-				Texture[GetIndexFromXY(j, i)] = ETextureType::RESERVED;
+				Texture[GetIndexFromXY(j, i)] = ETTTextureType::RESERVED;
 
 				return;
 			}
@@ -243,7 +243,7 @@ void ATTBaseMapGenerator::InPlaceCharacterRandom(UClass* CharacterClass)
 		int32 RandX{ RandomStream.RandRange(0, MapXSize - 1)};
 		int32 RandY{ RandomStream.RandRange(0, MapYSize - 1)};
 
-		if (MapTexture[GetIndexFromXY(RandX, RandY)] == ETextureType::BLOCKED 
+		if (MapTexture[GetIndexFromXY(RandX, RandY)] == ETTTextureType::BLOCKED 
 			|| CountNeighboursWithoutThis(MapTexture, RandX, RandY, -2, 3) > 1)
 			continue;
 
@@ -253,7 +253,7 @@ void ATTBaseMapGenerator::InPlaceCharacterRandom(UClass* CharacterClass)
 	while (!Path || Path->IsPartial());
 }
 
-void ATTBaseMapGenerator::InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, ETextureType PossibleBlocking)
+void ATTBaseMapGenerator::InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, ETTTextureType PossibleBlocking)
 {
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -272,7 +272,7 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* ActorClass, int32 SpawnCoun
 			RandX = RandomStream.RandRange(0, MapXSize - 1);
 			RandY = RandomStream.RandRange(0, MapYSize - 1);
 			Index = GetIndexFromXY(RandX, RandY);
-		} while (MapTexture[Index] == ETextureType::BLOCKED || MapTexture[Index] == ETextureType::RESERVED);
+		} while (MapTexture[Index] == ETTTextureType::BLOCKED || MapTexture[Index] == ETTTextureType::RESERVED);
 		GetWorld()->SpawnActor<AActor>(ActorClass, 
 			FVector{ MapOffsetX + (RandX * 300.0f), MapOffsetY + (RandY * 300.0f), OffsetZ }, 
 			FRotator::ZeroRotator, Param);
@@ -280,14 +280,14 @@ void ATTBaseMapGenerator::InPlaceActorRandom(UClass* ActorClass, int32 SpawnCoun
 	}
 }
 
-void ATTBaseMapGenerator::InPlaceActorRandom(const TArray<FActorDistElement>& DistElements, int NumOfSpawning, float OffsetZ, ETextureType PossibleBlocking)
+void ATTBaseMapGenerator::InPlaceActorRandom(const TArray<FActorDistElement>& DistElements, int NumOfSpawning, float OffsetZ, ETTTextureType PossibleBlocking)
 {
 	for (int i = 0; i < NumOfSpawning; ++i)
 		InPlaceActorRandom(ProbAlgorithm(DistElements), 1, OffsetZ, PossibleBlocking);
 }
 
 
-void ATTBaseMapGenerator::BuildObjects(TArray<ETextureType>& Texture, bool bSetTorch)
+void ATTBaseMapGenerator::BuildObjects(TArray<ETTTextureType>& Texture, bool bSetTorch)
 {
 	static FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();
@@ -311,7 +311,7 @@ void ATTBaseMapGenerator::BuildObjects(TArray<ETextureType>& Texture, bool bSetT
 	{
 		for (int x = 0; x < MapXSize; ++x)
 		{
-			if (Texture[GetIndexFromXY(x, y)] == ETextureType::BLOCKED)
+			if (Texture[GetIndexFromXY(x, y)] == ETTTextureType::BLOCKED)
 			{
 				if (CountNeighboursWithoutThis(Texture, x, y) < 8)
 					GetWorld()->SpawnActor<AActor>(MeshClass,
@@ -377,7 +377,7 @@ UClass* ATTBaseMapGenerator::ProbAlgorithm(const TArray<FActorDistElement>& Item
 {
 	static FRandomStream RandomStream{};
 	RandomStream.GenerateNewSeed();
-	float RandomSeed{ RandomStream.FRandRange(1.0f, 100.0f) };
+	float RandomSeed = RandomStream.FRandRange(1.0f, 100.0f);
 	float Cumulative{};
 
 	for (auto& Item : Items)

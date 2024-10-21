@@ -39,7 +39,7 @@ protected:
 	void TurnToTarget(AActor* Target, float InterpSpeed);
 public:
 	UPROPERTY(EditAnywhere, Category = "Camera")
-	TSubclassOf<UCameraShake> CameraShake;
+	TSubclassOf<class ULegacyCameraShake> CameraShake;
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
 	class UTTParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = "Sound")

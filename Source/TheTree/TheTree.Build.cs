@@ -9,7 +9,8 @@ public class TheTree : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore",
-            "UMG", "AIModule", "GameplayTasks", "NavigationSystem", "LevelSequence", "MovieScene" });
+            "UMG", "AIModule", "GameplayTasks", "NavigationSystem", "LevelSequence", "MovieScene", "GameplayCameras"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

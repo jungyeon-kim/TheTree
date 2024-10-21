@@ -8,6 +8,7 @@
 #include "TTAIStatComponent.h"
 #include "TTUIPlayerInGame.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DamageEvents.h"
 
 ATTImperfectDurion::ATTImperfectDurion()
 {
@@ -131,11 +132,11 @@ void ATTImperfectDurion::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ImperfectDurionAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.Actor.IsValid())
+			if (HitResult.GetActor())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -147,12 +148,12 @@ void ATTImperfectDurion::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ImperfectDurionDrainAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.Actor.IsValid())
+			if (HitResult.GetActor())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 				AIStat->SetHP(AIStat->GetHP() + AIStat->GetAtk() * 2.0f);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Effect->PlayEffectAtLocation(TEXT("Recovery"), GetActorLocation(), FVector(3.0f, 3.0f, 5.0f));
@@ -165,11 +166,11 @@ void ATTImperfectDurion::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ImperfectDurionChargeAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.Actor.IsValid())
+			if (HitResult.GetActor())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
+				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -182,15 +183,15 @@ void ATTImperfectDurion::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ImperfectDurionQuakeAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.Actor.IsValid())
+			if (HitResult.GetActor())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
 		Audio->PlaySoundCue2D(TEXT("Explosion"));
 		break;
 	}

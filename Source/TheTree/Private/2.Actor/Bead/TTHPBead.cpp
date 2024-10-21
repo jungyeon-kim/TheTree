@@ -52,7 +52,7 @@ void ATTHPBead::Tick(float DeltaTime)
 	
 	if (Player && GetWorld()->GetTimeSeconds() - SpawnedTime < 3.0f)
 	{
-		float NewLocationZ{ GetActorLocation().Z + FMath::Sin(Angle += DeltaTime * 5.0f) };
+		float NewLocationZ = GetActorLocation().Z + FMath::Sin(Angle += DeltaTime * 5.0f);
 		SetActorLocation(FVector{ GetActorLocation().X, GetActorLocation().Y, NewLocationZ });
 	}
 	else
