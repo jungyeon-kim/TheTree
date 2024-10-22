@@ -68,7 +68,6 @@ ATTPlayer::ATTPlayer()
 	GetCharacterMovement()->MaxAcceleration = 2000.0f;
 	GetCharacterMovement()->JumpZVelocity = 1500.0f;
 	GetCharacterMovement()->GravityScale = 3.0f;
-	GetCharacterMovement()->SetWalkableFloorAngle(30.0f);
 	for (int i = 0; i < 5; ++i) bIsSkillAttacking.Emplace(false);
 	SkillCost.Emplace(0.0f);
 	SkillCost.Emplace(15.0f);
