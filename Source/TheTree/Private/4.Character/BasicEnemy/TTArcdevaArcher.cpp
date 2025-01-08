@@ -5,7 +5,6 @@
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
-#include "Engine/DamageEvents.h"
 
 ATTArcdevaArcher::ATTArcdevaArcher()
 {
@@ -105,10 +104,10 @@ void ATTArcdevaArcher::AttackCheck()
 		Params);
 
 	if (bResult)
-		if (HitResult.GetActor())
+		if (HitResult.Actor.IsValid())
 		{
 			FDamageEvent DamageEvent{};
-			HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 				GetActorForwardVector().Rotation(), 2.5f);
 			Audio->PlaySoundWave2D(TEXT("HitAttack"));

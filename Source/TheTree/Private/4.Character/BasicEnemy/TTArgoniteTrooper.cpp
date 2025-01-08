@@ -5,7 +5,6 @@
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
-#include "Engine/DamageEvents.h"
 
 ATTArgoniteTrooper::ATTArgoniteTrooper()
 {
@@ -95,10 +94,10 @@ void ATTArgoniteTrooper::AttackCheck()
 		Params);
 
 	if (bResult)
-		if (HitResult.GetActor())
+		if (HitResult.Actor.IsValid())
 		{
 			FDamageEvent DamageEvent{};
-			HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
 			Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(), 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
 		}

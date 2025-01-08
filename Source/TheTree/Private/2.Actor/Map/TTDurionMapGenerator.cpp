@@ -15,7 +15,7 @@ void ATTDurionMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TArray<ETTTextureType> Map{ MakeMapTexture(20) };
+	TArray<ETextureType> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTDurionMapTile::StaticClass());
 	BuildObjects(Map, true);
 }

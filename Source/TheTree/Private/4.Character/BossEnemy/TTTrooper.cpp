@@ -8,7 +8,6 @@
 #include "TTAIStatComponent.h"
 #include "TTUIPlayerInGame.h"
 #include "DrawDebugHelpers.h"
-#include "Engine/DamageEvents.h"
 
 ATTTrooper::ATTTrooper()
 {
@@ -150,11 +149,11 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperAttackMontage_01")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -165,15 +164,15 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperQuakeAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 3.0f);
 		Audio->PlaySoundCue2D(TEXT("Explosion"));
 		break;
@@ -181,11 +180,11 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperRoundAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -196,11 +195,11 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperMoveAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 4.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 10.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -210,11 +209,11 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_00")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), CriticalDamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -224,26 +223,26 @@ void ATTTrooper::AttackCheck()
 	case FTTWorld::HashCode(TEXT("TrooperRangeAttackMontage_01")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 3.0f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Audio->PlaySoundCue2D(TEXT("Explosion"));
 		break;
 	}
 	case FTTWorld::HashCode(TEXT("TrooperLaserAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));

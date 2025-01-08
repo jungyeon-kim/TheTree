@@ -26,7 +26,7 @@ struct FTTLevelDesign : public FTableRowBase
 };
 
 UENUM()
-enum class ETTTextureType
+enum class ETextureType
 {
 	OPENED,
 	BLOCKED,
@@ -80,26 +80,26 @@ protected:
 	UPROPERTY()
 	class APlayerStart* PlayerStart;
 
-	TArray<ETTTextureType> MapTexture{};
+	TArray<ETextureType> MapTexture{};
 	TArray<UClass*> ClassCluster{};
 
-	TArray<ETTTextureType> MakeMapTexture(int GenerationCount);
-	void CelluarAutomata(TArray<ETTTextureType>& Texture, int GenerationCount);
-	int32 CountNeighbours(const TArray<ETTTextureType>& Texture, int x, int y);
-	int32 CountNeighboursWithoutThis(const TArray<ETTTextureType>& Texture, int x, int y,
+	TArray<ETextureType> MakeMapTexture(int GenerationCount);
+	void CelluarAutomata(TArray<ETextureType>& Texture, int GenerationCount);
+	int32 CountNeighbours(const TArray<ETextureType>& Texture, int x, int y);
+	int32 CountNeighboursWithoutThis(const TArray<ETextureType>& Texture, int x, int y,
 		int Start = -1, int End = 2);
 	int32 GetIndexFromXY(int x, int y);
-	void FinalWork(TArray<ETTTextureType>& Texture);
-	void SetChandelier(TArray<ETTTextureType>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
+	void FinalWork(TArray<ETextureType>& Texture);
+	void SetChandelier(TArray<ETextureType>& Texture, int x = 15, int y = 15, bool bSetChandelier = true);
 
 	void SpawnMonsters(TArray<FActorDistElement>& DistElements, int NumOfMonster);
 	void SpawnMonsters(UDataTable* MonsterDataTable, int Row);
 
 	void InPlaceCharacterRandom(UClass* CharacterClass);
-	void InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, ETTTextureType PossibleBlocking = ETTTextureType::BLOCKED);
-	void InPlaceActorRandom(const TArray<FActorDistElement>& DistElements, int NumOfSpawning, float OffsetZ, ETTTextureType PossibleBlocking = ETTTextureType::BLOCKED);
+	void InPlaceActorRandom(UClass* ActorClass, int32 SpawnCount, float OffsetZ, ETextureType PossibleBlocking = ETextureType::BLOCKED);
+	void InPlaceActorRandom(const TArray<FActorDistElement>& DistElements, int NumOfSpawning, float OffsetZ, ETextureType PossibleBlocking = ETextureType::BLOCKED);
 	void SetMapTileActorClass(UClass* Class);
-	void BuildObjects(TArray<ETTTextureType>& Texture, bool bSetTorch);
+	void BuildObjects(TArray<ETextureType>& Texture, bool bSetTorch);
 	void TurnToMonster();
 	void RebuildNavigation();
 

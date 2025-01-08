@@ -6,7 +6,6 @@
 #include "TTAudioComponent.h"
 #include "TTAIStatComponent.h"
 #include "DrawDebugHelpers.h"
-#include "Engine/DamageEvents.h"
 
 ATTArgoniteGiant::ATTArgoniteGiant()
 {
@@ -121,11 +120,11 @@ void ATTArgoniteGiant::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FDamageEvent DamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 2.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk(), DamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 2.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 2.5f);
 				Audio->PlaySoundCue2D(TEXT("HitAttack"));
@@ -136,11 +135,11 @@ void ATTArgoniteGiant::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantChargeAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
-				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 10.0f);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 10.0f);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 				Audio->PlaySoundWave2D(TEXT("HitChargeAttack"));
@@ -151,14 +150,14 @@ void ATTArgoniteGiant::AttackCheck()
 	case FTTWorld::HashCode(TEXT("ArgoniteGiantQuakeAttackMontage")):
 	{
 		if (bResult)
-			if (HitResult.GetActor())
+			if (HitResult.Actor.IsValid())
 			{
 				FPointDamageEvent CriticalDamageEvent{};
-				HitResult.GetActor()->TakeDamage(AIStat->GetAtk() * 2.5f, CriticalDamageEvent, GetController(), this);
+				HitResult.Actor->TakeDamage(AIStat->GetAtk() * 2.5f, CriticalDamageEvent, GetController(), this);
 				Effect->PlayEffectAtLocation(TEXT("HitImpact"), HitResult.GetActor()->GetActorLocation(),
 					GetActorForwardVector().Rotation(), 5.0f);
 			}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation, 2.0f);
 		Audio->PlaySoundCueAtLocation(TEXT("Explosion"), GetActorLocation());
 		break;

@@ -12,7 +12,6 @@
 #include "TTUIMap.h"
 #include "TTUIQuitGame.h"
 #include "DrawDebugHelpers.h"
-#include "Engine/DamageEvents.h"
 
 ATTPlayer::ATTPlayer()
 {
@@ -409,14 +408,14 @@ void ATTPlayer::AttackCheck()
 		if (bResult)
 		{
 			for (const auto& Result : HitResult)
-				if (Result.GetActor())
+				if (Result.Actor.IsValid())
 				{
 					FDamageEvent DamageEvent{};
-					Result.GetActor()->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk(), DamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 					CharacterStat->SetSta(CharacterStat->GetSta() + CharacterStat->GetStaToGetPerHit());
 				}
-			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 1.5f);
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.5f);
 			Audio->PlaySoundCue2D(TEXT("HitAttack"));
 		}
 		Audio->PlaySoundCue2D(TEXT("Attack"));
@@ -425,28 +424,28 @@ void ATTPlayer::AttackCheck()
 		if (bResult)
 		{
 			for (const auto& Result : HitResult)
-				if (Result.GetActor())
+				if (Result.Actor.IsValid())
 				{
 					FDamageEvent DamageEvent{};
-					Result.GetActor()->TakeDamage(CharacterStat->GetAtk() * 2.0f, DamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, DamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
 			Audio->PlaySoundWave2D(TEXT("HitSmashAttack"));
 		}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 3.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 		Effect->PlayEffectAtLocation(TEXT("ExplosionRock"), GetActorLocation() + HitStartLocation * 2.0f, 0.5f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerSlidingSlashAttackMontage")):
 		if (bResult)
 		{
 			for (const auto& Result : HitResult)
-				if (Result.GetActor())
+				if (Result.Actor.IsValid())
 				{
 					FPointDamageEvent CriticalDamageEvent{};
-					Result.GetActor()->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 1.5f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
-			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 3.0f);
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 			Audio->PlaySoundWave2D(TEXT("HitSlidingSlash"));
 		}
 		Audio->PlaySoundCue2D(TEXT("SlidingSlash"));
@@ -455,13 +454,13 @@ void ATTPlayer::AttackCheck()
 		if (bResult)
 		{
 			for (const auto& Result : HitResult)
-				if (Result.GetActor())
+				if (Result.Actor.IsValid())
 				{
 					FPointDamageEvent CriticalDamageEvent{};
-					Result.GetActor()->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 2.0f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 8.0f);
 				}
-			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 3.0f);
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 			Audio->PlaySoundWave2D(TEXT("HitWindCutter"));
 		}
 		break;
@@ -469,29 +468,29 @@ void ATTPlayer::AttackCheck()
 		if (bResult)
 		{
 			for (const auto& Result : HitResult)
-				if (Result.GetActor())
+				if (Result.Actor.IsValid())
 				{
 					FPointDamageEvent CriticalDamageEvent{};
-					Result.GetActor()->TakeDamage(CharacterStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 5.0f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
 				}
 			Effect->PlayEffectAtLocation(TEXT("GaiaImpact"), GetActorLocation() + HitStartLocation, 5.0f);
 			Audio->PlaySoundWave2D(TEXT("HitDrawSword"));
 		}
-		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 5.0f);
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 5.0f);
 		Effect->PlayEffectAtLocation(TEXT("GaiaLightning"), GetActorLocation() + HitStartLocation, 5.0f);
 		break;
 	case FTTWorld::HashCode(TEXT("PlayerDrawSwordAttackMontage")):
 		if (bResult)
 		{
 			for (const auto& Result : HitResult)
-				if (Result.GetActor())
+				if (Result.Actor.IsValid())
 				{
 					FPointDamageEvent CriticalDamageEvent{};
-					Result.GetActor()->TakeDamage(CharacterStat->GetAtk() * 10.0f, CriticalDamageEvent, GetController(), this);
+					Result.Actor->TakeDamage(CharacterStat->GetAtk() * 10.0f, CriticalDamageEvent, GetController(), this);
 					Effect->PlayEffectAtLocation(TEXT("HitImpact"), Result.GetActor()->GetActorLocation(), 15.0f);
 				}
-			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(CameraShake, 3.0f);
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 3.0f);
 			Audio->PlaySoundWave2D(TEXT("HitDrawSword"));
 			SetPlayRate(0.0f, 0.15f, 0.1f);
 		}

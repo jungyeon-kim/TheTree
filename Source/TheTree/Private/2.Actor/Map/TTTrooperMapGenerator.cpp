@@ -18,7 +18,7 @@ void ATTTrooperMapGenerator::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	TArray<ETTTextureType> Map{ MakeMapTexture(20) };
+	TArray<ETextureType> Map{ MakeMapTexture(20) };
 	SetMapTileActorClass(ATTTrooperMapTile::StaticClass());
 	BuildObjects(Map, false);
 
